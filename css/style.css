@@ -1,16 +1,69 @@
+/* ---------- LIGHT THEME (default) ---------- */
 :root {
-  --bg: #f6f8ff;
+  --bg: #f8fafc;
+  --bg-page: #f1f5f9;
   --card: #ffffff;
-  --text: #1f2a44;
-  --muted: #6b7280;
-  --primary: #4f46e5;
-  --secondary: #06b6d4;
+  --text: #0f172a;
+  --text-secondary: #334155;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary: #0ea5e9;
+  --accent: #f59e0b;
+  --success: #059669;
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --input-bg: #ffffff;
+  --menu-hover: #f1f5f9;
+  --menu-active: #eff6ff;
+  --menu-active-text: #1d4ed8;
+  --user-chip-bg: #f8fafc;
+  --user-chip-border: #e2e8f0;
+  --focus-ring: rgba(37, 99, 235, 0.2);
+}
+
+/* ---------- DARK THEME ---------- */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --bg-page: #020617;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --secondary: #0ea5e9;
   --accent: #f59e0b;
   --success: #10b981;
+  --success-bg: #064e3b;
+  --success-text: #6ee7b7;
   --danger: #ef4444;
-  --border: #e5e7eb;
-  --shadow: 0 12px 30px rgba(79, 70, 229, 0.12);
-  --radius: 16px;
+  --danger-bg: #7f1d1d;
+  --danger-text: #fca5a5;
+  --warning-bg: #78350f;
+  --warning-text: #fcd34d;
+  --border: #334155;
+  --border-subtle: #1e293b;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --input-bg: #1e293b;
+  --menu-hover: #334155;
+  --menu-active: #1e3a5f;
+  --menu-active-text: #93c5fd;
+  --user-chip-bg: #1e293b;
+  --user-chip-border: #334155;
+  --focus-ring: rgba(59, 130, 246, 0.4);
 }
 
 * {
@@ -20,10 +73,15 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
   color: var(--text);
-  background: linear-gradient(160deg, #eef2ff 0%, #ecfeff 45%, #fff7ed 100%);
+  background: var(--bg-page);
   min-height: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background: var(--bg-page);
 }
 
 a {
@@ -50,19 +108,19 @@ a {
   grid-template-columns: 1fr 1fr;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 .auth-visual {
   padding: 42px 36px;
-  background:
-    radial-gradient(circle at 15% 25%, rgba(79,70,229,0.18), transparent 35%),
-    radial-gradient(circle at 80% 15%, rgba(6,182,212,0.18), transparent 35%),
-    radial-gradient(circle at 45% 80%, rgba(245,158,11,0.16), transparent 30%),
-    linear-gradient(135deg, #4338ca, #0891b2);
+  background: linear-gradient(160deg, #1e3a8a 0%, #0c4a6e 100%);
   color: #fff;
+}
+
+[data-theme="dark"] .auth-visual {
+  background: linear-gradient(160deg, #1e3a8a 0%, #0f172a 100%);
 }
 
 .brand {
@@ -102,9 +160,9 @@ a {
 }
 
 .stat-pill {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.28);
-  border-radius: 14px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
   padding: 12px 14px;
   font-size: 0.92rem;
 }
@@ -138,25 +196,25 @@ a {
 
 label {
   font-size: 0.88rem;
-  color: #374151;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 input, textarea, select {
   width: 100%;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--input-bg);
   color: var(--text);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 12px 13px;
   font-size: 0.96rem;
   outline: none;
-  transition: 0.2s border-color, 0.2s box-shadow;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus, textarea:focus, select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(79,70,229,0.12);
+  box-shadow: 0 0 0 4px var(--focus-ring);
 }
 
 .btn {
@@ -177,21 +235,37 @@ input:focus, textarea:focus, select:focus {
   transform: translateY(0);
 }
 
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #6366f1);
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 10px 18px rgba(79,70,229,0.25);
+  border-radius: 8px;
+  padding: 12px 24px;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
 }
 
 .btn-ghost {
-  background: #eef2ff;
+  background: transparent;
+  border: 1px solid var(--primary);
   color: var(--primary);
   font-weight: 600;
 }
 
 .btn-ghost:hover {
-  background: #ddd6fe;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+  background: var(--menu-active);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .btn-ghost:hover {
+  background: var(--menu-active);
 }
 
 .auth-alt {
@@ -214,22 +288,22 @@ input:focus, textarea:focus, select:focus {
 
 .sidebar {
   border-right: 1px solid var(--border);
-  background: #ffffffcc;
-  backdrop-filter: blur(8px);
+  background: var(--card);
   padding: 16px;
   position: sticky;
   top: 0;
   height: 100vh;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .user-chip {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #eef2ff;
-  border: 1px solid #dbe1ff;
+  background: var(--user-chip-bg);
+  border: 1px solid var(--user-chip-border);
   padding: 12px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   margin-bottom: 18px;
 }
 
@@ -237,7 +311,7 @@ input:focus, textarea:focus, select:focus {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  background: var(--primary);
   color: #fff;
   display: grid;
   place-items: center;
@@ -263,18 +337,18 @@ input:focus, textarea:focus, select:focus {
 .menu a {
   padding: 11px 12px;
   border-radius: 10px;
-  color: #334155;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.95rem;
 }
 
 .menu a:hover {
-  background: #f1f5f9;
+  background: var(--menu-hover);
 }
 
 .menu a.active {
-  background: #ede9fe;
-  color: #4338ca;
+  background: var(--menu-active);
+  color: var(--menu-active-text);
 }
 
 .main {
@@ -283,8 +357,8 @@ input:focus, textarea:focus, select:focus {
 
 .topbar {
   border-bottom: 1px solid var(--border);
-  background: #ffffffd8;
-  backdrop-filter: blur(8px);
+  background: var(--card);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .topbar-inner {
@@ -305,16 +379,22 @@ input:focus, textarea:focus, select:focus {
   padding: 9px 12px;
   border-radius: 10px;
   font-weight: 600;
-  color: #475569;
+  color: var(--muted);
 }
 
 .tabs a:hover {
-  background: #f1f5f9;
+  background: var(--menu-hover);
 }
 
 .tabs a.active {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--menu-active);
+  color: var(--menu-active-text);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logout-link {
@@ -329,9 +409,10 @@ input:focus, textarea:focus, select:focus {
 .hero-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 28px;
   box-shadow: var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   display: grid;
   grid-template-columns: 1fr 220px;
   gap: 24px;
@@ -362,12 +443,11 @@ input:focus, textarea:focus, select:focus {
   width: 170px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background:
-    conic-gradient(var(--success) 0 40%, #d1fae5 40% 100%);
+  background: conic-gradient(var(--success) 0 40%, var(--success-bg) 40% 100%);
   display: grid;
   place-items: center;
   position: relative;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+  box-shadow: var(--shadow);
 }
 
 .progress-circle::before {
@@ -376,7 +456,7 @@ input:focus, textarea:focus, select:focus {
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--card);
 }
 
 .progress-circle span {
@@ -384,7 +464,7 @@ input:focus, textarea:focus, select:focus {
   z-index: 1;
   text-align: center;
   font-weight: 800;
-  color: #065f46;
+  color: var(--success-text);
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -404,19 +484,19 @@ input:focus, textarea:focus, select:focus {
 
 .lesson-card {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 20px;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(2,6,23,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .lesson-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .lesson-card h3 {
@@ -452,8 +532,8 @@ input:focus, textarea:focus, select:focus {
 
 .lesson-top {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #fff;
+  border-radius: var(--radius);
+  background: var(--card);
   padding: 14px 16px;
   display: flex;
   align-items: center;
@@ -468,8 +548,8 @@ input:focus, textarea:focus, select:focus {
 .badge {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--menu-active);
+  color: var(--menu-active-text);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -481,11 +561,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 .question-box, .answer-box {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 16px;
-  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.04);
+  box-shadow: var(--shadow);
 }
 
 .question-box h3,
@@ -514,11 +594,75 @@ input:focus, textarea:focus, select:focus {
   height: 76px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #f59e0b, #f97316);
+  background: var(--primary);
   color: #fff;
   font-weight: 800;
-  box-shadow: 0 12px 24px rgba(249,115,22,0.3);
+  box-shadow: var(--shadow-lg);
   cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.float-ai:hover {
+  background: var(--primary-hover);
+}
+
+/* ---------- THEME TOGGLE ---------- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--menu-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  display: none;
+}
+
+/* In light mode: show moon (click to go dark) */
+.theme-toggle[aria-label="Switch to dark theme"] .icon-moon {
+  display: block;
+}
+
+/* In dark mode: show sun (click to go light) */
+.theme-toggle[aria-label="Switch to light theme"] .icon-sun {
+  display: block;
+}
+
+.theme-toggle-auth {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+.theme-toggle-sidebar {
+  margin-top: 16px;
+  width: 100%;
+  justify-content: center;
 }
 
 /* ---------- MOBILE MENU ---------- */
@@ -528,17 +672,19 @@ input:focus, textarea:focus, select:focus {
   top: 0;
   z-index: 50;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--card);
   border-bottom: 1px solid var(--border);
+  transition: background-color 0.3s ease;
 }
 
 .hamburger {
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card);
   border-radius: 10px;
   padding: 8px 10px;
   font-weight: 700;
   cursor: pointer;
+  color: var(--text);
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -620,14 +766,14 @@ input:focus, textarea:focus, select:focus {
   width: 170px;
   height: 170px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: var(--primary);
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.25);
+  box-shadow: var(--shadow-lg);
 }
 
 .quiz-badge-inner {
-  background: #fff;
+  background: var(--card);
   width: 130px;
   height: 130px;
   border-radius: 50%;
@@ -654,19 +800,19 @@ input:focus, textarea:focus, select:focus {
 
 .quiz-card {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 24px;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(2,6,23,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .quiz-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .quiz-icon {
@@ -713,18 +859,18 @@ input:focus, textarea:focus, select:focus {
 }
 
 .quiz-difficulty.easy {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .quiz-difficulty.medium {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .quiz-difficulty.hard {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 /* ---------- AI PAGE ---------- */
@@ -737,22 +883,22 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   align-items: center;
   gap: 20px;
-  background: linear-gradient(135deg, #f0f9ff, #e0e7ff);
+  background: var(--menu-active);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 28px;
   margin-bottom: 24px;
 }
 
 .ai-avatar {
   font-size: 3.5rem;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: var(--primary);
   width: 80px;
   height: 80px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .ai-header h1 {
@@ -769,9 +915,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .chat-container {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow);
   margin-bottom: 24px;
@@ -782,7 +928,7 @@ input:focus, textarea:focus, select:focus {
   max-height: 500px;
   overflow-y: auto;
   padding: 24px;
-  background: #fafafa;
+  background: var(--bg);
 }
 
 .message {
@@ -814,16 +960,16 @@ input:focus, textarea:focus, select:focus {
 }
 
 .ai-message .message-avatar {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: var(--primary);
 }
 
 .message-content {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px 16px;
   max-width: 85%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow);
 }
 
 .message-content p {
@@ -834,7 +980,7 @@ input:focus, textarea:focus, select:focus {
 
 .chat-input-wrapper {
   padding: 20px;
-  background: #fff;
+  background: var(--card);
   border-top: 1px solid var(--border);
   display: flex;
   gap: 12px;
@@ -854,7 +1000,7 @@ input:focus, textarea:focus, select:focus {
 
 .chat-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px var(--focus-ring);
 }
 
 .chat-send {
@@ -863,9 +1009,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .ai-suggestions {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow);
 }
@@ -884,7 +1030,7 @@ input:focus, textarea:focus, select:focus {
 
 .chip {
   padding: 10px 16px;
-  background: #f3f4f6;
+  background: var(--user-chip-bg);
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.9rem;
@@ -895,7 +1041,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .chip:hover {
-  background: #e0e7ff;
+  background: var(--menu-active);
   border-color: var(--primary);
   color: var(--primary);
   transform: translateY(-2px);
@@ -930,19 +1076,19 @@ input:focus, textarea:focus, select:focus {
 
 .resource-card {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 24px;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(2,6,23,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .resource-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .resource-icon {
@@ -972,7 +1118,7 @@ input:focus, textarea:focus, select:focus {
 .video-thumbnail {
   width: 100%;
   height: 160px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: var(--primary);
   border-radius: 10px;
   display: grid;
   place-items: center;
@@ -1004,9 +1150,9 @@ input:focus, textarea:focus, select:focus {
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
@@ -1014,7 +1160,7 @@ input:focus, textarea:focus, select:focus {
 
 .link-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
+  box-shadow: var(--shadow-lg);
   transform: translateX(4px);
 }
 
@@ -1022,7 +1168,7 @@ input:focus, textarea:focus, select:focus {
   font-size: 2rem;
   width: 50px;
   height: 50px;
-  background: #f3f4f6;
+  background: var(--user-chip-bg);
   border-radius: 10px;
   display: grid;
   place-items: center;
@@ -1061,24 +1207,21 @@ input:focus, textarea:focus, select:focus {
 .brand-badge-large {
   width: 90px;
   height: 90px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  border-radius: var(--radius-lg);
+  background: var(--primary);
   display: inline-grid;
   place-items: center;
   font-weight: 900;
   font-size: 3rem;
   color: #fff;
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 .about-hero h1 {
   font-size: 3rem;
   font-weight: 900;
   margin: 0 0 12px;
-  background: linear-gradient(135deg, #4f46e5, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--primary);
 }
 
 .about-tagline {
@@ -1115,18 +1258,18 @@ input:focus, textarea:focus, select:focus {
 }
 
 .feature-box {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 24px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
 }
 
 .feature-box:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .feature-icon {
@@ -1157,9 +1300,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .stat-box {
-  background: linear-gradient(135deg, #f0f9ff, #e0e7ff);
+  background: var(--menu-active);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 30px 20px;
   text-align: center;
 }
@@ -1180,9 +1323,9 @@ input:focus, textarea:focus, select:focus {
 
 .contact-section {
   text-align: center;
-  background: linear-gradient(135deg, #f0f9ff, #fef3c7);
+  background: var(--menu-active);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 40px;
 }
 

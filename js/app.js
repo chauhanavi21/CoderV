@@ -1,3 +1,29 @@
+// ---------- THEME TOGGLE ----------
+function initTheme() {
+  const btn = document.getElementById("themeToggle");
+  const labelEl = btn?.querySelector(".theme-toggle-text");
+  if (!btn) return;
+
+  function updateToggle() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    btn.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+    if (labelEl) labelEl.textContent = isDark ? "Light" : "Dark";
+  }
+
+  updateToggle();
+
+  btn.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("coderv-theme", next);
+    updateToggle();
+  });
+}
+
+initTheme();
+
+// ---------- SIDEBAR TOGGLE ----------
 function toggleSidebar(btnId, sidebarId) {
   const btn = document.getElementById(btnId);
   const sidebar = document.getElementById(sidebarId);

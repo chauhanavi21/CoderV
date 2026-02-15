@@ -1,0 +1,12 @@
+{
+  "name": "coderv",
+  "version": "1.0.0",
+  "description": "A web-based programming learning platform",
+  "scripts": {
+    "start": "serve",
+    "serve": "serve"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
