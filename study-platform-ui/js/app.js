@@ -4,6 +4,19 @@ function toggleSidebar(btnId, sidebarId) {
 
   if (!btn || !sidebar) return;
 
+  // Hide sidebar on mobile initially
+  function checkMobile() {
+    const isMobile = window.innerWidth <= 840;
+    if (isMobile) {
+      sidebar.classList.add("hidden-mobile");
+    } else {
+      sidebar.classList.remove("hidden-mobile");
+    }
+  }
+
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
   btn.addEventListener("click", () => {
     sidebar.classList.toggle("hidden-mobile");
   });
