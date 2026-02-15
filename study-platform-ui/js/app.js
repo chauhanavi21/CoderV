@@ -39,3 +39,15 @@ toggleSidebar("menuToggleDashboard", "dashboardSidebar");
 
 // Lesson
 toggleSidebar("menuToggleLesson", "lessonSidebar");
+
+// Quiz
+toggleSidebar("menuToggleQuiz", "quizSidebar");
+
+// AI
+toggleSidebar("menuToggleAI", "aiSidebar");
+
+// Resources
+toggleSidebar("menuToggleResources", "resourcesSidebar");
+
+// About
+toggleSidebar("menuToggleAbout", "aboutSidebar");

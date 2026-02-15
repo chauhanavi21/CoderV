@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoderV | Ask AI Assistant</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="mobile-top">
+    <strong>CoderV AI</strong>
+    <button class="hamburger" id="menuToggleAI">Menu</button>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="aiSidebar">
+      <div class="user-chip">
+        <div class="avatar">TC</div>
+        <div>
+          <div class="name">Team Name</div>
+          <div class="mini">Student account</div>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="dashboard.html">Home</a>
+        <a href="lesson.html">Learning</a>
+        <a href="quiz.html">Extra Quiz</a>
+        <a href="ai.html" class="active">Ask AI</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <nav class="tabs">
+            <a href="ai.html" class="active">AI Assistant</a>
+            <a href="resources.html">Resources</a>
+            <a href="about.html">About</a>
+          </nav>
+          <a class="logout-link" href="login.html">Log out</a>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="ai-container">
+          <div class="ai-header">
+            <div class="ai-avatar">🤖</div>
+            <div>
+              <h1>AI Learning Assistant</h1>
+              <p>Get instant help with coding questions, explanations, and debugging</p>
+            </div>
+          </div>
+
+          <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+              <div class="message ai-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                  <p>Hello! I'm your AI learning assistant. Ask me anything about programming, algorithms, or any coding concept you're learning.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-input-wrapper">
+              <textarea 
+                class="chat-input" 
+                placeholder="Ask a question... (e.g., 'Explain recursion in simple terms')"
+                rows="3"
+              ></textarea>
+              <button class="btn btn-primary chat-send">Send Question</button>
+            </div>
+          </div>
+
+          <div class="ai-suggestions">
+            <h3>Quick Questions</h3>
+            <div class="suggestion-chips">
+              <button class="chip">What is Big O notation?</button>
+              <button class="chip">How do arrays work?</button>
+              <button class="chip">Explain object-oriented programming</button>
+              <button class="chip">What are REST APIs?</button>
+              <button class="chip">Difference between var, let, and const</button>
+              <button class="chip">How to debug code effectively?</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
