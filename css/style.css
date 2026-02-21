@@ -255,6 +255,15 @@ input:focus, textarea:focus, select:focus {
   color: var(--muted);
 }
 
+.user-chip-link {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-chip-link:hover {
+  background: var(--menu-hover);
+}
+
 .menu {
   display: grid;
   gap: 6px;
@@ -1196,6 +1205,218 @@ input:focus, textarea:focus, select:focus {
   margin: 0;
   color: var(--text);
   font-weight: 500;
+}
+
+/* ---------- PROFILE PAGE ---------- */
+.profile-hero {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.75rem;
+}
+
+.profile-info h1 {
+  margin: 0 0 6px;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.profile-role {
+  margin: 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.profile-meta {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow);
+}
+
+.profile-stat-icon {
+  font-size: 2rem;
+}
+
+.profile-stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.profile-stat-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.profile-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.profile-activity-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.profile-activity-card h3 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.activity-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.95rem;
+}
+
+.activity-list li:last-child {
+  border-bottom: none;
+}
+
+.activity-done {
+  color: var(--success);
+  margin-right: 8px;
+}
+
+.activity-next {
+  color: var(--primary);
+  margin-right: 8px;
+}
+
+.activity-pending {
+  color: var(--muted);
+  margin-right: 8px;
+}
+
+.quiz-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.quiz-summary-row:last-child {
+  border-bottom: none;
+}
+
+.quiz-summary-row span {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.quiz-summary-row strong {
+  color: var(--primary);
+}
+
+.profile-info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.profile-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-info-row:last-child {
+  border-bottom: none;
+}
+
+.profile-info-label {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.profile-info-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.profile-actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-activity-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- RESPONSIVE UPDATES ---------- */

@@ -51,3 +51,6 @@ toggleSidebar("menuToggleResources", "resourcesSidebar");
 
 // About
 toggleSidebar("menuToggleAbout", "aboutSidebar");
+
+// Profile
+toggleSidebar("menuToggleProfile", "profileSidebar");

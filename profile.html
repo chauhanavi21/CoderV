@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoderV | Profile</title>
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('coderv-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    );
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="mobile-top">
+    <strong>CoderV Profile</strong>
+    <button class="hamburger" id="menuToggleProfile">Menu</button>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="profileSidebar">
+      <a href="profile.html" class="user-chip user-chip-link">
+        <div class="avatar">TC</div>
+        <div>
+          <div class="name">Team Name</div>
+          <div class="mini">Student account</div>
+        </div>
+      </a>
+
+      <nav class="menu">
+        <a href="dashboard.html">Home</a>
+        <a href="lesson.html">Learning</a>
+        <a href="quiz.html">Extra Quiz</a>
+        <a href="ai.html">Ask AI</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <nav class="tabs">
+            <a href="dashboard.html">How to use</a>
+            <a href="resources.html">Resources</a>
+            <a href="about.html">About</a>
+          </nav>
+          <div class="topbar-actions">
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
+              <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+              <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              <span class="theme-toggle-text">Dark</span>
+            </button>
+            <a class="logout-link" href="index.html">Log out</a>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <article class="profile-hero">
+          <div class="profile-header">
+            <div class="profile-avatar">TC</div>
+            <div class="profile-info">
+              <h1>Team Name</h1>
+              <p class="profile-role">Student account</p>
+              <p class="profile-meta">Member since Jan 2025</p>
+            </div>
+          </div>
+        </article>
+
+        <h2 class="section-title">Learning Stats</h2>
+        <div class="profile-stats-grid">
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">📚</div>
+            <div class="profile-stat-content">
+              <span class="profile-stat-value">2 / 6</span>
+              <span class="profile-stat-label">Lessons completed</span>
+            </div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">📊</div>
+            <div class="profile-stat-content">
+              <span class="profile-stat-value">33%</span>
+              <span class="profile-stat-label">Course progress</span>
+            </div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">✅</div>
+            <div class="profile-stat-content">
+              <span class="profile-stat-value">12</span>
+              <span class="profile-stat-label">Quizzes available</span>
+            </div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">🔥</div>
+            <div class="profile-stat-content">
+              <span class="profile-stat-value">5</span>
+              <span class="profile-stat-label">Day streak</span>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Activity Overview</h2>
+        <div class="profile-activity-grid">
+          <article class="profile-activity-card">
+            <h3>Recent lessons</h3>
+            <ul class="activity-list">
+              <li><span class="activity-done">✓</span> Lesson 1: Introduction</li>
+              <li><span class="activity-done">✓</span> Lesson 2: Variables</li>
+              <li><span class="activity-next">→</span> Lesson 3: Ratios</li>
+              <li><span class="activity-pending">○</span> Lesson 4: Percentages</li>
+              <li><span class="activity-pending">○</span> Lesson 5: Data basics</li>
+            </ul>
+          </article>
+          <article class="profile-activity-card">
+            <h3>Quiz performance</h3>
+            <div class="quiz-summary">
+              <div class="quiz-summary-row">
+                <span>Completed</span>
+                <strong>3</strong>
+              </div>
+              <div class="quiz-summary-row">
+                <span>Average score</span>
+                <strong>78%</strong>
+              </div>
+              <div class="quiz-summary-row">
+                <span>Best score</span>
+                <strong>92%</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <h2 class="section-title">Account Information</h2>
+        <article class="profile-info-card">
+          <div class="profile-info-row">
+            <span class="profile-info-label">Display name</span>
+            <span class="profile-info-value">Team Name</span>
+          </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">Account type</span>
+            <span class="profile-info-value">Student</span>
+          </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">AI questions asked</span>
+            <span class="profile-info-value">24</span>
+          </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">Total study time</span>
+            <span class="profile-info-value">~12 hours</span>
+          </div>
+        </article>
+
+        <div class="profile-actions">
+          <a href="dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+          <a href="lesson.html" class="btn btn-ghost">Continue Learning</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
