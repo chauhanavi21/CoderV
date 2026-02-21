@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "A web-based programming learning platform",
   "scripts": {
-    "start": "serve",
-    "serve": "serve"
+    "start": "npx serve",
+    "serve": "npx serve",
+    "dev": "npx serve"
   },
   "devDependencies": {
     "serve": "^14.2.4"
