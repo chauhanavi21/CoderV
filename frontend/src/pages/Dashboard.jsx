@@ -2,9 +2,24 @@ import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 
 const upcomingLessons = [
-  { title: 'Lesson 3: Ratios', desc: 'Core concept + 5 practice questions.' },
-  { title: 'Lesson 4: Percentages', desc: 'Quick walkthrough with mini puzzle.' },
-  { title: 'Lesson 5: Data basics', desc: 'Interpret graphs and avoid common mistakes.' },
+  {
+    title: 'Type 1: Python Graph Explorer',
+    desc: 'Learn nodes, edges, traversals, and paths with 4 difficulties and 20 examples.',
+    to: '/lessons/type-1',
+    cta: 'Start Type 1',
+  },
+  {
+    title: 'Type 2: Coming soon',
+    desc: 'Reserved for the second lesson type in the learning system.',
+    to: '/lessons',
+    cta: 'View all lessons',
+  },
+  {
+    title: 'Type 3: Coming soon',
+    desc: 'Reserved for the third lesson type so the lesson area can grow consistently.',
+    to: '/lessons',
+    cta: 'View all lessons',
+  },
 ];
 
 export default function Dashboard() {
@@ -41,10 +56,10 @@ export default function Dashboard() {
             <h3 className="font-bold text-base">{lesson.title}</h3>
             <p className="text-muted text-sm leading-relaxed flex-1">{lesson.desc}</p>
             <Link
-              to="/lesson"
+              to={lesson.to}
               className="w-full text-center bg-indigo-50 text-primary rounded-xl px-4 py-3 text-sm font-semibold hover:bg-violet-100 hover:shadow-md transition-all"
             >
-              Open lesson
+              {lesson.cta}
             </Link>
           </article>
         ))}

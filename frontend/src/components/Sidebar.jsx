@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 const sidebarLinks = [
   { to: '/dashboard', label: 'Home' },
-  { to: '/lesson', label: 'Learning' },
+  { to: '/lessons', label: 'Learning' },
   { to: '/quiz', label: 'Extra Quiz' },
   { to: '/ai', label: 'Ask AI' },
 ];
