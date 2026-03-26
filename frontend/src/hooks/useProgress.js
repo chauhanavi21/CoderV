@@ -3,7 +3,7 @@ import { useAuth } from '@clerk/react';
 import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
 
 const STORAGE_KEY = 'coderv-progress';
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
 
 // ── Local storage helpers ────────────────────────────────────────────────────
 function loadLocal() {
