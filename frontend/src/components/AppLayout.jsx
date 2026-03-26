@@ -11,7 +11,7 @@ export default function AppLayout({ children, tabs = defaultTabs, sidebarId = 'a
   return (
     <div className="grid md:grid-cols-[250px_1fr] min-h-screen">
       <Sidebar id={sidebarId} />
-      <main className="min-w-0">
+      <main className="min-w-0 bg-transparent dark:text-slate-100">
         <Topbar tabs={tabs} />
         <section className="p-6 max-md:p-4">
           {children}

@@ -4,10 +4,10 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Lesson from './pages/Lesson'
-import GraphModule from './pages/GraphModule'
 import LessonsLanding from './pages/LessonsLanding'
 import LessonDetail from './pages/LessonDetail'
 import LessonPractice from './pages/LessonPractice'
+import Playground from './pages/Playground'
 import Quiz from './pages/Quiz'
 import AiAssistant from './pages/AiAssistant'
 import Resources from './pages/Resources'
@@ -26,6 +26,7 @@ function App() {
         <Route path="/lessons" element={<LessonsLanding />} />
         <Route path="/lessons/:lessonId" element={<LessonDetail />} />
         <Route path="/lessons/:lessonId/:difficulty" element={<LessonPractice />} />
+        <Route path="/playground" element={<Playground />} />
         {/* Legacy routes — redirect to new lesson system */}
         <Route path="/lesson" element={<Navigate to="/lessons" replace />} />
         <Route path="/lesson/type-1" element={<Navigate to="/lessons/type-1" replace />} />

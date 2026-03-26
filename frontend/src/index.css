@@ -8,6 +8,11 @@
   body {
     @apply font-sans text-gray-800 min-h-screen m-0 p-0;
     background: linear-gradient(160deg, #eef2ff 0%, #ecfeff 45%, #fff7ed 100%);
+    transition: background 0.3s ease, color 0.2s ease;
+  }
+  .dark body {
+    @apply text-slate-100;
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b2e 45%, #0d1117 100%);
   }
   a { @apply text-inherit no-underline; }
 }
