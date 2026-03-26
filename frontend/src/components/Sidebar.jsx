@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useUser, useClerk } from '@clerk/react';
 
 const sidebarLinks = [
   { to: '/dashboard', label: 'Home' },
@@ -12,6 +13,8 @@ const sidebarLinks = [
 export default function Sidebar({ id }) {
   const [hidden, setHidden] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 840);
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
 
   useEffect(() => {
     const check = () => {
@@ -38,6 +41,14 @@ export default function Sidebar({ id }) {
     return () => document.removeEventListener('click', handler);
   }, [isMobile, id]);
 
+  const initials = isLoaded && user
+    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() || 'U'
+    : '?';
+
+  const displayName = isLoaded && user
+    ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.primaryEmailAddress?.emailAddress?.split('@')[0] || 'User'
+    : 'Loading...';
+
   return (
     <>
       {/* Mobile top bar */}
@@ -56,7 +67,8 @@ export default function Sidebar({ id }) {
       <aside
         id={id}
         className={`
-          border-r border-gray-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm p-4 sticky top-0 h-screen
+          border-r border-gray-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm p-4
+          flex flex-col sticky top-0 h-screen
           max-md:fixed max-md:z-[60] max-md:w-[260px] max-md:left-0 max-md:top-14 max-md:h-[calc(100vh-56px)]
           max-md:shadow-xl max-md:transition-transform max-md:duration-300
           ${isMobile && hidden ? 'max-md:-translate-x-full' : 'max-md:translate-x-0'}
@@ -64,17 +76,25 @@ export default function Sidebar({ id }) {
       >
         {/* User chip */}
         <div className="flex items-center gap-2.5 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 p-3 rounded-xl mb-4">
-          <div className="w-[38px] h-[38px] rounded-full gradient-avatar text-white grid place-items-center font-extrabold text-sm">
-            TC
-          </div>
-          <div>
-            <div className="font-bold text-sm dark:text-slate-100">Team Name</div>
+          {isLoaded && user?.imageUrl ? (
+            <img
+              src={user.imageUrl}
+              alt={displayName}
+              className="w-[38px] h-[38px] rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-[38px] h-[38px] rounded-full gradient-avatar text-white grid place-items-center font-extrabold text-sm shrink-0">
+              {initials}
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="font-bold text-sm dark:text-slate-100 truncate">{displayName}</div>
             <div className="text-xs text-muted dark:text-slate-400">Student account</div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="grid gap-1.5">
+        <nav className="grid gap-1.5 flex-1">
           {sidebarLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -92,6 +112,15 @@ export default function Sidebar({ id }) {
             </NavLink>
           ))}
         </nav>
+
+        {/* Sign out at bottom */}
+        <button
+          type="button"
+          onClick={() => signOut({ redirectUrl: '/login' })}
+          className="mt-4 w-full text-left px-3 py-2.5 rounded-lg font-semibold text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+        >
+          Sign out
+        </button>
       </aside>
     </>
   );

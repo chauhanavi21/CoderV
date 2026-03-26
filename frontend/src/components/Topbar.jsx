@@ -1,4 +1,4 @@
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 
 function SunIcon() {
@@ -49,24 +49,15 @@ export default function Topbar({ tabs }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          {/* Dark / light toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="rounded-lg border border-gray-200 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            {isDark ? <SunIcon /> : <MoonIcon />}
-          </button>
-
-          <Link
-            to="/login"
-            className="font-bold text-red-500 dark:text-red-400 text-sm hover:text-red-600 dark:hover:text-red-300 transition-colors"
-          >
-            Log out
-          </Link>
-        </div>
+        {/* Dark / light toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="rounded-lg border border-gray-200 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          {isDark ? <SunIcon /> : <MoonIcon />}
+        </button>
       </div>
     </header>
   );

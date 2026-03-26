@@ -1,9 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useAuth } from '@clerk/react';
 import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
 
 const STORAGE_KEY = 'coderv-progress';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-function load() {
+// ── Local storage helpers ────────────────────────────────────────────────────
+function loadLocal() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
   } catch {
@@ -11,25 +14,83 @@ function load() {
   }
 }
 
-function save(data) {
+function saveLocal(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export function useProgress() {
-  const [progress, setProgress] = useState(load);
+// ── Convert flat Supabase rows → nested progress object ──────────────────────
+function rowsToProgress(rows = []) {
+  return rows.reduce((acc, row) => {
+    if (!acc[row.lesson_id]) acc[row.lesson_id] = {};
+    if (!acc[row.lesson_id][row.difficulty]) acc[row.lesson_id][row.difficulty] = [];
+    if (!acc[row.lesson_id][row.difficulty].includes(row.example_id)) {
+      acc[row.lesson_id][row.difficulty].push(row.example_id);
+    }
+    return acc;
+  }, {});
+}
 
-  const markComplete = useCallback((lessonId, difficulty, exampleId) => {
-    setProgress((prev) => {
-      const next = structuredClone(prev);
-      if (!next[lessonId]) next[lessonId] = {};
-      if (!next[lessonId][difficulty]) next[lessonId][difficulty] = [];
-      if (!next[lessonId][difficulty].includes(exampleId)) {
-        next[lessonId][difficulty] = [...next[lessonId][difficulty], exampleId];
+// ── Hook ─────────────────────────────────────────────────────────────────────
+export function useProgress() {
+  const [progress, setProgress] = useState(loadLocal);
+  const { getToken, isSignedIn, isLoaded } = useAuth();
+
+  // Hydrate from backend when the user is signed in
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+
+    async function syncFromBackend() {
+      try {
+        const token = await getToken();
+        const res = await fetch(`${API_BASE}/api/progress`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const { progress: rows } = await res.json();
+        const remote = rowsToProgress(rows);
+        setProgress(remote);
+        saveLocal(remote);
+      } catch {
+        // Backend unavailable — local state remains as-is
       }
-      save(next);
-      return next;
-    });
-  }, []);
+    }
+
+    syncFromBackend();
+  }, [isLoaded, isSignedIn, getToken]);
+
+  const markComplete = useCallback(
+    async (lessonId, difficulty, exampleId) => {
+      // Optimistic local update
+      setProgress((prev) => {
+        const next = structuredClone(prev);
+        if (!next[lessonId]) next[lessonId] = {};
+        if (!next[lessonId][difficulty]) next[lessonId][difficulty] = [];
+        if (!next[lessonId][difficulty].includes(exampleId)) {
+          next[lessonId][difficulty] = [...next[lessonId][difficulty], exampleId];
+        }
+        saveLocal(next);
+        return next;
+      });
+
+      // Persist to backend if authenticated
+      if (isSignedIn) {
+        try {
+          const token = await getToken();
+          await fetch(`${API_BASE}/api/progress/complete`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ lessonId, difficulty, exampleId }),
+          });
+        } catch {
+          // Silent — local already updated; will sync on next load
+        }
+      }
+    },
+    [isSignedIn, getToken]
+  );
 
   const isComplete = useCallback(
     (lessonId, difficulty, exampleId) =>
@@ -46,11 +107,7 @@ export function useProgress() {
       const completed = examples.filter(
         (ex) => progress[lessonId]?.[difficultyId]?.includes(ex.id)
       ).length;
-      return {
-        completed,
-        total,
-        percent: total > 0 ? Math.round((completed / total) * 100) : 0,
-      };
+      return { completed, total, percent: total > 0 ? Math.round((completed / total) * 100) : 0 };
     },
     [progress]
   );
@@ -66,11 +123,7 @@ export function useProgress() {
         total += dp.total;
         completed += dp.completed;
       }
-      return {
-        completed,
-        total,
-        percent: total > 0 ? Math.round((completed / total) * 100) : 0,
-      };
+      return { completed, total, percent: total > 0 ? Math.round((completed / total) * 100) : 0 };
     },
     [getDifficultyProgress]
   );
@@ -84,18 +137,8 @@ export function useProgress() {
       total += lp.total;
       completed += lp.completed;
     }
-    return {
-      completed,
-      total,
-      percent: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
+    return { completed, total, percent: total > 0 ? Math.round((completed / total) * 100) : 0 };
   }, [getLessonProgress]);
 
-  return {
-    markComplete,
-    isComplete,
-    getDifficultyProgress,
-    getLessonProgress,
-    getTotalProgress,
-  };
+  return { markComplete, isComplete, getDifficultyProgress, getLessonProgress, getTotalProgress };
 }
