@@ -1,5 +1,6 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
 import { useProgress } from '../hooks/useProgress';
 
@@ -30,12 +31,11 @@ export default function LessonDetail() {
   const { lessonId } = useParams();
   const lesson = lessonsRegistry.find((l) => l.id === lessonId);
   const module = getLessonModule(lessonId);
-  const { getLessonProgress, getDifficultyProgress } = useProgress();
+  const { getLessonProgress, getDifficultyProgress, progressLoading } = useProgress();
 
   if (!lesson || !lesson.available || !module) {
     return <Navigate to="/lessons" replace />;
   }
-
   const progress = getLessonProgress(lesson.id);
   const totalExamples = module.difficultyOrder.reduce(
     (count, dId) => count + module.difficulties[dId].examples.length,
@@ -46,6 +46,16 @@ export default function LessonDetail() {
     { to: '/lessons', label: 'All Lessons' },
     { to: `/lessons/${lesson.id}`, label: `Lesson ${lesson.number}` },
   ];
+
+  if (progressLoading) {
+    return (
+      <AppLayout tabs={tabs} sidebarId="lessonDetailSidebar">
+        <SkeletonHero className="mb-2" />
+        <div className="h-6 w-40 bg-gray-200 dark:bg-slate-700 rounded animate-pulse mt-8 mb-4" />
+        <SkeletonList count={2} className="md:grid-cols-2 xl:grid-cols-2" />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout tabs={tabs} sidebarId="lessonDetailSidebar">

@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import QuizSection from '../components/QuizSection';
+import { SkeletonCard } from '../components/SkeletonCard';
 import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
 import { useProgress } from '../hooks/useProgress';
 
@@ -16,7 +17,7 @@ export default function LessonPractice() {
     difficultyData?.examples?.[0]?.id ?? ''
   );
   const [hasStartedVisualizer, setHasStartedVisualizer] = useState(false);
-  const { markComplete, isComplete } = useProgress();
+  const { markComplete, isComplete, progressLoading } = useProgress();
 
   useEffect(() => {
     if (difficultyData?.examples?.[0]) {
@@ -41,6 +42,20 @@ export default function LessonPractice() {
     { to: `/lessons/${lessonId}`, label: `Lesson ${lesson.number}` },
     { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData.label },
   ];
+
+  if (progressLoading) {
+    return (
+      <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
+        <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+          <SkeletonCard className="h-64" />
+          <div className="grid gap-6">
+            <SkeletonCard />
+            <SkeletonCard className="h-56" />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">

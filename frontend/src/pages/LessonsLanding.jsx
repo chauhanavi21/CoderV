@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { lessonsRegistry } from '../data/lessonModules';
 import { useProgress } from '../hooks/useProgress';
 
@@ -10,8 +11,18 @@ const tabs = [
 ];
 
 export default function LessonsLanding() {
-  const { getLessonProgress, getTotalProgress } = useProgress();
+  const { getLessonProgress, getTotalProgress, progressLoading } = useProgress();
   const total = getTotalProgress();
+
+  if (progressLoading) {
+    return (
+      <AppLayout tabs={tabs} sidebarId="lessonsSidebar">
+        <SkeletonHero className="mb-2" />
+        <div className="h-6 w-32 bg-gray-200 dark:bg-slate-700 rounded animate-pulse mt-8 mb-4" />
+        <SkeletonList count={2} className="md:grid-cols-2 xl:grid-cols-2" />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout tabs={tabs} sidebarId="lessonsSidebar">

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
@@ -19,7 +20,7 @@ const P = ({ children }) => <ProtectedRoute>{children}</ProtectedRoute>;
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <ScrollToTop />
       <Routes>
         {/* Public */}
@@ -45,7 +46,7 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </ErrorBoundary>
   );
 }
 

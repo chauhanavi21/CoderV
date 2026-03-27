@@ -104,6 +104,7 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
   const [outputs,      setOutputs]      = useState([]);
   const [running,      setRunning]      = useState(false);
   const [interacted,   setInteracted]   = useState(false);
+  const [mobileTab,    setMobileTab]    = useState('code');
   const timerRef = useRef(null);
 
   const notifyFirstInteraction = useCallback(() => {
@@ -184,11 +185,29 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
         </div>
       </div>
 
+      {/* ── Mobile tab switcher (hidden on lg+) ── */}
+      <div className="flex lg:hidden border-b border-slate-800">
+        {['code', 'graph'].map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setMobileTab(tab)}
+            className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer ${
+              mobileTab === tab
+                ? 'text-indigo-400 border-b-2 border-indigo-500 -mb-px'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            {tab === 'code' ? '📄 Code' : '📊 Graph & Vars'}
+          </button>
+        ))}
+      </div>
+
       {/* ── Main panels ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
 
         {/* Left — code */}
-        <div className="p-4">
+        <div className={`p-4 ${mobileTab !== 'code' ? 'hidden lg:block' : ''}`}>
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Code</p>
           <div className="rounded-xl bg-slate-900 p-3 overflow-x-auto">
             <pre className="text-sm leading-6 font-mono">
@@ -214,7 +233,7 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
         </div>
 
         {/* Right — graph + variables */}
-        <div className="p-4 flex flex-col gap-4">
+        <div className={`p-4 flex flex-col gap-4 ${mobileTab !== 'graph' ? 'hidden lg:flex' : ''}`}>
 
           {/* Graph */}
           <div>

@@ -33,11 +33,17 @@ function rowsToProgress(rows = []) {
 // ── Hook ─────────────────────────────────────────────────────────────────────
 export function useProgress() {
   const [progress, setProgress] = useState(loadLocal);
+  const [progressLoading, setProgressLoading] = useState(true);
   const { user, loading, getToken } = useAuth();
 
   // Hydrate from backend when the user is signed in
   useEffect(() => {
-    if (loading || !user) return;
+    if (loading) return;
+
+    if (!user) {
+      setProgressLoading(false);
+      return;
+    }
 
     async function syncFromBackend() {
       try {
@@ -52,6 +58,8 @@ export function useProgress() {
         saveLocal(remote);
       } catch {
         // Backend unavailable — local state remains as-is
+      } finally {
+        setProgressLoading(false);
       }
     }
 
@@ -140,5 +148,5 @@ export function useProgress() {
     return { completed, total, percent: total > 0 ? Math.round((completed / total) * 100) : 0 };
   }, [getLessonProgress]);
 
-  return { markComplete, isComplete, getDifficultyProgress, getLessonProgress, getTotalProgress };
+  return { markComplete, isComplete, getDifficultyProgress, getLessonProgress, getTotalProgress, progressLoading };
 }
