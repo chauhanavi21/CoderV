@@ -4,50 +4,61 @@ import { useTheme } from '../contexts/ThemeContext';
 export default function Signup() {
   const { isDark, toggleTheme } = useTheme();
 
-  /* dark mode  → white card (bright, readable)
-     light mode → dark card (indigo-950, light text) */
-  const panelBg    = isDark ? 'bg-white'        : 'bg-indigo-950';
-  const clerkBg    = isDark ? '#ffffff'          : '#1e1b4b';
-  const clerkInput = isDark ? '#f1f5f9'          : '#2e2b6e';
-  const clerkText  = isDark ? '#111827'          : '#f1f5f9';
-  const clerkSub   = isDark ? '#6b7280'          : '#a5b4fc';
-  const clerkNeutral = isDark ? '#374151'        : '#818cf8';
+  const panelBg = isDark ? 'bg-white' : 'bg-[#1e1b4b]';
+
+  const clerkVars = isDark
+    ? {
+        colorBackground:              '#ffffff',
+        colorText:                    '#111827',
+        colorTextSecondary:           '#6b7280',
+        colorInputBackground:         '#f1f5f9',
+        colorInputText:               '#111827',
+        colorPrimary:                 '#4f46e5',
+        colorTextOnPrimaryBackground: '#ffffff',
+        colorNeutral:                 '#9ca3af',
+        borderRadius:                 '0.75rem',
+        fontFamily:                   'inherit',
+        spacingUnit:                  '1rem',
+      }
+    : {
+        colorBackground:              '#1e1b4b',
+        colorText:                    '#eef2ff',
+        colorTextSecondary:           '#c7d2fe',
+        colorInputBackground:         '#3730a3',
+        colorInputText:               '#eef2ff',
+        colorPrimary:                 '#818cf8',
+        colorTextOnPrimaryBackground: '#ffffff',
+        colorNeutral:                 '#a5b4fc',
+        borderRadius:                 '0.75rem',
+        fontFamily:                   'inherit',
+        spacingUnit:                  '1rem',
+      };
 
   const clerkAppearance = {
-    variables: {
-      colorBackground:              clerkBg,
-      colorText:                    clerkText,
-      colorTextSecondary:           clerkSub,
-      colorInputBackground:         clerkInput,
-      colorInputText:               clerkText,
-      colorPrimary:                 '#4f46e5',
-      colorTextOnPrimaryBackground: '#ffffff',
-      colorNeutral:                 clerkNeutral,
-      borderRadius:                 '0.75rem',
-      fontFamily:                   'inherit',
-    },
+    variables: clerkVars,
     elements: {
-      rootBox:              'w-full',
-      card:                 '!shadow-none !border-0 p-0 w-full',
-      formButtonPrimary:    'font-bold hover:opacity-90 transition-opacity',
-      footerActionLink:     isDark ? 'text-indigo-600 font-semibold' : 'text-indigo-300 font-semibold',
-      footer:               `bg-[${clerkBg}]`,
+      rootBox: 'w-full max-w-[340px] mx-auto',
+      card: '!shadow-none !border-0 w-full',
+      formButtonPrimary: 'font-bold hover:opacity-90 transition-opacity',
+      footerActionLink: isDark
+        ? 'text-indigo-600 font-semibold'
+        : 'text-indigo-300 font-semibold',
       socialButtonsBlockButton: isDark
         ? 'border-gray-200 hover:bg-gray-50'
-        : 'border-indigo-700 text-indigo-100 hover:bg-indigo-900',
+        : 'border-indigo-600 text-indigo-100 hover:bg-indigo-900',
     },
   };
 
   return (
-    <main className="min-h-screen grid place-items-center py-7 px-4 relative">
+    <main className="min-h-screen grid place-items-center py-7 px-4">
 
       {/* ── Theme toggle ── */}
       <button
         onClick={toggleTheme}
         aria-label="Toggle theme"
         className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full flex items-center justify-center
-                   bg-gray-200/80 dark:bg-slate-700/80 border border-gray-300 dark:border-slate-600
-                   backdrop-blur-sm hover:scale-110 transition-transform shadow"
+                   bg-white/80 dark:bg-slate-700/80 border border-gray-200 dark:border-slate-600
+                   backdrop-blur-sm hover:scale-110 transition-transform shadow-md"
       >
         {isDark ? (
           <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -83,7 +94,7 @@ export default function Signup() {
         </aside>
 
         {/* ── Clerk Sign-Up ── */}
-        <div className={`flex items-center justify-center p-8 max-md:p-6 transition-colors ${panelBg}`}>
+        <div className={`flex items-center justify-center px-6 py-10 md:px-10 transition-colors ${panelBg}`}>
           <SignUp
             forceRedirectUrl="/dashboard"
             signInUrl="/login"
