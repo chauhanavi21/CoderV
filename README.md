@@ -85,11 +85,13 @@ final_sem/
 ├── frontend/              # React + Vite app (deployed to Vercel)
 │   ├── src/
 │   │   ├── contexts/      # AuthContext (Firebase), ThemeContext
-│   │   ├── components/    # Sidebar, Topbar, ProtectedRoute, …
-│   │   ├── pages/         # Login, Signup, Dashboard, Lessons, Playground, …
-│   │   ├── hooks/         # useProgress (syncs with backend)
+│   │   ├── components/    # Sidebar, Topbar, ProtectedRoute, StepVisualizer,
+│   │   │                  # QuizSection, SkeletonCard, ErrorBoundary, …
+│   │   ├── pages/         # Login, Signup, Dashboard, Lessons, LessonDetail,
+│   │   │                  # LessonPractice, Playground, About, Resources, …
+│   │   ├── hooks/         # useProgress (localStorage cache + Supabase sync)
 │   │   ├── lib/           # firebase.js config, api.js fetch wrapper
-│   │   └── data/          # Lesson modules / registry
+│   │   └── data/          # lessonModules.js — all 4 lesson types, 80 examples
 │   └── .env.example       # Documents required VITE_* vars
 │
 ├── backend/               # Express server (separate GitHub repo, on Render)
@@ -100,7 +102,7 @@ final_sem/
 │   │   ├── models/        # progressModel, userModel (Supabase queries)
 │   │   ├── routes/        # traceRoutes, progressRoutes, userRoutes, healthRoutes
 │   │   └── app.js         # Express app setup, CORS, route mounting
-│   ├── tracer.py          # Python sys.settrace code visualiser
+│   ├── tracer.py          # Python sys.settrace code visualiser (captures locals)
 │   ├── server.js          # Entry point (loads .env, starts server)
 │   └── .env.example       # Documents required backend env vars
 │
@@ -150,6 +152,21 @@ user_progress (
 
 ---
 
+## Lesson Modules
+
+All lesson content lives in `frontend/src/data/lessonModules.js`. There are currently **4 lesson types**, each with **4 difficulties × 5 examples = 20 examples** (80 examples total). Every example includes Python code, step-by-step trace, quiz questions, and a concept explanation.
+
+| # | Lesson Type | Difficulties | Theme |
+|---|-------------|-------------|-------|
+| 1 | Python Step Visualizer | Beginner → Hard | Variables, loops, functions, recursion |
+| 2 | Data Structures Explorer | Beginner → Hard | Lists, stacks, queues, dictionaries |
+| 3 | Algorithm Patterns | Beginner → Hard | Searching, sorting, recursion, two pointers |
+| 4 | System Design Basics | Beginner → Hard | Caching, load balancing, API patterns, advanced patterns |
+
+Progress for all lesson types is tracked in Supabase under `user_progress` using the flexible `lesson_id` + `difficulty` + `example_id` composite key.
+
+---
+
 ## Environment Variables
 
 ### Frontend (`frontend/.env.local` — never commit)
@@ -193,17 +210,77 @@ node server.js     # http://localhost:5000
 
 ---
 
-## Features Built So Far
+## Features Built ✅
 
-- [x] User authentication (Firebase — email + password, custom UI)
-- [x] User data sync to Supabase on login/signup
-- [x] Protected routes (redirect to /login if not authenticated)
-- [x] Dark / Light mode toggle (persists to localStorage)
-- [x] Python code visualiser (step-by-step using `sys.settrace`)
-- [x] Lesson system with difficulties and examples
-- [x] User progress tracking (localStorage + Supabase sync)
-- [x] Dashboard with progress ring
-- [x] Sidebar navigation with user avatar
-- [ ] Quiz system (in progress)
-- [ ] AI assistant (in progress)
-- [ ] More lesson types (in progress)
+### Authentication & Users
+- [x] User authentication — Firebase email + password, custom UI
+- [x] User data sync to Supabase on login and signup (`/api/users/sync`)
+- [x] Protected routes — redirect to `/login` if not authenticated
+- [x] `AuthContext` with `user`, `loading`, `getToken`, `signOut`
+
+### UI & Theme
+- [x] Dark / Light mode toggle — persists to `localStorage`, available on all pages including login/signup
+- [x] Consistent white-card text visibility — all white-background cards force `text-gray-900` regardless of theme
+- [x] Loading skeleton system — `SkeletonCard`, `SkeletonHero`, `SkeletonList` shimmer placeholders
+- [x] Global error boundary — catches runtime JS errors and shows a friendly fallback UI
+- [x] 404 Not Found page — improved copy and "Go back" button
+- [x] Mobile-responsive visualizer — tab switcher (Code / Graph & Vars) on small screens
+
+### Lessons & Learning
+- [x] Lesson registry with 4 lesson types, all marked `available: true`
+- [x] **Lesson Type 1 — Python Step Visualizer** (20 examples: variables, loops, functions, recursion)
+- [x] **Lesson Type 2 — Data Structures Explorer** (20 examples: lists, stacks, queues, dictionaries)
+- [x] **Lesson Type 3 — Algorithm Patterns** (20 examples: searching, sorting, recursion, two pointers)
+- [x] **Lesson Type 4 — System Design Basics** (20 examples: caching, traffic, API patterns, advanced patterns)
+- [x] Difficulty progression within each lesson (Beginner → Easy → Medium → Hard)
+- [x] Visualize-first then quiz logic — quiz only appears after first visualizer interaction
+
+### Progress Tracking
+- [x] `useProgress` hook — `markComplete`, `isComplete`, `getLessonProgress`, `getTotalProgress`
+- [x] `localStorage` as fast cache layer — hydrates instantly on page load
+- [x] Supabase sync — progress persisted to backend on `markComplete`
+- [x] `progressLoading` state — skeleton shown while remote data loads
+- [x] `ensureUser` guard in backend progress controller — auto-upserts user before any write
+
+### Dashboard
+- [x] Dynamic hero with real progress percentage (conic-gradient ring)
+- [x] Quick stats row (completed lessons, total examples, etc.)
+- [x] "Continue Learning" section — only shows lessons the user has started
+- [x] "No lessons started yet" placeholder card with Browse Lessons CTA if nothing started
+
+### Python Visualizer (Playground)
+- [x] Step-by-step code execution using `sys.settrace` in `tracer.py`
+- [x] `locals` snapshot captured at every step
+- [x] 3-panel layout — code (highlighted line), variables table, concept graph
+- [x] 4 quick-example buttons
+- [x] "Waking backend…" cold-start status for Render free tier
+
+### Backend (MVC)
+- [x] Express app with MVC structure — config / middleware / controllers / models / routes
+- [x] Firebase Admin SDK token verification middleware (`requireAuth`)
+- [x] `POST /api/users/sync` — upsert Firebase user into Supabase
+- [x] `GET/POST /api/progress` — read and write user progress
+- [x] `POST /api/trace` — run Python tracer subprocess
+- [x] `GET /api/health` — service health check
+
+---
+
+## What's Left 🔲
+
+### High Priority
+- [ ] **AI Assistant** — currently scaffolded (`AiAssistant.jsx`), needs real LLM API integration (e.g. OpenAI / Gemini)
+- [ ] **Dynamic quiz questions** — quiz data is currently hardcoded in `lessonModules.js`; a future API + database table would allow adding/editing questions without a redeploy
+- [ ] **Graph / Tree Explorer lesson (Type 5)** — visualise tree traversals and graph algorithms with animated node graphs
+
+### Medium Priority
+- [ ] **User profile page** — show name, email, joined date, overall stats
+- [ ] **Streak tracking** — daily login streak saved to Supabase, shown on dashboard
+- [ ] **Lesson search / filter** — filter by difficulty or topic on the Lessons landing page
+- [ ] **Backend cold-start fix** — Render free tier sleeps after inactivity; consider upgrading or adding a keep-alive ping
+
+### Nice to Have
+- [ ] **Leaderboard** — compare progress with other users
+- [ ] **Bookmarks** — save favourite examples to revisit
+- [ ] **Share snippet** — share a visualizer state via URL
+- [ ] **Export progress** — download progress as PDF or CSV
+- [ ] **PWA / mobile app** — installable offline-capable version
