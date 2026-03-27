@@ -24,7 +24,7 @@ export const lessonsRegistry = [
     description:
       'Master common algorithm patterns through guided examples and visual breakdowns.',
     color: 'bg-amber-600',
-    available: false,
+    available: true,
   },
   {
     id: 'type-4',
@@ -43,6 +43,8 @@ export function getLessonModule(lessonId) {
       return lessonTypeOneModule;
     case 'type-2':
       return lessonTypeTwoModule;
+    case 'type-3':
+      return lessonTypeThreeModule;
     default:
       return null;
   }
@@ -1425,6 +1427,842 @@ print(freq)`,
             { line: 2, desc: 'Loop: w = "cat" (3rd time)', action: { type: 'loop', name: 'w', val: '"cat"', target: 'words', color: '#E24B4A' } },
             { line: 4, desc: '"cat" in freq → freq["cat"] = 3', action: { type: 'update', name: 'freq', val: '{"cat":3,"dog":2,"bird":1}', color: '#BA7517' } },
             { line: 7, desc: 'Print {"cat":3,"dog":2,"bird":1}', action: { type: 'output', val: '{"cat": 3, "dog": 2, "bird": 1}' } },
+          ],
+        },
+      ],
+    },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson Type 3 — Algorithm Patterns
+// 4 difficulties × 5 examples = 20 examples
+// Beginner: Searching | Easy: Sorting | Medium: Recursion | Hard: Two Pointers
+// ─────────────────────────────────────────────────────────────────────────────
+export const lessonTypeThreeModule = {
+  id: 'algorithm-patterns-type-3',
+  title: 'Algorithm Patterns',
+  lessonType: {
+    id: 'type-3',
+    label: 'Type 3',
+    name: 'Algorithm pattern visualizer',
+    totalTypes: 4,
+  },
+  summary:
+    'Master common algorithm patterns — searching, sorting, recursion, and two pointers — through animated step-by-step examples that show exactly how each pattern works.',
+  difficultyOrder: ['beginner', 'easy', 'medium', 'hard'],
+  difficulties: {
+
+    // ── BEGINNER ── Searching ─────────────────────────────────────────────
+    beginner: {
+      id: 'beginner',
+      label: 'Beginner',
+      description: 'Learn searching patterns — scan, find, and compare values in a list.',
+      examples: [
+        {
+          id: 'linear-search',
+          title: 'Linear search',
+          concept: 'Check every element one by one until you find the target.',
+          code: `nums = [4, 7, 2, 9, 1]
+target = 9
+found = -1
+for i in range(len(nums)):
+    if nums[i] == target:
+        found = i
+print(found)`,
+          explanation: 'We walk through each index. When nums[i] matches the target we save that index in found.',
+          challenge: 'What would found be if target was 99?',
+          quiz: [
+            { question: 'What is `found` after the loop?', options: ['-1', '3', '4', '9'], answer: 1 },
+            { question: 'How many elements does linear search check in the worst case?', options: ['1', 'Half the list', 'All elements', 'None'], answer: 2 },
+            { question: 'What value of `found` means the target was NOT found?', options: ['0', '1', '-1', 'None'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'target', label: 'target' },
+            { id: 'found', label: 'found' },
+            { id: 'i', label: 'i' },
+          ],
+          edges: [{ from: 'nums', to: 'i' }, { from: 'i', to: 'found' }],
+          steps: [
+            { line: 0, desc: 'nums = [4,7,2,9,1]', action: { type: 'create', name: 'nums', val: '[4,7,2,9,1]', color: '#1D9E75' } },
+            { line: 1, desc: 'target = 9', action: { type: 'create', name: 'target', val: '9', color: '#7C6AF6' } },
+            { line: 2, desc: 'found = -1 (not found yet)', action: { type: 'create', name: 'found', val: '-1', color: '#ef4444' } },
+            { line: 3, desc: 'Loop: i = 0, nums[0] = 4 ≠ 9', action: { type: 'loop', name: 'i', val: '0', target: 'nums', color: '#E24B4A' } },
+            { line: 3, desc: 'Loop: i = 1, nums[1] = 7 ≠ 9', action: { type: 'loop', name: 'i', val: '1', target: 'nums', color: '#E24B4A' } },
+            { line: 3, desc: 'Loop: i = 2, nums[2] = 2 ≠ 9', action: { type: 'loop', name: 'i', val: '2', target: 'nums', color: '#E24B4A' } },
+            { line: 3, desc: 'Loop: i = 3, nums[3] = 9 == target!', action: { type: 'loop', name: 'i', val: '3', target: 'nums', color: '#E24B4A' } },
+            { line: 5, desc: 'found = 3 (target is at index 3)', action: { type: 'update', name: 'found', val: '3', color: '#1D9E75' } },
+            { line: 6, desc: 'Print found = 3', action: { type: 'output', val: '3' } },
+          ],
+        },
+        {
+          id: 'find-max',
+          title: 'Finding the maximum',
+          concept: 'Track the largest value seen so far as you scan through the list.',
+          code: `scores = [42, 87, 55, 91, 73]
+max_val = scores[0]
+for s in scores:
+    if s > max_val:
+        max_val = s
+print(max_val)`,
+          explanation: 'Start by assuming the first item is the max. Replace it whenever a bigger value is found.',
+          challenge: 'What would the algorithm do differently if the list was already sorted descending?',
+          quiz: [
+            { question: 'What is `max_val` at the end?', options: ['87', '73', '91', '55'], answer: 2 },
+            { question: 'Why do we start `max_val = scores[0]`?', options: ['It must be the max', 'We need a starting comparison point', 'The first item is always largest', 'It is required by Python'], answer: 1 },
+            { question: 'How many comparisons does this algorithm make?', options: ['1', 'len(scores) - 1', 'len(scores)', 'len(scores) + 1'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'scores', label: 'scores' },
+            { id: 'max_val', label: 'max_val' },
+            { id: 's', label: 's' },
+          ],
+          edges: [{ from: 'scores', to: 's' }, { from: 's', to: 'max_val' }],
+          steps: [
+            { line: 0, desc: 'scores = [42,87,55,91,73]', action: { type: 'create', name: 'scores', val: '[42,87,55,91,73]', color: '#1D9E75' } },
+            { line: 1, desc: 'max_val = scores[0] = 42', action: { type: 'create', name: 'max_val', val: '42', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: s = 42, 42 > 42? No', action: { type: 'loop', name: 's', val: '42', target: 'scores', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: s = 87, 87 > 42? Yes!', action: { type: 'loop', name: 's', val: '87', target: 'scores', color: '#E24B4A' } },
+            { line: 4, desc: 'max_val = 87', action: { type: 'update', name: 'max_val', val: '87', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: s = 55, 55 > 87? No', action: { type: 'loop', name: 's', val: '55', target: 'scores', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: s = 91, 91 > 87? Yes!', action: { type: 'loop', name: 's', val: '91', target: 'scores', color: '#E24B4A' } },
+            { line: 4, desc: 'max_val = 91', action: { type: 'update', name: 'max_val', val: '91', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: s = 73, 73 > 91? No', action: { type: 'loop', name: 's', val: '73', target: 'scores', color: '#E24B4A' } },
+            { line: 5, desc: 'Print max_val = 91', action: { type: 'output', val: '91' } },
+          ],
+        },
+        {
+          id: 'find-min',
+          title: 'Finding the minimum',
+          concept: 'The same pattern as max — but update when a SMALLER value is found.',
+          code: `temps = [22, 15, 30, 8, 19]
+min_val = temps[0]
+for t in temps:
+    if t < min_val:
+        min_val = t
+print(min_val)`,
+          explanation: 'Start with the first item. Whenever a smaller temperature is found, update min_val.',
+          challenge: 'Could you find both min and max in a single loop?',
+          quiz: [
+            { question: 'What is `min_val` at the end?', options: ['15', '8', '19', '22'], answer: 1 },
+            { question: 'What is the only difference from the max pattern?', options: ['We use a different variable', 'The condition is < instead of >', 'We loop in reverse', 'We start from index 1'], answer: 1 },
+            { question: 'What is `min_val` after seeing 22 and 15?', options: ['22', '19', '15', '8'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'temps', label: 'temps' },
+            { id: 'min_val', label: 'min_val' },
+            { id: 't', label: 't' },
+          ],
+          edges: [{ from: 'temps', to: 't' }, { from: 't', to: 'min_val' }],
+          steps: [
+            { line: 0, desc: 'temps = [22,15,30,8,19]', action: { type: 'create', name: 'temps', val: '[22,15,30,8,19]', color: '#1D9E75' } },
+            { line: 1, desc: 'min_val = temps[0] = 22', action: { type: 'create', name: 'min_val', val: '22', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: t = 22, 22 < 22? No', action: { type: 'loop', name: 't', val: '22', target: 'temps', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: t = 15, 15 < 22? Yes!', action: { type: 'loop', name: 't', val: '15', target: 'temps', color: '#E24B4A' } },
+            { line: 4, desc: 'min_val = 15', action: { type: 'update', name: 'min_val', val: '15', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: t = 30, 30 < 15? No', action: { type: 'loop', name: 't', val: '30', target: 'temps', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: t = 8, 8 < 15? Yes!', action: { type: 'loop', name: 't', val: '8', target: 'temps', color: '#E24B4A' } },
+            { line: 4, desc: 'min_val = 8', action: { type: 'update', name: 'min_val', val: '8', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: t = 19, 19 < 8? No', action: { type: 'loop', name: 't', val: '19', target: 'temps', color: '#E24B4A' } },
+            { line: 5, desc: 'Print min_val = 8', action: { type: 'output', val: '8' } },
+          ],
+        },
+        {
+          id: 'count-pattern',
+          title: 'Counting with a condition',
+          concept: 'Scan the list and increment a counter each time a condition is true.',
+          code: `nums = [3, 8, 2, 7, 4, 9, 1]
+count = 0
+for n in nums:
+    if n > 5:
+        count = count + 1
+print(count)`,
+          explanation: 'count starts at 0. Each time n > 5 we add 1. The numbers greater than 5 are 8, 7, 9 — so count = 3.',
+          challenge: 'How would you count numbers that are even instead?',
+          quiz: [
+            { question: 'What is `count` at the end?', options: ['2', '4', '3', '5'], answer: 2 },
+            { question: 'Which values trigger the counter?', options: ['3, 2, 4, 1', '8, 7, 9', '3, 8, 7', '8, 7, 4, 9'], answer: 1 },
+            { question: 'What is `count` after seeing just 3 and 8?', options: ['0', '2', '1', '3'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'count', label: 'count' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'nums', to: 'n' }, { from: 'n', to: 'count' }],
+          steps: [
+            { line: 0, desc: 'nums = [3,8,2,7,4,9,1]', action: { type: 'create', name: 'nums', val: '[3,8,2,7,4,9,1]', color: '#1D9E75' } },
+            { line: 1, desc: 'count = 0', action: { type: 'create', name: 'count', val: '0', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: n = 3, 3 > 5? No', action: { type: 'loop', name: 'n', val: '3', target: 'nums', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: n = 8, 8 > 5? Yes!', action: { type: 'loop', name: 'n', val: '8', target: 'nums', color: '#E24B4A' } },
+            { line: 4, desc: 'count = 0 + 1 = 1', action: { type: 'update', name: 'count', val: '1', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: n = 2, 2 > 5? No', action: { type: 'loop', name: 'n', val: '2', target: 'nums', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: n = 7, 7 > 5? Yes!', action: { type: 'loop', name: 'n', val: '7', target: 'nums', color: '#E24B4A' } },
+            { line: 4, desc: 'count = 1 + 1 = 2', action: { type: 'update', name: 'count', val: '2', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: n = 4, 4 > 5? No', action: { type: 'loop', name: 'n', val: '4', target: 'nums', color: '#E24B4A' } },
+            { line: 2, desc: 'Loop: n = 9, 9 > 5? Yes!', action: { type: 'loop', name: 'n', val: '9', target: 'nums', color: '#E24B4A' } },
+            { line: 4, desc: 'count = 2 + 1 = 3', action: { type: 'update', name: 'count', val: '3', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: n = 1, 1 > 5? No', action: { type: 'loop', name: 'n', val: '1', target: 'nums', color: '#E24B4A' } },
+            { line: 5, desc: 'Print count = 3', action: { type: 'output', val: '3' } },
+          ],
+        },
+        {
+          id: 'sum-accumulate',
+          title: 'Accumulator pattern',
+          concept: 'Start at zero and keep adding each value to build up a running total.',
+          code: `prices = [12, 5, 8, 20, 3]
+total = 0
+for p in prices:
+    total = total + p
+print(total)
+average = total / len(prices)
+print(average)`,
+          explanation: 'total grows with each price. After the loop total = 48. Dividing by 5 items gives average = 9.6.',
+          challenge: 'What would happen if prices was an empty list []?',
+          quiz: [
+            { question: 'What is `total` after the loop?', options: ['40', '48', '45', '50'], answer: 1 },
+            { question: 'What is `average`?', options: ['8.0', '10.0', '9.6', '9.0'], answer: 2 },
+            { question: 'What is the value of `total` after seeing 12 and 5?', options: ['12', '5', '17', '60'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'prices', label: 'prices' },
+            { id: 'total', label: 'total' },
+            { id: 'average', label: 'average' },
+            { id: 'p', label: 'p' },
+          ],
+          edges: [{ from: 'prices', to: 'p' }, { from: 'p', to: 'total' }, { from: 'total', to: 'average' }],
+          steps: [
+            { line: 0, desc: 'prices = [12,5,8,20,3]', action: { type: 'create', name: 'prices', val: '[12,5,8,20,3]', color: '#1D9E75' } },
+            { line: 1, desc: 'total = 0', action: { type: 'create', name: 'total', val: '0', color: '#7C6AF6' } },
+            { line: 2, desc: 'Loop: p = 12', action: { type: 'loop', name: 'p', val: '12', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 0 + 12 = 12', action: { type: 'update', name: 'total', val: '12', from: ['p', 'total'] } },
+            { line: 2, desc: 'Loop: p = 5', action: { type: 'loop', name: 'p', val: '5', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 12 + 5 = 17', action: { type: 'update', name: 'total', val: '17', from: ['p', 'total'] } },
+            { line: 2, desc: 'Loop: p = 8', action: { type: 'loop', name: 'p', val: '8', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 17 + 8 = 25', action: { type: 'update', name: 'total', val: '25', from: ['p', 'total'] } },
+            { line: 2, desc: 'Loop: p = 20', action: { type: 'loop', name: 'p', val: '20', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 25 + 20 = 45', action: { type: 'update', name: 'total', val: '45', from: ['p', 'total'] } },
+            { line: 2, desc: 'Loop: p = 3', action: { type: 'loop', name: 'p', val: '3', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 45 + 3 = 48', action: { type: 'update', name: 'total', val: '48', from: ['p', 'total'] } },
+            { line: 4, desc: 'Print total = 48', action: { type: 'output', val: '48' } },
+            { line: 5, desc: 'average = 48 / 5 = 9.6', action: { type: 'create', name: 'average', val: '9.6', color: '#BA7517', from: ['total'] } },
+            { line: 6, desc: 'Print average = 9.6', action: { type: 'output', val: '9.6' } },
+          ],
+        },
+      ],
+    },
+
+    // ── EASY ── Sorting ───────────────────────────────────────────────────
+    easy: {
+      id: 'easy',
+      label: 'Easy',
+      description: 'Learn sorting patterns — arrange items in order using classic algorithms.',
+      examples: [
+        {
+          id: 'bubble-sort',
+          title: 'Bubble sort',
+          concept: 'Repeatedly swap adjacent items if they are in the wrong order.',
+          code: `arr = [5, 3, 8, 1]
+for i in range(len(arr)):
+    for j in range(len(arr) - 1):
+        if arr[j] > arr[j+1]:
+            arr[j], arr[j+1] = arr[j+1], arr[j]
+print(arr)`,
+          explanation: 'Larger values "bubble up" to the end with each pass. After enough passes the list is sorted.',
+          challenge: 'How many passes does bubble sort need in the worst case?',
+          quiz: [
+            { question: 'What is `arr` after the sort?', options: ['[5,3,8,1]', '[1,3,5,8]', '[8,5,3,1]', '[1,5,3,8]'], answer: 1 },
+            { question: 'What does a swap do in bubble sort?', options: ['Removes an element', 'Moves larger element one step right', 'Reverses the list', 'Finds the minimum'], answer: 1 },
+            { question: 'What is the time complexity of bubble sort?', options: ['O(n)', 'O(log n)', 'O(n²)', 'O(1)'], answer: 2 },
+          ],
+          nodes: [{ id: 'arr', label: 'arr' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'arr = [5,3,8,1]', action: { type: 'create', name: 'arr', val: '[5,3,8,1]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 5,3 → swap → [3,5,8,1]', action: { type: 'update', name: 'arr', val: '[3,5,8,1]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 5,8 → ok, no swap', action: { type: 'update', name: 'arr', val: '[3,5,8,1]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 8,1 → swap → [3,5,1,8]', action: { type: 'update', name: 'arr', val: '[3,5,1,8]', color: '#D85A30' } },
+            { line: 3, desc: 'Pass 2: Compare 3,5 → ok', action: { type: 'update', name: 'arr', val: '[3,5,1,8]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 5,1 → swap → [3,1,5,8]', action: { type: 'update', name: 'arr', val: '[3,1,5,8]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 5,8 → ok, no swap', action: { type: 'update', name: 'arr', val: '[3,1,5,8]', color: '#D85A30' } },
+            { line: 3, desc: 'Pass 3: Compare 3,1 → swap → [1,3,5,8]', action: { type: 'update', name: 'arr', val: '[1,3,5,8]', color: '#D85A30' } },
+            { line: 3, desc: 'Compare 3,5 → ok | Compare 5,8 → ok', action: { type: 'update', name: 'arr', val: '[1,3,5,8]', color: '#D85A30' } },
+            { line: 5, desc: 'Print sorted arr', action: { type: 'output', val: '[1, 3, 5, 8]' } },
+          ],
+        },
+        {
+          id: 'selection-sort',
+          title: 'Selection sort',
+          concept: 'Find the smallest remaining element and move it to the correct position.',
+          code: `arr = [64, 25, 12, 22]
+for i in range(len(arr)):
+    min_idx = i
+    for j in range(i+1, len(arr)):
+        if arr[j] < arr[min_idx]:
+            min_idx = j
+    arr[i], arr[min_idx] = arr[min_idx], arr[i]
+print(arr)`,
+          explanation: 'In each pass, we find the minimum of the unsorted part and swap it to the front.',
+          challenge: 'How many swaps does selection sort make at most?',
+          quiz: [
+            { question: 'What is `arr` after the sort?', options: ['[64,25,12,22]', '[22,25,12,64]', '[12,22,25,64]', '[12,64,22,25]'], answer: 2 },
+            { question: 'What is `min_idx` used for?', options: ['The current loop counter', 'The index of the smallest found so far', 'The value to swap', 'The sorted portion length'], answer: 1 },
+            { question: 'How many swaps does selection sort make at most?', options: ['n²', '1', 'n', 'n-1'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'arr', label: 'arr' },
+            { id: 'min_idx', label: 'min_idx' },
+          ],
+          edges: [{ from: 'arr', to: 'min_idx' }],
+          steps: [
+            { line: 0, desc: 'arr = [64,25,12,22]', action: { type: 'create', name: 'arr', val: '[64,25,12,22]', color: '#D85A30' } },
+            { line: 2, desc: 'Pass 1: min_idx = 0 (value 64)', action: { type: 'create', name: 'min_idx', val: '0', color: '#7C6AF6' } },
+            { line: 4, desc: 'j=1: 25 < 64 → min_idx = 1', action: { type: 'update', name: 'min_idx', val: '1', color: '#7C6AF6' } },
+            { line: 4, desc: 'j=2: 12 < 25 → min_idx = 2', action: { type: 'update', name: 'min_idx', val: '2', color: '#7C6AF6' } },
+            { line: 4, desc: 'j=3: 22 > 12, no change', action: { type: 'update', name: 'min_idx', val: '2', color: '#7C6AF6' } },
+            { line: 6, desc: 'Swap arr[0] and arr[2] → [12,25,64,22]', action: { type: 'update', name: 'arr', val: '[12,25,64,22]', color: '#D85A30' } },
+            { line: 2, desc: 'Pass 2: min_idx = 1 (value 25)', action: { type: 'update', name: 'min_idx', val: '1', color: '#7C6AF6' } },
+            { line: 4, desc: 'j=2: 64 > 25 | j=3: 22 < 25 → min_idx = 3', action: { type: 'update', name: 'min_idx', val: '3', color: '#7C6AF6' } },
+            { line: 6, desc: 'Swap arr[1] and arr[3] → [12,22,64,25]', action: { type: 'update', name: 'arr', val: '[12,22,64,25]', color: '#D85A30' } },
+            { line: 2, desc: 'Pass 3: find min in [64,25] → min_idx = 3', action: { type: 'update', name: 'min_idx', val: '3', color: '#7C6AF6' } },
+            { line: 6, desc: 'Swap arr[2] and arr[3] → [12,22,25,64]', action: { type: 'update', name: 'arr', val: '[12,22,25,64]', color: '#D85A30' } },
+            { line: 7, desc: 'Print sorted arr', action: { type: 'output', val: '[12, 22, 25, 64]' } },
+          ],
+        },
+        {
+          id: 'insertion-sort',
+          title: 'Insertion sort',
+          concept: 'Insert each new element into its correct position among already-sorted elements.',
+          code: `arr = [4, 2, 7, 1, 5]
+for i in range(1, len(arr)):
+    key = arr[i]
+    j = i - 1
+    while j >= 0 and arr[j] > key:
+        arr[j+1] = arr[j]
+        j = j - 1
+    arr[j+1] = key
+print(arr)`,
+          explanation: 'Like sorting cards in your hand — pick the next card and slide it left until it fits.',
+          challenge: 'What is the best case for insertion sort — when does it make fewest moves?',
+          quiz: [
+            { question: 'What is `arr` after the sort?', options: ['[4,2,7,1,5]', '[7,5,4,2,1]', '[1,2,4,5,7]', '[1,4,2,5,7]'], answer: 2 },
+            { question: 'What does the `key` variable hold?', options: ['The sorted portion length', 'The element being inserted', 'The minimum value', 'The loop counter'], answer: 1 },
+            { question: 'When is insertion sort most efficient?', options: ['Random data', 'Reverse sorted data', 'Already sorted data', 'Very large lists'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'arr', label: 'arr' },
+            { id: 'key', label: 'key' },
+          ],
+          edges: [{ from: 'arr', to: 'key' }],
+          steps: [
+            { line: 0, desc: 'arr = [4,2,7,1,5]', action: { type: 'create', name: 'arr', val: '[4,2,7,1,5]', color: '#D85A30' } },
+            { line: 2, desc: 'i=1: key = arr[1] = 2', action: { type: 'create', name: 'key', val: '2', color: '#7C6AF6' } },
+            { line: 4, desc: '4 > 2 → shift 4 right → [4,4,7,1,5]', action: { type: 'update', name: 'arr', val: '[4,4,7,1,5]', color: '#D85A30' } },
+            { line: 7, desc: 'Insert 2 at index 0 → [2,4,7,1,5]', action: { type: 'update', name: 'arr', val: '[2,4,7,1,5]', color: '#D85A30' } },
+            { line: 2, desc: 'i=2: key = arr[2] = 7', action: { type: 'update', name: 'key', val: '7', color: '#7C6AF6' } },
+            { line: 4, desc: '4 < 7 → 7 already in place', action: { type: 'update', name: 'arr', val: '[2,4,7,1,5]', color: '#D85A30' } },
+            { line: 2, desc: 'i=3: key = arr[3] = 1', action: { type: 'update', name: 'key', val: '1', color: '#7C6AF6' } },
+            { line: 4, desc: 'Shift 7,4,2 right → [2,2,4,7,5]', action: { type: 'update', name: 'arr', val: '[2,2,4,7,5]', color: '#D85A30' } },
+            { line: 7, desc: 'Insert 1 at index 0 → [1,2,4,7,5]', action: { type: 'update', name: 'arr', val: '[1,2,4,7,5]', color: '#D85A30' } },
+            { line: 2, desc: 'i=4: key = arr[4] = 5', action: { type: 'update', name: 'key', val: '5', color: '#7C6AF6' } },
+            { line: 4, desc: '7 > 5 → shift 7 → insert 5 → [1,2,4,5,7]', action: { type: 'update', name: 'arr', val: '[1,2,4,5,7]', color: '#D85A30' } },
+            { line: 8, desc: 'Print sorted arr', action: { type: 'output', val: '[1, 2, 4, 5, 7]' } },
+          ],
+        },
+        {
+          id: 'sort-builtin',
+          title: "Python's built-in sort",
+          concept: 'sorted() returns a new sorted list. sort() sorts the list in place.',
+          code: `nums = [5, 2, 8, 1, 9]
+asc = sorted(nums)
+desc = sorted(nums, reverse=True)
+print(asc)
+print(desc)
+nums.sort()
+print(nums)`,
+          explanation: 'sorted() leaves the original unchanged and returns a new list. sort() modifies nums directly.',
+          challenge: 'What would nums look like after sorted(nums) but before nums.sort()?',
+          quiz: [
+            { question: 'What is `asc`?', options: ['[9,8,5,2,1]', '[5,2,8,1,9]', '[1,2,5,8,9]', 'None'], answer: 2 },
+            { question: 'What is `desc`?', options: ['[1,2,5,8,9]', '[9,8,5,2,1]', '[5,2,8,1,9]', '[9,5,8,1,2]'], answer: 1 },
+            { question: 'What is the key difference between sorted() and sort()?', options: ['sorted is faster', 'sort returns a new list, sorted modifies in place', 'sorted returns a new list, sort modifies in place', 'No difference'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'asc', label: 'asc' },
+            { id: 'desc', label: 'desc' },
+          ],
+          edges: [{ from: 'nums', to: 'asc' }, { from: 'nums', to: 'desc' }],
+          steps: [
+            { line: 0, desc: 'nums = [5,2,8,1,9]', action: { type: 'create', name: 'nums', val: '[5,2,8,1,9]', color: '#D85A30' } },
+            { line: 1, desc: 'sorted(nums) → new sorted list', action: { type: 'create', name: 'asc', val: '[1,2,5,8,9]', color: '#1D9E75', from: ['nums'] } },
+            { line: 2, desc: 'sorted(nums, reverse=True) → descending', action: { type: 'create', name: 'desc', val: '[9,8,5,2,1]', color: '#7C6AF6', from: ['nums'] } },
+            { line: 3, desc: 'Print asc', action: { type: 'output', val: '[1, 2, 5, 8, 9]' } },
+            { line: 4, desc: 'Print desc', action: { type: 'output', val: '[9, 8, 5, 2, 1]' } },
+            { line: 5, desc: 'nums.sort() → modifies nums in place', action: { type: 'update', name: 'nums', val: '[1,2,5,8,9]', color: '#D85A30' } },
+            { line: 6, desc: 'Print nums (now sorted)', action: { type: 'output', val: '[1, 2, 5, 8, 9]' } },
+          ],
+        },
+        {
+          id: 'sort-key',
+          title: 'Sorting with a key',
+          concept: 'Pass a key function to sort by a custom property — like string length.',
+          code: `words = ["banana", "fig", "cherry", "kiwi"]
+by_length = sorted(words, key=len)
+print(by_length)
+by_last = sorted(words, key=lambda w: w[-1])
+print(by_last)`,
+          explanation: 'key=len sorts by how long each word is. key=lambda w: w[-1] sorts by last character.',
+          challenge: 'How would you sort words alphabetically by their second character?',
+          quiz: [
+            { question: 'What is `by_length`?', options: ['["banana","cherry","kiwi","fig"]', '["fig","kiwi","banana","cherry"]', '["fig","kiwi","cherry","banana"]', '["cherry","banana","kiwi","fig"]'], answer: 1 },
+            { question: 'What does `key=len` mean?', options: ['Sort by value', 'Use the len() of each item as the sort key', 'Sort by index', 'Sort descending'], answer: 1 },
+            { question: 'What does `lambda w: w[-1]` return for "banana"?', options: ['"b"', '"a"', '"n"', '"banana"'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'words', label: 'words' },
+            { id: 'by_length', label: 'by_length' },
+            { id: 'by_last', label: 'by_last' },
+          ],
+          edges: [{ from: 'words', to: 'by_length' }, { from: 'words', to: 'by_last' }],
+          steps: [
+            { line: 0, desc: 'words = ["banana","fig","cherry","kiwi"]', action: { type: 'create', name: 'words', val: '["banana","fig",...]', color: '#7C6AF6' } },
+            { line: 1, desc: 'Sort by len: fig(3) kiwi(4) banana(6) cherry(6)', action: { type: 'create', name: 'by_length', val: '["fig","kiwi","banana","cherry"]', color: '#1D9E75', from: ['words'] } },
+            { line: 2, desc: 'Print by_length', action: { type: 'output', val: '["fig", "kiwi", "banana", "cherry"]' } },
+            { line: 3, desc: 'Sort by last char: a→banana,a→kiwi,e→apple,y→cherry', action: { type: 'create', name: 'by_last', val: '["banana","kiwi","fig","cherry"]', color: '#D85A30', from: ['words'] } },
+            { line: 4, desc: 'Print by_last', action: { type: 'output', val: '["banana", "kiwi", "fig", "cherry"]' } },
+          ],
+        },
+      ],
+    },
+
+    // ── MEDIUM ── Recursion ───────────────────────────────────────────────
+    medium: {
+      id: 'medium',
+      label: 'Medium',
+      description: 'Understand recursion — functions that call themselves to solve smaller versions of the same problem.',
+      examples: [
+        {
+          id: 'recursion-intro',
+          title: 'What is recursion?',
+          concept: 'A recursive function calls itself with a smaller input until it hits the base case.',
+          code: `def countdown(n):
+    if n == 0:
+        print("Go!")
+        return
+    print(n)
+    countdown(n - 1)
+
+countdown(3)`,
+          explanation: 'countdown(3) prints 3, then calls countdown(2), which prints 2, then 1, then 0 triggers "Go!".',
+          challenge: 'What would happen if you forgot the base case (n == 0)?',
+          quiz: [
+            { question: 'What is the base case in countdown?', options: ['n > 0', 'n == 0', 'n < 0', 'n == 1'], answer: 1 },
+            { question: 'What gets printed first?', options: ['"Go!"', '1', '3', '0'], answer: 2 },
+            { question: 'Without a base case, what happens?', options: ['Nothing prints', 'It prints once', 'Infinite recursion (crash)', 'It returns 0'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'countdown', label: 'countdown' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'countdown', to: 'n' }],
+          steps: [
+            { line: 0, desc: 'Define countdown function', action: { type: 'fn_def', name: 'countdown', color: '#D85A30' } },
+            { line: 7, desc: 'Call countdown(3)', action: { type: 'fn_call', name: 'countdown', arg: '3' } },
+            { line: 1, desc: 'n=3, 3==0? No', action: { type: 'create', name: 'n', val: '3', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print 3', action: { type: 'output', val: '3' } },
+            { line: 5, desc: 'Call countdown(2)', action: { type: 'fn_call', name: 'countdown', arg: '2' } },
+            { line: 1, desc: 'n=2, 2==0? No', action: { type: 'update', name: 'n', val: '2', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print 2', action: { type: 'output', val: '2' } },
+            { line: 5, desc: 'Call countdown(1)', action: { type: 'fn_call', name: 'countdown', arg: '1' } },
+            { line: 1, desc: 'n=1, 1==0? No', action: { type: 'update', name: 'n', val: '1', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print 1', action: { type: 'output', val: '1' } },
+            { line: 5, desc: 'Call countdown(0)', action: { type: 'fn_call', name: 'countdown', arg: '0' } },
+            { line: 1, desc: 'n=0, base case hit!', action: { type: 'update', name: 'n', val: '0', color: '#1D9E75' } },
+            { line: 2, desc: 'Print "Go!"', action: { type: 'output', val: 'Go!' } },
+          ],
+        },
+        {
+          id: 'factorial',
+          title: 'Factorial with recursion',
+          concept: 'n! = n × (n-1)! — multiply n by the factorial of the smaller number below it.',
+          code: `def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+result = factorial(4)
+print(result)`,
+          explanation: 'factorial(4) = 4 × factorial(3) = 4 × 3 × 2 × 1 × 1 = 24.',
+          challenge: 'What is factorial(0)? Why is the base case set to return 1?',
+          quiz: [
+            { question: 'What is `result`?', options: ['12', '16', '24', '10'], answer: 2 },
+            { question: 'What does factorial(1) return?', options: ['0', '2', '1', '-1'], answer: 2 },
+            { question: 'What is the base case?', options: ['n == 1', 'n == -1', 'n > 0', 'n == 0'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'factorial', label: 'factorial' },
+            { id: 'result', label: 'result' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'factorial', to: 'result' }],
+          steps: [
+            { line: 0, desc: 'Define factorial function', action: { type: 'fn_def', name: 'factorial', color: '#D85A30' } },
+            { line: 5, desc: 'Call factorial(4)', action: { type: 'fn_call', name: 'factorial', arg: '4' } },
+            { line: 1, desc: 'n=4, 4==0? No', action: { type: 'create', name: 'n', val: '4', color: '#7C6AF6' } },
+            { line: 3, desc: 'Return 4 × factorial(3) — call factorial(3)', action: { type: 'fn_call', name: 'factorial', arg: '3' } },
+            { line: 1, desc: 'n=3, 3==0? No', action: { type: 'update', name: 'n', val: '3', color: '#7C6AF6' } },
+            { line: 3, desc: 'Return 3 × factorial(2) — call factorial(2)', action: { type: 'fn_call', name: 'factorial', arg: '2' } },
+            { line: 1, desc: 'n=2, 2==0? No', action: { type: 'update', name: 'n', val: '2', color: '#7C6AF6' } },
+            { line: 3, desc: 'Return 2 × factorial(1) — call factorial(1)', action: { type: 'fn_call', name: 'factorial', arg: '1' } },
+            { line: 1, desc: 'n=1, 1==0? No', action: { type: 'update', name: 'n', val: '1', color: '#7C6AF6' } },
+            { line: 3, desc: 'Return 1 × factorial(0) — call factorial(0)', action: { type: 'fn_call', name: 'factorial', arg: '0' } },
+            { line: 1, desc: 'n=0, base case! Return 1', action: { type: 'update', name: 'n', val: '0', color: '#1D9E75' } },
+            { line: 3, desc: 'Unwind: 1×1=1, 2×1=2, 3×2=6, 4×6=24', action: { type: 'fn_return', ret: 'result', val: '24' } },
+            { line: 5, desc: 'result = 24', action: { type: 'create', name: 'result', val: '24', color: '#1D9E75' } },
+            { line: 6, desc: 'Print 24', action: { type: 'output', val: '24' } },
+          ],
+        },
+        {
+          id: 'fibonacci',
+          title: 'Fibonacci with recursion',
+          concept: 'Each Fibonacci number is the sum of the two before it: fib(n) = fib(n-1) + fib(n-2).',
+          code: `def fib(n):
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)
+
+print(fib(5))`,
+          explanation: 'fib(5) = fib(4)+fib(3) = (fib(3)+fib(2))+(fib(2)+fib(1)) and so on. Answer is 5.',
+          challenge: 'Can you spot the inefficiency — which values get computed multiple times?',
+          quiz: [
+            { question: 'What does `fib(5)` return?', options: ['3', '8', '5', '13'], answer: 2 },
+            { question: 'What is the base case?', options: ['n == 0', 'n == 2', 'n <= 1', 'n > 1'], answer: 2 },
+            { question: 'What is `fib(0)` + `fib(1)`?', options: ['0', '2', '1', '3'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'fib', label: 'fib' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'fib', to: 'n' }],
+          steps: [
+            { line: 0, desc: 'Define fib function', action: { type: 'fn_def', name: 'fib', color: '#D85A30' } },
+            { line: 5, desc: 'Call fib(5)', action: { type: 'fn_call', name: 'fib', arg: '5' } },
+            { line: 1, desc: 'n=5, 5<=1? No → return fib(4)+fib(3)', action: { type: 'create', name: 'n', val: '5', color: '#7C6AF6' } },
+            { line: 5, desc: 'Call fib(4)', action: { type: 'fn_call', name: 'fib', arg: '4' } },
+            { line: 1, desc: 'n=4, 4<=1? No → fib(3)+fib(2)', action: { type: 'update', name: 'n', val: '4', color: '#7C6AF6' } },
+            { line: 5, desc: 'Keep splitting... fib(3)=2, fib(2)=1', action: { type: 'fn_call', name: 'fib', arg: '3' } },
+            { line: 1, desc: 'Base cases hit: fib(1)=1, fib(0)=0', action: { type: 'update', name: 'n', val: '1', color: '#1D9E75' } },
+            { line: 2, desc: 'Unwind: fib(2)=1, fib(3)=2, fib(4)=3', action: { type: 'fn_return', ret: 'fib', val: '3' } },
+            { line: 2, desc: 'fib(5) = fib(4)+fib(3) = 3+2 = 5', action: { type: 'fn_return', ret: 'fib', val: '5' } },
+            { line: 5, desc: 'Print fib(5) = 5', action: { type: 'output', val: '5' } },
+          ],
+        },
+        {
+          id: 'sum-recursive',
+          title: 'Recursive sum',
+          concept: 'Sum a list recursively: total = first_item + sum(rest_of_list).',
+          code: `def rec_sum(lst):
+    if len(lst) == 0:
+        return 0
+    return lst[0] + rec_sum(lst[1:])
+
+print(rec_sum([1, 2, 3, 4]))`,
+          explanation: 'rec_sum([1,2,3,4]) = 1 + rec_sum([2,3,4]) = 1+2+rec_sum([3,4]) ... until the list is empty.',
+          challenge: 'What would rec_sum([]) return? Why is that a good base case?',
+          quiz: [
+            { question: 'What does `rec_sum([1,2,3,4])` print?', options: ['6', '8', '10', '12'], answer: 2 },
+            { question: 'What is the base case?', options: ['lst[0] == 0', 'len(lst) == 1', 'len(lst) == 0', 'lst == None'], answer: 2 },
+            { question: 'What does `lst[1:]` mean?', options: ['The first element', 'Everything except the first element', 'The last element', 'A reversed list'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'rec_sum', label: 'rec_sum' },
+            { id: 'lst', label: 'lst' },
+          ],
+          edges: [{ from: 'rec_sum', to: 'lst' }],
+          steps: [
+            { line: 0, desc: 'Define rec_sum function', action: { type: 'fn_def', name: 'rec_sum', color: '#D85A30' } },
+            { line: 5, desc: 'Call rec_sum([1,2,3,4])', action: { type: 'fn_call', name: 'rec_sum', arg: '[1,2,3,4]' } },
+            { line: 1, desc: 'lst=[1,2,3,4], len=4, not empty', action: { type: 'create', name: 'lst', val: '[1,2,3,4]', color: '#7C6AF6' } },
+            { line: 3, desc: '1 + rec_sum([2,3,4]) → recurse', action: { type: 'fn_call', name: 'rec_sum', arg: '[2,3,4]' } },
+            { line: 1, desc: 'lst=[2,3,4]', action: { type: 'update', name: 'lst', val: '[2,3,4]', color: '#7C6AF6' } },
+            { line: 3, desc: '2 + rec_sum([3,4]) → recurse', action: { type: 'fn_call', name: 'rec_sum', arg: '[3,4]' } },
+            { line: 1, desc: 'lst=[3,4]', action: { type: 'update', name: 'lst', val: '[3,4]', color: '#7C6AF6' } },
+            { line: 3, desc: '3 + rec_sum([4]) → recurse', action: { type: 'fn_call', name: 'rec_sum', arg: '[4]' } },
+            { line: 3, desc: '4 + rec_sum([]) → recurse', action: { type: 'fn_call', name: 'rec_sum', arg: '[]' } },
+            { line: 1, desc: 'Base case: lst=[], return 0', action: { type: 'update', name: 'lst', val: '[]', color: '#1D9E75' } },
+            { line: 3, desc: 'Unwind: 4+0=4, 3+4=7, 2+7=9, 1+9=10', action: { type: 'fn_return', ret: 'rec_sum', val: '10' } },
+            { line: 5, desc: 'Print 10', action: { type: 'output', val: '10' } },
+          ],
+        },
+        {
+          id: 'power-recursive',
+          title: 'Power with recursion',
+          concept: 'x^n = x × x^(n-1). Multiply x by itself n times using recursion.',
+          code: `def power(x, n):
+    if n == 0:
+        return 1
+    return x * power(x, n - 1)
+
+print(power(2, 4))`,
+          explanation: 'power(2,4) = 2×power(2,3) = 2×2×power(2,2) = ... = 2×2×2×2×1 = 16.',
+          challenge: 'What is power(3, 3)? Trace through the calls.',
+          quiz: [
+            { question: 'What does `power(2, 4)` print?', options: ['8', '16', '32', '4'], answer: 1 },
+            { question: 'What is the base case?', options: ['x == 0', 'n == 1', 'n == 0', 'x == 1'], answer: 2 },
+            { question: 'What does power(x, 0) always return?', options: ['0', 'x', '-1', '1'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'power', label: 'power' },
+            { id: 'x', label: 'x' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'power', to: 'x' }, { from: 'power', to: 'n' }],
+          steps: [
+            { line: 0, desc: 'Define power function', action: { type: 'fn_def', name: 'power', color: '#D85A30' } },
+            { line: 5, desc: 'Call power(2, 4)', action: { type: 'fn_call', name: 'power', arg: '2, 4' } },
+            { line: 1, desc: 'x=2, n=4 → not base case', action: { type: 'create', name: 'n', val: '4', color: '#7C6AF6' } },
+            { line: 3, desc: '2 × power(2, 3) → recurse', action: { type: 'fn_call', name: 'power', arg: '2, 3' } },
+            { line: 1, desc: 'n=3 → 2 × power(2, 2)', action: { type: 'update', name: 'n', val: '3', color: '#7C6AF6' } },
+            { line: 3, desc: '2 × power(2, 2) → recurse', action: { type: 'fn_call', name: 'power', arg: '2, 2' } },
+            { line: 1, desc: 'n=2 → 2 × power(2, 1)', action: { type: 'update', name: 'n', val: '2', color: '#7C6AF6' } },
+            { line: 3, desc: '2 × power(2, 1) → recurse', action: { type: 'fn_call', name: 'power', arg: '2, 1' } },
+            { line: 1, desc: 'n=1 → 2 × power(2, 0)', action: { type: 'update', name: 'n', val: '1', color: '#7C6AF6' } },
+            { line: 3, desc: 'n=0 → base case, return 1', action: { type: 'update', name: 'n', val: '0', color: '#1D9E75' } },
+            { line: 3, desc: 'Unwind: 2×1=2, 2×2=4, 2×4=8, 2×8=16', action: { type: 'fn_return', ret: 'power', val: '16' } },
+            { line: 5, desc: 'Print 16', action: { type: 'output', val: '16' } },
+          ],
+        },
+      ],
+    },
+
+    // ── HARD ── Two Pointers ──────────────────────────────────────────────
+    hard: {
+      id: 'hard',
+      label: 'Hard',
+      description: 'Master the two-pointer pattern — use two indices to solve problems efficiently.',
+      examples: [
+        {
+          id: 'two-pointers-intro',
+          title: 'Two pointers — intro',
+          concept: 'Start one pointer at each end of the list and move them toward each other.',
+          code: `nums = [1, 2, 3, 4, 5]
+left = 0
+right = len(nums) - 1
+while left < right:
+    print(nums[left], nums[right])
+    left = left + 1
+    right = right - 1`,
+          explanation: 'left starts at index 0, right at index 4. They meet in the middle, printing each pair.',
+          challenge: 'How many iterations happen if the list has 6 elements?',
+          quiz: [
+            { question: 'What is printed in the first iteration?', options: ['2 4', '1 5', '3 3', '1 2'], answer: 1 },
+            { question: 'When does the loop stop?', options: ['When left > right', 'When left < right', 'When left == right', 'When left >= right'], answer: 3 },
+            { question: 'How many pairs does a 5-element list produce?', options: ['5', '4', '3', '2'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'left', label: 'left' },
+            { id: 'right', label: 'right' },
+          ],
+          edges: [{ from: 'nums', to: 'left' }, { from: 'nums', to: 'right' }],
+          steps: [
+            { line: 0, desc: 'nums = [1,2,3,4,5]', action: { type: 'create', name: 'nums', val: '[1,2,3,4,5]', color: '#1D9E75' } },
+            { line: 1, desc: 'left = 0 (start)', action: { type: 'create', name: 'left', val: '0', color: '#7C6AF6' } },
+            { line: 2, desc: 'right = 4 (end)', action: { type: 'create', name: 'right', val: '4', color: '#D85A30' } },
+            { line: 3, desc: '0 < 4 → enter loop', action: { type: 'update', name: 'left', val: '0', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print nums[0]=1, nums[4]=5', action: { type: 'output', val: '1 5' } },
+            { line: 5, desc: 'left = 0+1 = 1', action: { type: 'update', name: 'left', val: '1', color: '#7C6AF6' } },
+            { line: 6, desc: 'right = 4-1 = 3', action: { type: 'update', name: 'right', val: '3', color: '#D85A30' } },
+            { line: 3, desc: '1 < 3 → continue', action: { type: 'update', name: 'left', val: '1', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print nums[1]=2, nums[3]=4', action: { type: 'output', val: '2 4' } },
+            { line: 5, desc: 'left = 2', action: { type: 'update', name: 'left', val: '2', color: '#7C6AF6' } },
+            { line: 6, desc: 'right = 2', action: { type: 'update', name: 'right', val: '2', color: '#D85A30' } },
+            { line: 3, desc: '2 < 2? No → loop ends', action: { type: 'update', name: 'left', val: '2', color: '#1D9E75' } },
+          ],
+        },
+        {
+          id: 'palindrome-check',
+          title: 'Palindrome check',
+          concept: 'Use two pointers to compare characters from both ends toward the center.',
+          code: `word = "racecar"
+left = 0
+right = len(word) - 1
+is_palindrome = True
+while left < right:
+    if word[left] != word[right]:
+        is_palindrome = False
+        break
+    left = left + 1
+    right = right - 1
+print(is_palindrome)`,
+          explanation: 'Compare word[0] with word[-1], word[1] with word[-2], etc. If all match, it\'s a palindrome.',
+          challenge: 'Would "hello" pass the palindrome check? At which step does it fail?',
+          quiz: [
+            { question: 'What is `is_palindrome` for "racecar"?', options: ['False', 'None', 'True', '0'], answer: 2 },
+            { question: 'When does the loop stop early (break)?', options: ['When pointers meet', 'When a mismatch is found', 'After 5 iterations', 'Never'], answer: 1 },
+            { question: 'What would is_palindrome be for "hello"?', options: ['True', 'None', 'Error', 'False'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'word', label: 'word' },
+            { id: 'left', label: 'left' },
+            { id: 'right', label: 'right' },
+            { id: 'is_palindrome', label: 'is_palindrome' },
+          ],
+          edges: [
+            { from: 'word', to: 'left' },
+            { from: 'word', to: 'right' },
+            { from: 'left', to: 'is_palindrome' },
+            { from: 'right', to: 'is_palindrome' },
+          ],
+          steps: [
+            { line: 0, desc: 'word = "racecar"', action: { type: 'create', name: 'word', val: '"racecar"', color: '#7C6AF6' } },
+            { line: 1, desc: 'left = 0', action: { type: 'create', name: 'left', val: '0', color: '#1D9E75' } },
+            { line: 2, desc: 'right = 6', action: { type: 'create', name: 'right', val: '6', color: '#D85A30' } },
+            { line: 3, desc: 'is_palindrome = True', action: { type: 'create', name: 'is_palindrome', val: 'True', color: '#1D9E75' } },
+            { line: 5, desc: 'word[0]="r" == word[6]="r" ✓', action: { type: 'update', name: 'left', val: '1', color: '#1D9E75' } },
+            { line: 8, desc: 'left=1, right=5', action: { type: 'update', name: 'right', val: '5', color: '#D85A30' } },
+            { line: 5, desc: 'word[1]="a" == word[5]="a" ✓', action: { type: 'update', name: 'left', val: '2', color: '#1D9E75' } },
+            { line: 8, desc: 'left=2, right=4', action: { type: 'update', name: 'right', val: '4', color: '#D85A30' } },
+            { line: 5, desc: 'word[2]="c" == word[4]="c" ✓', action: { type: 'update', name: 'left', val: '3', color: '#1D9E75' } },
+            { line: 8, desc: 'left=3, right=3 → 3 < 3? No, loop ends', action: { type: 'update', name: 'right', val: '3', color: '#D85A30' } },
+            { line: 10, desc: 'Print is_palindrome = True', action: { type: 'output', val: 'True' } },
+          ],
+        },
+        {
+          id: 'two-sum-sorted',
+          title: 'Two sum in sorted list',
+          concept: 'Find two numbers that add up to the target — use two pointers from each end.',
+          code: `nums = [1, 3, 5, 7, 9]
+target = 10
+left = 0
+right = len(nums) - 1
+while left < right:
+    s = nums[left] + nums[right]
+    if s == target:
+        print(nums[left], nums[right])
+        break
+    elif s < target:
+        left = left + 1
+    else:
+        right = right - 1`,
+          explanation: 'If sum is too small, move left pointer right to increase it. If too large, move right pointer left.',
+          challenge: 'What would the output be if target was 6?',
+          quiz: [
+            { question: 'What pair is printed?', options: ['1 9', '3 7', '1 7', '3 9'], answer: 1 },
+            { question: 'What happens when the sum is too small?', options: ['right moves left', 'left moves right', 'Both move', 'loop breaks'], answer: 1 },
+            { question: 'Why must the list be sorted for this pattern to work?', options: ['Python requires it', 'We need predictable direction to move pointers', 'It reduces time complexity to O(1)', 'Unsorted lists crash'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'left', label: 'left' },
+            { id: 'right', label: 'right' },
+            { id: 's', label: 's' },
+          ],
+          edges: [
+            { from: 'nums', to: 'left' },
+            { from: 'nums', to: 'right' },
+            { from: 'left', to: 's' },
+            { from: 'right', to: 's' },
+          ],
+          steps: [
+            { line: 0, desc: 'nums = [1,3,5,7,9]', action: { type: 'create', name: 'nums', val: '[1,3,5,7,9]', color: '#1D9E75' } },
+            { line: 1, desc: 'target = 10', action: { type: 'create', name: 'target', val: '10', color: '#7C6AF6' } },
+            { line: 2, desc: 'left = 0', action: { type: 'create', name: 'left', val: '0', color: '#1D9E75' } },
+            { line: 3, desc: 'right = 4', action: { type: 'create', name: 'right', val: '4', color: '#D85A30' } },
+            { line: 5, desc: 's = nums[0]+nums[4] = 1+9 = 10', action: { type: 'create', name: 's', val: '10', color: '#BA7517', from: ['left', 'right'] } },
+            { line: 6, desc: '10 == 10 → found!', action: { type: 'update', name: 's', val: '10', color: '#1D9E75' } },
+            { line: 7, desc: 'Print 1 9', action: { type: 'output', val: '1 9' } },
+          ],
+        },
+        {
+          id: 'remove-duplicates',
+          title: 'Remove duplicates in place',
+          concept: 'Use a slow and fast pointer to overwrite duplicates without extra memory.',
+          code: `arr = [1, 1, 2, 3, 3, 4]
+slow = 0
+for fast in range(1, len(arr)):
+    if arr[fast] != arr[slow]:
+        slow = slow + 1
+        arr[slow] = arr[fast]
+print(arr[:slow+1])`,
+          explanation: 'slow tracks where to write the next unique value. fast scans ahead and copies unique values.',
+          challenge: 'What would arr[:slow+1] contain if all elements were the same?',
+          quiz: [
+            { question: 'What does `arr[:slow+1]` print?', options: ['[1,2,3,4]', '[1,1,2,3]', '[2,3,4]', '[1,2,3]'], answer: 0 },
+            { question: 'What does the `slow` pointer track?', options: ['The last duplicate', 'The position to write the next unique value', 'The current scan position', 'The array length'], answer: 1 },
+            { question: 'What is `slow` at the end for [1,1,2,3,3,4]?', options: ['6', '5', '4', '3'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'arr', label: 'arr' },
+            { id: 'slow', label: 'slow' },
+            { id: 'fast', label: 'fast' },
+          ],
+          edges: [{ from: 'arr', to: 'fast' }, { from: 'fast', to: 'slow' }],
+          steps: [
+            { line: 0, desc: 'arr = [1,1,2,3,3,4]', action: { type: 'create', name: 'arr', val: '[1,1,2,3,3,4]', color: '#1D9E75' } },
+            { line: 1, desc: 'slow = 0', action: { type: 'create', name: 'slow', val: '0', color: '#7C6AF6' } },
+            { line: 2, desc: 'fast=1: arr[1]=1 == arr[0]=1, skip', action: { type: 'loop', name: 'fast', val: '1', target: 'arr', color: '#E24B4A' } },
+            { line: 2, desc: 'fast=2: arr[2]=2 != arr[0]=1 → unique!', action: { type: 'loop', name: 'fast', val: '2', target: 'arr', color: '#E24B4A' } },
+            { line: 4, desc: 'slow = 0+1 = 1', action: { type: 'update', name: 'slow', val: '1', color: '#7C6AF6' } },
+            { line: 5, desc: 'arr[1] = arr[2] = 2 → arr=[1,2,2,3,3,4]', action: { type: 'update', name: 'arr', val: '[1,2,2,3,3,4]', color: '#1D9E75' } },
+            { line: 2, desc: 'fast=3: arr[3]=3 != arr[1]=2 → unique!', action: { type: 'loop', name: 'fast', val: '3', target: 'arr', color: '#E24B4A' } },
+            { line: 4, desc: 'slow = 2', action: { type: 'update', name: 'slow', val: '2', color: '#7C6AF6' } },
+            { line: 5, desc: 'arr[2] = 3 → arr=[1,2,3,3,3,4]', action: { type: 'update', name: 'arr', val: '[1,2,3,3,3,4]', color: '#1D9E75' } },
+            { line: 2, desc: 'fast=4: arr[4]=3 == arr[2]=3, skip', action: { type: 'loop', name: 'fast', val: '4', target: 'arr', color: '#E24B4A' } },
+            { line: 2, desc: 'fast=5: arr[5]=4 != arr[2]=3 → unique!', action: { type: 'loop', name: 'fast', val: '5', target: 'arr', color: '#E24B4A' } },
+            { line: 4, desc: 'slow = 3', action: { type: 'update', name: 'slow', val: '3', color: '#7C6AF6' } },
+            { line: 5, desc: 'arr[3] = 4', action: { type: 'update', name: 'arr', val: '[1,2,3,4,3,4]', color: '#1D9E75' } },
+            { line: 6, desc: 'Print arr[:4] = [1,2,3,4]', action: { type: 'output', val: '[1, 2, 3, 4]' } },
+          ],
+        },
+        {
+          id: 'max-subarray',
+          title: "Kadane's — max subarray sum",
+          concept: "Keep a running sum. Reset to 0 when it goes negative. Track the max seen so far.",
+          code: `nums = [-2, 1, -3, 4, -1, 2, 1]
+max_sum = nums[0]
+current = 0
+for n in nums:
+    current = current + n
+    if current < 0:
+        current = 0
+    if current > max_sum:
+        max_sum = current
+print(max_sum)`,
+          explanation: 'The subarray [4,-1,2,1] sums to 6. Whenever current dips below 0 we restart from 0.',
+          challenge: 'What would max_sum be if all numbers were negative?',
+          quiz: [
+            { question: 'What is `max_sum` at the end?', options: ['4', '5', '6', '7'], answer: 2 },
+            { question: 'Why do we reset `current = 0` when it goes negative?', options: ['To avoid errors', 'A negative prefix can only make the sum worse', 'To sort the array', 'To save memory'], answer: 1 },
+            { question: 'What subarray gives the maximum sum?', options: ['[-2,1,-3,4]', '[4,-1,2,1]', '[1,-3,4,-1,2,1]', '[-2,1]'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'current', label: 'current' },
+            { id: 'max_sum', label: 'max_sum' },
+            { id: 'n', label: 'n' },
+          ],
+          edges: [{ from: 'nums', to: 'n' }, { from: 'n', to: 'current' }, { from: 'current', to: 'max_sum' }],
+          steps: [
+            { line: 0, desc: 'nums = [-2,1,-3,4,-1,2,1]', action: { type: 'create', name: 'nums', val: '[-2,1,-3,4,-1,2,1]', color: '#1D9E75' } },
+            { line: 1, desc: 'max_sum = nums[0] = -2', action: { type: 'create', name: 'max_sum', val: '-2', color: '#7C6AF6' } },
+            { line: 2, desc: 'current = 0', action: { type: 'create', name: 'current', val: '0', color: '#D85A30' } },
+            { line: 3, desc: 'n = -2 → current = 0+(-2) = -2', action: { type: 'loop', name: 'n', val: '-2', target: 'nums', color: '#E24B4A' } },
+            { line: 5, desc: 'current < 0 → reset to 0', action: { type: 'update', name: 'current', val: '0', color: '#D85A30' } },
+            { line: 3, desc: 'n = 1 → current = 0+1 = 1', action: { type: 'loop', name: 'n', val: '1', target: 'nums', color: '#E24B4A' } },
+            { line: 7, desc: '1 > -2 → max_sum = 1', action: { type: 'update', name: 'max_sum', val: '1', color: '#7C6AF6' } },
+            { line: 3, desc: 'n = -3 → current = 1+(-3) = -2', action: { type: 'loop', name: 'n', val: '-3', target: 'nums', color: '#E24B4A' } },
+            { line: 5, desc: 'current < 0 → reset to 0', action: { type: 'update', name: 'current', val: '0', color: '#D85A30' } },
+            { line: 3, desc: 'n = 4 → current = 4', action: { type: 'loop', name: 'n', val: '4', target: 'nums', color: '#E24B4A' } },
+            { line: 7, desc: '4 > 1 → max_sum = 4', action: { type: 'update', name: 'max_sum', val: '4', color: '#7C6AF6' } },
+            { line: 3, desc: 'n = -1 → current = 3', action: { type: 'loop', name: 'n', val: '-1', target: 'nums', color: '#E24B4A' } },
+            { line: 3, desc: 'n = 2 → current = 5', action: { type: 'loop', name: 'n', val: '2', target: 'nums', color: '#E24B4A' } },
+            { line: 7, desc: '5 > 4 → max_sum = 5', action: { type: 'update', name: 'max_sum', val: '5', color: '#7C6AF6' } },
+            { line: 3, desc: 'n = 1 → current = 6', action: { type: 'loop', name: 'n', val: '1', target: 'nums', color: '#E24B4A' } },
+            { line: 7, desc: '6 > 5 → max_sum = 6', action: { type: 'update', name: 'max_sum', val: '6', color: '#7C6AF6' } },
+            { line: 9, desc: 'Print max_sum = 6', action: { type: 'output', val: '6' } },
           ],
         },
       ],

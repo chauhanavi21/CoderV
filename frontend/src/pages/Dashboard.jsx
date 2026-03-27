@@ -101,85 +101,84 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* My Lessons */}
-      <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">My Lessons</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {lessonCards.map((lesson) => {
-          const p = lesson.progress;
-          const started   = p && p.completed > 0;
-          const completed = p && p.completed === p.total && p.total > 0;
+      {/* My Lessons — only lessons the user has touched */}
+      {(() => {
+        const startedLessons = lessonCards.filter((l) => l.available && l.progress?.completed > 0);
 
+        if (startedLessons.length === 0) {
           return (
-            <article
-              key={lesson.id}
-              className={`border rounded-xl p-5 flex flex-col gap-3 transition-all duration-200 ${
-                lesson.available
-                  ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:-translate-y-1 hover:shadow-hover'
-                  : 'border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 opacity-60'
-              }`}
-            >
-              {/* Header row */}
-              <div className="flex items-center gap-3">
-                <span className={`w-9 h-9 rounded-xl grid place-items-center text-sm font-extrabold text-white shrink-0 ${lesson.color}`}>
-                  {lesson.number}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-sm dark:text-slate-100 truncate">{lesson.title}</h3>
-                  {lesson.available && p && (
-                    <p className="text-xs text-muted dark:text-slate-400">
-                      {completed ? 'All done ✓' : `${p.completed} / ${p.total} examples`}
-                    </p>
-                  )}
-                </div>
-                {completed && (
-                  <span className="ml-auto shrink-0 text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-full">
-                    Done
-                  </span>
-                )}
-                {!lesson.available && (
-                  <span className="ml-auto shrink-0 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 px-2.5 py-1 rounded-full">
-                    Soon
-                  </span>
-                )}
-              </div>
-
-              <p className="text-muted dark:text-slate-400 text-sm leading-relaxed flex-1">
-                {lesson.description}
-              </p>
-
-              {/* Progress bar — only for available + started */}
-              {lesson.available && started && (
-                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5">
-                  <div
-                    className={`h-1.5 rounded-full transition-all duration-500 ${completed ? 'bg-emerald-500' : 'bg-indigo-500'}`}
-                    style={{ width: `${p.percent}%` }}
-                  />
-                </div>
-              )}
-
-              {/* CTA */}
-              {lesson.available ? (
+            <>
+              <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">My Lessons</h2>
+              <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-10 text-center">
+                <p className="text-2xl mb-3">📚</p>
+                <p className="font-bold text-slate-700 dark:text-slate-300 mb-1">No lessons started yet</p>
+                <p className="text-sm text-muted dark:text-slate-400 mb-5">
+                  Head to the Lessons page to pick your first topic and start learning.
+                </p>
                 <Link
-                  to={`/lessons/${lesson.id}`}
-                  className={`w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                    completed
-                      ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
-                      : started
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm'
-                      : 'bg-indigo-50 dark:bg-indigo-900/30 text-primary dark:text-indigo-300 hover:bg-violet-100 dark:hover:bg-violet-900/40'
-                  }`}
+                  to="/lessons"
+                  className="inline-block bg-indigo-600 text-white rounded-xl px-6 py-3 text-sm font-bold hover:bg-indigo-500 shadow-sm transition-colors"
                 >
-                  {completed ? 'Review' : started ? `Continue ${lesson.title}` : `Start ${lesson.title}`}
+                  Browse Lessons →
                 </Link>
-              ) : (
-                <div className="w-full text-center bg-gray-100 dark:bg-slate-700/50 text-gray-400 dark:text-slate-500 rounded-xl px-4 py-3 text-sm font-semibold cursor-not-allowed">
-                  Coming Soon
-                </div>
-              )}
-            </article>
+              </div>
+            </>
           );
-        })}
-      </div>
+        }
+
+        return (
+          <>
+            <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">Continue Learning</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {startedLessons.map((lesson) => {
+                const p = lesson.progress;
+                const completed = p.completed === p.total && p.total > 0;
+                return (
+                  <article
+                    key={lesson.id}
+                    className="border border-gray-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`w-9 h-9 rounded-xl grid place-items-center text-sm font-extrabold text-white shrink-0 ${lesson.color}`}>
+                        {lesson.number}
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-sm dark:text-slate-100 truncate">{lesson.title}</h3>
+                        <p className="text-xs text-muted dark:text-slate-400">
+                          {completed ? 'All done ✓' : `${p.completed} / ${p.total} examples`}
+                        </p>
+                      </div>
+                      {completed && (
+                        <span className="ml-auto shrink-0 text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-full">
+                          Done
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5">
+                      <div
+                        className={`h-1.5 rounded-full transition-all duration-500 ${completed ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+                        style={{ width: `${p.percent}%` }}
+                      />
+                    </div>
+
+                    <Link
+                      to={`/lessons/${lesson.id}`}
+                      className={`w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                        completed
+                          ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm'
+                      }`}
+                    >
+                      {completed ? `Review ${lesson.title}` : `Continue ${lesson.title}`}
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+          </>
+        );
+      })()}
     </AppLayout>
   );
 }
