@@ -33,7 +33,7 @@ export const lessonsRegistry = [
     description:
       'Learn fundamental system design concepts with real-world scenario walkthroughs.',
     color: 'bg-rose-600',
-    available: false,
+    available: true,
   },
 ];
 
@@ -45,6 +45,8 @@ export function getLessonModule(lessonId) {
       return lessonTypeTwoModule;
     case 'type-3':
       return lessonTypeThreeModule;
+    case 'type-4':
+      return lessonTypeFourModule;
     default:
       return null;
   }
@@ -2263,6 +2265,977 @@ print(max_sum)`,
             { line: 3, desc: 'n = 1 → current = 6', action: { type: 'loop', name: 'n', val: '1', target: 'nums', color: '#E24B4A' } },
             { line: 7, desc: '6 > 5 → max_sum = 6', action: { type: 'update', name: 'max_sum', val: '6', color: '#7C6AF6' } },
             { line: 9, desc: 'Print max_sum = 6', action: { type: 'output', val: '6' } },
+          ],
+        },
+      ],
+    },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson Type 4 — System Design Basics
+// 4 difficulties × 5 examples = 20 examples
+// Beginner: Caching | Easy: Load & Traffic | Medium: API Patterns | Hard: Advanced Patterns
+// Each example uses simple Python to demonstrate the core concept visually.
+// ─────────────────────────────────────────────────────────────────────────────
+export const lessonTypeFourModule = {
+  id: 'system-design-type-4',
+  title: 'System Design Basics',
+  lessonType: {
+    id: 'type-4',
+    label: 'Type 4',
+    name: 'System design visualizer',
+    totalTypes: 4,
+  },
+  summary:
+    'Learn how real-world systems are built — caching, load balancing, rate limiting, APIs, and more — through simple Python simulations that make every pattern crystal clear.',
+  difficultyOrder: ['beginner', 'easy', 'medium', 'hard'],
+  difficulties: {
+
+    // ── BEGINNER ── Caching ───────────────────────────────────────────────
+    beginner: {
+      id: 'beginner',
+      label: 'Beginner',
+      description: 'Understand caching — storing results so you never compute the same thing twice.',
+      examples: [
+        {
+          id: 'cache-intro',
+          title: 'What is a cache?',
+          concept: 'A cache stores results of expensive lookups so future requests are instant.',
+          code: `cache = {}
+cache["user_1"] = "Alice"
+cache["user_2"] = "Bob"
+print(cache["user_1"])
+print("user_3" in cache)
+print(len(cache))`,
+          explanation: 'A dictionary is a perfect cache. Storing a result once lets every future lookup skip the expensive work.',
+          challenge: 'What happens to cache performance as more items are added?',
+          quiz: [
+            { question: 'What data structure is used to simulate a cache here?', options: ['list', 'set', 'tuple', 'dict'], answer: 3 },
+            { question: 'What does `"user_3" in cache` return?', options: ['True', 'None', '"user_3"', 'False'], answer: 3 },
+            { question: 'What is the main benefit of a cache?', options: ['Uses less memory', 'Avoids repeating expensive lookups', 'Sorts data automatically', 'Encrypts data'], answer: 1 },
+          ],
+          nodes: [{ id: 'cache', label: 'cache' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'cache = {} (empty cache)', action: { type: 'create', name: 'cache', val: '{}', color: '#7C6AF6' } },
+            { line: 1, desc: 'Store user_1 → "Alice"', action: { type: 'update', name: 'cache', val: '{"user_1":"Alice"}', color: '#7C6AF6' } },
+            { line: 2, desc: 'Store user_2 → "Bob"', action: { type: 'update', name: 'cache', val: '{"user_1":"Alice","user_2":"Bob"}', color: '#7C6AF6' } },
+            { line: 3, desc: 'Cache HIT: get user_1 instantly', action: { type: 'output', val: 'Alice' } },
+            { line: 4, desc: '"user_3" in cache → False (cache MISS)', action: { type: 'output', val: 'False' } },
+            { line: 5, desc: 'Cache has 2 entries', action: { type: 'output', val: '2' } },
+          ],
+        },
+        {
+          id: 'cache-hit-miss',
+          title: 'Cache hit vs cache miss',
+          concept: 'A cache HIT returns instantly. A cache MISS fetches data and stores it for next time.',
+          code: `cache = {}
+
+def get_user(user_id):
+    if user_id in cache:
+        return "HIT: " + cache[user_id]
+    data = "fetched_" + user_id
+    cache[user_id] = data
+    return "MISS: " + data
+
+print(get_user("u1"))
+print(get_user("u1"))
+print(get_user("u2"))`,
+          explanation: 'First call to get_user("u1") is a MISS — data is fetched and cached. Second call is a HIT — returns instantly.',
+          challenge: 'What is the cache hit rate after the three calls above?',
+          quiz: [
+            { question: 'What does the first call to get_user("u1") return?', options: ['HIT: fetched_u1', 'MISS: fetched_u1', 'None', 'HIT: u1'], answer: 1 },
+            { question: 'What does the second call to get_user("u1") return?', options: ['MISS: fetched_u1', 'None', 'HIT: fetched_u1', 'Error'], answer: 2 },
+            { question: 'How many items are in cache after all three calls?', options: ['3', '1', '0', '2'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'cache', label: 'cache' },
+            { id: 'get_user', label: 'get_user' },
+          ],
+          edges: [{ from: 'get_user', to: 'cache' }],
+          steps: [
+            { line: 0, desc: 'cache = {}', action: { type: 'create', name: 'cache', val: '{}', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define get_user function', action: { type: 'fn_def', name: 'get_user', color: '#D85A30' } },
+            { line: 9, desc: 'Call get_user("u1")', action: { type: 'fn_call', name: 'get_user', arg: '"u1"' } },
+            { line: 3, desc: '"u1" in cache? No → cache MISS', action: { type: 'create', name: 'data', val: '"fetched_u1"', color: '#ef4444' } },
+            { line: 6, desc: 'Store u1 in cache', action: { type: 'update', name: 'cache', val: '{"u1":"fetched_u1"}', color: '#7C6AF6' } },
+            { line: 9, desc: 'Print MISS: fetched_u1', action: { type: 'output', val: 'MISS: fetched_u1' } },
+            { line: 10, desc: 'Call get_user("u1") again', action: { type: 'fn_call', name: 'get_user', arg: '"u1"' } },
+            { line: 3, desc: '"u1" in cache? Yes → cache HIT!', action: { type: 'update', name: 'cache', val: '{"u1":"fetched_u1"}', color: '#1D9E75' } },
+            { line: 10, desc: 'Print HIT: fetched_u1', action: { type: 'output', val: 'HIT: fetched_u1' } },
+            { line: 11, desc: 'Call get_user("u2") — cache MISS', action: { type: 'fn_call', name: 'get_user', arg: '"u2"' } },
+            { line: 6, desc: 'Fetch and store u2', action: { type: 'update', name: 'cache', val: '{"u1":"fetched_u1","u2":"fetched_u2"}', color: '#7C6AF6' } },
+            { line: 11, desc: 'Print MISS: fetched_u2', action: { type: 'output', val: 'MISS: fetched_u2' } },
+          ],
+        },
+        {
+          id: 'cache-eviction',
+          title: 'Cache eviction (size limit)',
+          concept: 'Caches have limited size. When full, old entries must be removed to make room.',
+          code: `cache = {}
+MAX_SIZE = 3
+
+def add_to_cache(key, value):
+    if len(cache) >= MAX_SIZE:
+        oldest = list(cache.keys())[0]
+        del cache[oldest]
+        print("Evicted:", oldest)
+    cache[key] = value
+
+add_to_cache("a", 1)
+add_to_cache("b", 2)
+add_to_cache("c", 3)
+add_to_cache("d", 4)
+print(cache)`,
+          explanation: 'When the 4th item is added, "a" (the oldest) is evicted first. This is a simple FIFO eviction policy.',
+          challenge: 'What eviction strategy do most real caches use instead of FIFO?',
+          quiz: [
+            { question: 'What is evicted when "d" is added?', options: ['"b"', '"c"', '"d"', '"a"'], answer: 3 },
+            { question: 'What is `cache` after adding "d"?', options: ['{"a":1,"b":2,"c":3}', '{"b":2,"c":3,"d":4}', '{"a":1,"c":3,"d":4}', '{"d":4}'], answer: 1 },
+            { question: 'What does FIFO stand for in eviction?', options: ['First In First Out', 'Fast Item Flush Out', 'Fixed Index First Out', 'Full Index Freed Out'], answer: 0 },
+          ],
+          nodes: [
+            { id: 'cache', label: 'cache' },
+            { id: 'MAX_SIZE', label: 'MAX_SIZE' },
+          ],
+          edges: [{ from: 'MAX_SIZE', to: 'cache' }],
+          steps: [
+            { line: 0, desc: 'cache = {}', action: { type: 'create', name: 'cache', val: '{}', color: '#7C6AF6' } },
+            { line: 1, desc: 'MAX_SIZE = 3', action: { type: 'create', name: 'MAX_SIZE', val: '3', color: '#BA7517' } },
+            { line: 3, desc: 'Define add_to_cache', action: { type: 'fn_def', name: 'add_to_cache', color: '#D85A30' } },
+            { line: 10, desc: 'add_to_cache("a", 1)', action: { type: 'fn_call', name: 'add_to_cache', arg: '"a", 1' } },
+            { line: 8, desc: 'cache = {"a":1}', action: { type: 'update', name: 'cache', val: '{"a":1}', color: '#7C6AF6' } },
+            { line: 11, desc: 'add_to_cache("b", 2)', action: { type: 'fn_call', name: 'add_to_cache', arg: '"b", 2' } },
+            { line: 8, desc: 'cache = {"a":1,"b":2}', action: { type: 'update', name: 'cache', val: '{"a":1,"b":2}', color: '#7C6AF6' } },
+            { line: 12, desc: 'add_to_cache("c", 3)', action: { type: 'fn_call', name: 'add_to_cache', arg: '"c", 3' } },
+            { line: 8, desc: 'cache = {"a":1,"b":2,"c":3} — full!', action: { type: 'update', name: 'cache', val: '{"a":1,"b":2,"c":3}', color: '#7C6AF6' } },
+            { line: 13, desc: 'add_to_cache("d", 4) — cache is full!', action: { type: 'fn_call', name: 'add_to_cache', arg: '"d", 4' } },
+            { line: 5, desc: 'Evict oldest key "a"', action: { type: 'update', name: 'cache', val: '{"b":2,"c":3}', color: '#ef4444' } },
+            { line: 6, desc: 'Print Evicted: a', action: { type: 'output', val: 'Evicted: a' } },
+            { line: 8, desc: 'Add "d" → cache = {"b":2,"c":3,"d":4}', action: { type: 'update', name: 'cache', val: '{"b":2,"c":3,"d":4}', color: '#7C6AF6' } },
+            { line: 14, desc: 'Print final cache', action: { type: 'output', val: '{"b": 2, "c": 3, "d": 4}' } },
+          ],
+        },
+        {
+          id: 'key-value-store',
+          title: 'Key-value store',
+          concept: 'A key-value store maps unique keys to values — the foundation of databases like Redis.',
+          code: `store = {}
+
+def set_val(key, value):
+    store[key] = value
+
+def get_val(key):
+    return store.get(key, "NOT FOUND")
+
+set_val("name", "Alice")
+set_val("age", "25")
+print(get_val("name"))
+print(get_val("city"))`,
+          explanation: 'set_val writes a key. get_val reads it back. Missing keys return "NOT FOUND" instead of crashing.',
+          challenge: 'How would you implement a delete operation for this key-value store?',
+          quiz: [
+            { question: 'What does `get_val("city")` return?', options: ['"Alice"', 'None', '"NOT FOUND"', 'Error'], answer: 2 },
+            { question: 'What does `store.get(key, "NOT FOUND")` do when key is missing?', options: ['Raises KeyError', 'Returns None', 'Returns "NOT FOUND"', 'Adds the key'], answer: 2 },
+            { question: 'What real-world system uses the key-value pattern?', options: ['SQL databases', 'Redis / Memcached', 'File systems', 'Load balancers'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'store', label: 'store' },
+            { id: 'set_val', label: 'set_val' },
+            { id: 'get_val', label: 'get_val' },
+          ],
+          edges: [{ from: 'set_val', to: 'store' }, { from: 'store', to: 'get_val' }],
+          steps: [
+            { line: 0, desc: 'store = {} (empty key-value store)', action: { type: 'create', name: 'store', val: '{}', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define set_val (write)', action: { type: 'fn_def', name: 'set_val', color: '#D85A30' } },
+            { line: 5, desc: 'Define get_val (read)', action: { type: 'fn_def', name: 'get_val', color: '#1D9E75' } },
+            { line: 8, desc: 'set_val("name", "Alice")', action: { type: 'fn_call', name: 'set_val', arg: '"name","Alice"' } },
+            { line: 3, desc: 'store["name"] = "Alice"', action: { type: 'update', name: 'store', val: '{"name":"Alice"}', color: '#7C6AF6' } },
+            { line: 9, desc: 'set_val("age", "25")', action: { type: 'fn_call', name: 'set_val', arg: '"age","25"' } },
+            { line: 3, desc: 'store["age"] = "25"', action: { type: 'update', name: 'store', val: '{"name":"Alice","age":"25"}', color: '#7C6AF6' } },
+            { line: 10, desc: 'get_val("name") → found!', action: { type: 'fn_call', name: 'get_val', arg: '"name"' } },
+            { line: 10, desc: 'Print "Alice"', action: { type: 'output', val: 'Alice' } },
+            { line: 11, desc: 'get_val("city") → not in store', action: { type: 'fn_call', name: 'get_val', arg: '"city"' } },
+            { line: 11, desc: 'Print "NOT FOUND"', action: { type: 'output', val: 'NOT FOUND' } },
+          ],
+        },
+        {
+          id: 'write-through-cache',
+          title: 'Write-through caching',
+          concept: 'Write-through: every write updates both the cache AND the database at the same time.',
+          code: `db = {}
+cache = {}
+
+def write(key, value):
+    db[key] = value
+    cache[key] = value
+    print("Written to db and cache")
+
+def read(key):
+    if key in cache:
+        return "CACHE: " + str(cache[key])
+    return "DB: " + str(db.get(key, "missing"))
+
+write("score", 99)
+print(read("score"))`,
+          explanation: 'write() updates both db and cache together. read() checks cache first — always gets fresh data.',
+          challenge: 'What is the downside of write-through compared to write-back caching?',
+          quiz: [
+            { question: 'In write-through, where is data written?', options: ['Cache only', 'DB only', 'Both cache and DB', 'Neither'], answer: 2 },
+            { question: 'What does `read("score")` return after write?', options: ['"DB: 99"', '"CACHE: 99"', '"missing"', 'None'], answer: 1 },
+            { question: 'What is the main benefit of write-through?', options: ['Faster writes', 'Cache always stays consistent with DB', 'Less memory used', 'No need for a database'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'db', label: 'db' },
+            { id: 'cache', label: 'cache' },
+          ],
+          edges: [{ from: 'db', to: 'cache' }],
+          steps: [
+            { line: 0, desc: 'db = {} (database)', action: { type: 'create', name: 'db', val: '{}', color: '#1D9E75' } },
+            { line: 1, desc: 'cache = {}', action: { type: 'create', name: 'cache', val: '{}', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define write (write-through)', action: { type: 'fn_def', name: 'write', color: '#D85A30' } },
+            { line: 9, desc: 'Define read (cache-first)', action: { type: 'fn_def', name: 'read', color: '#1D9E75' } },
+            { line: 13, desc: 'write("score", 99)', action: { type: 'fn_call', name: 'write', arg: '"score", 99' } },
+            { line: 4, desc: 'db["score"] = 99', action: { type: 'update', name: 'db', val: '{"score":99}', color: '#1D9E75' } },
+            { line: 5, desc: 'cache["score"] = 99 (simultaneously)', action: { type: 'update', name: 'cache', val: '{"score":99}', color: '#7C6AF6' } },
+            { line: 6, desc: 'Print Written to db and cache', action: { type: 'output', val: 'Written to db and cache' } },
+            { line: 14, desc: 'read("score") — check cache first', action: { type: 'fn_call', name: 'read', arg: '"score"' } },
+            { line: 9, desc: '"score" in cache → True → CACHE HIT', action: { type: 'output', val: 'CACHE: 99' } },
+          ],
+        },
+      ],
+    },
+
+    // ── EASY ── Load & Traffic ────────────────────────────────────────────
+    easy: {
+      id: 'easy',
+      label: 'Easy',
+      description: 'Learn how systems handle high traffic — rate limiting, load balancing, and queues.',
+      examples: [
+        {
+          id: 'rate-limiting',
+          title: 'Rate limiting',
+          concept: 'Rate limiting caps how many requests a user can make in a time window.',
+          code: `request_counts = {}
+LIMIT = 3
+
+def handle_request(user):
+    count = request_counts.get(user, 0)
+    if count >= LIMIT:
+        return "BLOCKED: " + user
+    request_counts[user] = count + 1
+    return "OK: " + user
+
+print(handle_request("alice"))
+print(handle_request("alice"))
+print(handle_request("alice"))
+print(handle_request("alice"))`,
+          explanation: 'Each request increments the counter. Once a user hits the LIMIT their next request is blocked.',
+          challenge: 'How would you reset the counter after 1 minute to allow new requests?',
+          quiz: [
+            { question: 'What does the 4th call to handle_request("alice") return?', options: ['"OK: alice"', '"BLOCKED: alice"', 'None', 'Error'], answer: 1 },
+            { question: 'What is `request_counts["alice"]` after 3 allowed requests?', options: ['0', '2', '3', '4'], answer: 2 },
+            { question: 'What is the purpose of rate limiting?', options: ['Speed up requests', 'Prevent abuse and server overload', 'Cache responses', 'Encrypt traffic'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'request_counts', label: 'request_counts' },
+            { id: 'LIMIT', label: 'LIMIT' },
+          ],
+          edges: [{ from: 'LIMIT', to: 'request_counts' }],
+          steps: [
+            { line: 0, desc: 'request_counts = {}', action: { type: 'create', name: 'request_counts', val: '{}', color: '#7C6AF6' } },
+            { line: 1, desc: 'LIMIT = 3', action: { type: 'create', name: 'LIMIT', val: '3', color: '#BA7517' } },
+            { line: 3, desc: 'Define handle_request', action: { type: 'fn_def', name: 'handle_request', color: '#D85A30' } },
+            { line: 10, desc: 'Request 1 — count=0 < 3, allow', action: { type: 'fn_call', name: 'handle_request', arg: '"alice"' } },
+            { line: 7, desc: 'request_counts["alice"] = 1', action: { type: 'update', name: 'request_counts', val: '{"alice":1}', color: '#1D9E75' } },
+            { line: 10, desc: 'Print OK: alice', action: { type: 'output', val: 'OK: alice' } },
+            { line: 11, desc: 'Request 2 — count=1 < 3, allow', action: { type: 'fn_call', name: 'handle_request', arg: '"alice"' } },
+            { line: 7, desc: 'request_counts["alice"] = 2', action: { type: 'update', name: 'request_counts', val: '{"alice":2}', color: '#1D9E75' } },
+            { line: 11, desc: 'Print OK: alice', action: { type: 'output', val: 'OK: alice' } },
+            { line: 12, desc: 'Request 3 — count=2 < 3, allow', action: { type: 'fn_call', name: 'handle_request', arg: '"alice"' } },
+            { line: 7, desc: 'request_counts["alice"] = 3', action: { type: 'update', name: 'request_counts', val: '{"alice":3}', color: '#1D9E75' } },
+            { line: 12, desc: 'Print OK: alice', action: { type: 'output', val: 'OK: alice' } },
+            { line: 13, desc: 'Request 4 — count=3 >= LIMIT → BLOCK!', action: { type: 'fn_call', name: 'handle_request', arg: '"alice"' } },
+            { line: 5, desc: 'Print BLOCKED: alice', action: { type: 'output', val: 'BLOCKED: alice' } },
+          ],
+        },
+        {
+          id: 'round-robin',
+          title: 'Round-robin load balancing',
+          concept: 'Distribute requests evenly across servers by rotating through them in order.',
+          code: `servers = ["server1", "server2", "server3"]
+index = 0
+
+def get_server():
+    global index
+    server = servers[index % len(servers)]
+    index = index + 1
+    return server
+
+for i in range(6):
+    print(get_server())`,
+          explanation: 'Each call picks the next server in the list using modulo. After the last server it wraps back to the first.',
+          challenge: 'What would happen if one server goes down? How would you handle it?',
+          quiz: [
+            { question: 'What server handles request 4 (i=3)?', options: ['server1', 'server3', 'server2', 'server4'], answer: 0 },
+            { question: 'What does `index % len(servers)` do?', options: ['Divides index by 3', 'Wraps index to stay within 0-2', 'Finds the fastest server', 'Counts requests'], answer: 1 },
+            { question: 'What is the goal of load balancing?', options: ['Cache responses', 'Encrypt traffic', 'Spread traffic evenly across servers', 'Block slow requests'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'servers', label: 'servers' },
+            { id: 'index', label: 'index' },
+          ],
+          edges: [{ from: 'index', to: 'servers' }],
+          steps: [
+            { line: 0, desc: 'servers = ["server1","server2","server3"]', action: { type: 'create', name: 'servers', val: '["server1","server2","server3"]', color: '#1D9E75' } },
+            { line: 1, desc: 'index = 0', action: { type: 'create', name: 'index', val: '0', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define get_server', action: { type: 'fn_def', name: 'get_server', color: '#D85A30' } },
+            { line: 9, desc: 'i=0: get_server() → index=0, 0%3=0 → server1', action: { type: 'fn_call', name: 'get_server', arg: '' } },
+            { line: 9, desc: 'index = 1 | Print server1', action: { type: 'update', name: 'index', val: '1', color: '#7C6AF6' } },
+            { line: 9, desc: 'Print server1', action: { type: 'output', val: 'server1' } },
+            { line: 9, desc: 'i=1: index=1, 1%3=1 → server2', action: { type: 'fn_call', name: 'get_server', arg: '' } },
+            { line: 9, desc: 'index = 2', action: { type: 'update', name: 'index', val: '2', color: '#7C6AF6' } },
+            { line: 9, desc: 'Print server2', action: { type: 'output', val: 'server2' } },
+            { line: 9, desc: 'i=2: index=2, 2%3=2 → server3', action: { type: 'fn_call', name: 'get_server', arg: '' } },
+            { line: 9, desc: 'index = 3', action: { type: 'update', name: 'index', val: '3', color: '#7C6AF6' } },
+            { line: 9, desc: 'Print server3', action: { type: 'output', val: 'server3' } },
+            { line: 9, desc: 'i=3: index=3, 3%3=0 → wraps to server1!', action: { type: 'update', name: 'index', val: '4', color: '#D85A30' } },
+            { line: 9, desc: 'Print server1 (wrapped)', action: { type: 'output', val: 'server1' } },
+          ],
+        },
+        {
+          id: 'retry-logic',
+          title: 'Retry with backoff',
+          concept: 'If a request fails, wait briefly and try again — but limit the total attempts.',
+          code: `import random
+MAX_RETRIES = 3
+
+def call_api(attempt):
+    if attempt < 2:
+        return None
+    return "success"
+
+result = None
+for attempt in range(MAX_RETRIES):
+    result = call_api(attempt)
+    if result:
+        print("Done on attempt", attempt + 1)
+        break
+    print("Retry", attempt + 1)
+print(result)`,
+          explanation: 'The first 2 attempts fail (return None). The 3rd succeeds. The loop breaks early when a result is found.',
+          challenge: 'How would you add exponential backoff — waiting 1s, 2s, 4s between retries?',
+          quiz: [
+            { question: 'On which attempt does call_api succeed?', options: ['1st', '3rd', '2nd', '4th'], answer: 1 },
+            { question: 'What is `result` after the loop?', options: ['None', '"retry"', '"success"', '0'], answer: 2 },
+            { question: 'Why is MAX_RETRIES important?', options: ['Speeds up requests', 'Prevents infinite retrying on permanent failures', 'Caches the response', 'Encrypts the call'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'MAX_RETRIES', label: 'MAX_RETRIES' },
+            { id: 'result', label: 'result' },
+            { id: 'attempt', label: 'attempt' },
+          ],
+          edges: [{ from: 'MAX_RETRIES', to: 'attempt' }, { from: 'attempt', to: 'result' }],
+          steps: [
+            { line: 1, desc: 'MAX_RETRIES = 3', action: { type: 'create', name: 'MAX_RETRIES', val: '3', color: '#BA7517' } },
+            { line: 3, desc: 'Define call_api', action: { type: 'fn_def', name: 'call_api', color: '#D85A30' } },
+            { line: 8, desc: 'result = None', action: { type: 'create', name: 'result', val: 'None', color: '#ef4444' } },
+            { line: 9, desc: 'attempt = 0 → call_api(0)', action: { type: 'loop', name: 'attempt', val: '0', target: 'MAX_RETRIES', color: '#E24B4A' } },
+            { line: 4, desc: '0 < 2 → return None (fail)', action: { type: 'update', name: 'result', val: 'None', color: '#ef4444' } },
+            { line: 13, desc: 'Print Retry 1', action: { type: 'output', val: 'Retry 1' } },
+            { line: 9, desc: 'attempt = 1 → call_api(1)', action: { type: 'loop', name: 'attempt', val: '1', target: 'MAX_RETRIES', color: '#E24B4A' } },
+            { line: 4, desc: '1 < 2 → return None (fail again)', action: { type: 'update', name: 'result', val: 'None', color: '#ef4444' } },
+            { line: 13, desc: 'Print Retry 2', action: { type: 'output', val: 'Retry 2' } },
+            { line: 9, desc: 'attempt = 2 → call_api(2)', action: { type: 'loop', name: 'attempt', val: '2', target: 'MAX_RETRIES', color: '#E24B4A' } },
+            { line: 5, desc: '2 >= 2 → return "success"!', action: { type: 'update', name: 'result', val: '"success"', color: '#1D9E75' } },
+            { line: 11, desc: 'Print Done on attempt 3', action: { type: 'output', val: 'Done on attempt 3' } },
+            { line: 14, desc: 'Print result = "success"', action: { type: 'output', val: 'success' } },
+          ],
+        },
+        {
+          id: 'message-queue',
+          title: 'Message queue (producer/consumer)',
+          concept: 'A queue decouples producers (who create work) from consumers (who process it).',
+          code: `queue = []
+
+def produce(task):
+    queue.append(task)
+    print("Produced:", task)
+
+def consume():
+    if queue:
+        task = queue.pop(0)
+        print("Consumed:", task)
+        return task
+    print("Queue empty")
+
+produce("email_1")
+produce("email_2")
+consume()
+consume()
+consume()`,
+          explanation: 'produce() adds tasks to the back. consume() takes from the front. The consumer works independently of the producer.',
+          challenge: 'What would happen if you had 3 producers and 1 consumer running simultaneously?',
+          quiz: [
+            { question: 'What is in the queue after two produces?', options: ['["email_2"]', '["email_1","email_2"]', '["email_2","email_1"]', 'empty'], answer: 1 },
+            { question: 'What does the third consume() call print?', options: ['"Consumed: email_2"', '"Consumed: email_1"', '"Queue empty"', 'Error'], answer: 2 },
+            { question: 'What is the main benefit of a message queue?', options: ['Faster DB writes', 'Decouples producers from consumers — they work at different speeds', 'Caches API responses', 'Encrypts messages'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'queue', label: 'queue' },
+            { id: 'produce', label: 'produce' },
+            { id: 'consume', label: 'consume' },
+          ],
+          edges: [{ from: 'produce', to: 'queue' }, { from: 'queue', to: 'consume' }],
+          steps: [
+            { line: 0, desc: 'queue = [] (empty message queue)', action: { type: 'create', name: 'queue', val: '[]', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define produce (writer)', action: { type: 'fn_def', name: 'produce', color: '#1D9E75' } },
+            { line: 7, desc: 'Define consume (reader)', action: { type: 'fn_def', name: 'consume', color: '#D85A30' } },
+            { line: 13, desc: 'produce("email_1")', action: { type: 'fn_call', name: 'produce', arg: '"email_1"' } },
+            { line: 3, desc: 'queue = ["email_1"]', action: { type: 'update', name: 'queue', val: '["email_1"]', color: '#7C6AF6' } },
+            { line: 13, desc: 'Print Produced: email_1', action: { type: 'output', val: 'Produced: email_1' } },
+            { line: 14, desc: 'produce("email_2")', action: { type: 'fn_call', name: 'produce', arg: '"email_2"' } },
+            { line: 3, desc: 'queue = ["email_1","email_2"]', action: { type: 'update', name: 'queue', val: '["email_1","email_2"]', color: '#7C6AF6' } },
+            { line: 14, desc: 'Print Produced: email_2', action: { type: 'output', val: 'Produced: email_2' } },
+            { line: 15, desc: 'consume() → pop front', action: { type: 'fn_call', name: 'consume', arg: '' } },
+            { line: 8, desc: 'queue = ["email_2"]', action: { type: 'update', name: 'queue', val: '["email_2"]', color: '#7C6AF6' } },
+            { line: 15, desc: 'Print Consumed: email_1', action: { type: 'output', val: 'Consumed: email_1' } },
+            { line: 16, desc: 'consume() again', action: { type: 'fn_call', name: 'consume', arg: '' } },
+            { line: 8, desc: 'queue = []', action: { type: 'update', name: 'queue', val: '[]', color: '#7C6AF6' } },
+            { line: 16, desc: 'Print Consumed: email_2', action: { type: 'output', val: 'Consumed: email_2' } },
+            { line: 17, desc: 'consume() — queue empty', action: { type: 'fn_call', name: 'consume', arg: '' } },
+            { line: 17, desc: 'Print Queue empty', action: { type: 'output', val: 'Queue empty' } },
+          ],
+        },
+        {
+          id: 'pagination',
+          title: 'Pagination',
+          concept: 'Instead of returning all data at once, return it in pages to save bandwidth.',
+          code: `data = list(range(1, 21))
+PAGE_SIZE = 5
+
+def get_page(page):
+    start = page * PAGE_SIZE
+    end = start + PAGE_SIZE
+    return data[start:end]
+
+print(get_page(0))
+print(get_page(1))
+print(get_page(3))`,
+          explanation: 'Page 0 = items 0-4, Page 1 = items 5-9. Slicing the list gives just the right chunk.',
+          challenge: 'How many total pages are there? How would you calculate that?',
+          quiz: [
+            { question: 'What does `get_page(0)` return?', options: ['[1,2,3,4,5]', '[0,1,2,3,4]', '[6,7,8,9,10]', '[5,6,7,8,9]'], answer: 0 },
+            { question: 'What does `get_page(1)` return?', options: ['[1,2,3,4,5]', '[11,12,13,14,15]', '[6,7,8,9,10]', '[5,6,7,8,9]'], answer: 2 },
+            { question: 'Why is pagination important in APIs?', options: ['Makes responses faster to encrypt', 'Avoids sending millions of rows at once', 'Caches responses automatically', 'Enables rate limiting'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'data', label: 'data' },
+            { id: 'PAGE_SIZE', label: 'PAGE_SIZE' },
+            { id: 'get_page', label: 'get_page' },
+          ],
+          edges: [{ from: 'data', to: 'get_page' }, { from: 'PAGE_SIZE', to: 'get_page' }],
+          steps: [
+            { line: 0, desc: 'data = [1..20] (20 items total)', action: { type: 'create', name: 'data', val: '[1,2,...,20]', color: '#1D9E75' } },
+            { line: 1, desc: 'PAGE_SIZE = 5', action: { type: 'create', name: 'PAGE_SIZE', val: '5', color: '#BA7517' } },
+            { line: 3, desc: 'Define get_page', action: { type: 'fn_def', name: 'get_page', color: '#D85A30' } },
+            { line: 8, desc: 'get_page(0): start=0, end=5', action: { type: 'fn_call', name: 'get_page', arg: '0' } },
+            { line: 8, desc: 'Return data[0:5] = [1,2,3,4,5]', action: { type: 'output', val: '[1, 2, 3, 4, 5]' } },
+            { line: 9, desc: 'get_page(1): start=5, end=10', action: { type: 'fn_call', name: 'get_page', arg: '1' } },
+            { line: 9, desc: 'Return data[5:10] = [6,7,8,9,10]', action: { type: 'output', val: '[6, 7, 8, 9, 10]' } },
+            { line: 10, desc: 'get_page(3): start=15, end=20', action: { type: 'fn_call', name: 'get_page', arg: '3' } },
+            { line: 10, desc: 'Return data[15:20] = [16,17,18,19,20]', action: { type: 'output', val: '[16, 17, 18, 19, 20]' } },
+          ],
+        },
+      ],
+    },
+
+    // ── MEDIUM ── API Patterns ────────────────────────────────────────────
+    medium: {
+      id: 'medium',
+      label: 'Medium',
+      description: 'Learn how APIs are structured — request/response, error handling, and versioning.',
+      examples: [
+        {
+          id: 'request-response',
+          title: 'Request / response pattern',
+          concept: 'Every API call is a request that gets back a structured response with status and data.',
+          code: `def make_response(status, data=None, error=None):
+    return {"status": status, "data": data, "error": error}
+
+def get_user(user_id):
+    users = {"u1": "Alice", "u2": "Bob"}
+    if user_id in users:
+        return make_response(200, data=users[user_id])
+    return make_response(404, error="User not found")
+
+r1 = get_user("u1")
+r2 = get_user("u99")
+print(r1["status"], r1["data"])
+print(r2["status"], r2["error"])`,
+          explanation: 'A 200 means success with data. A 404 means not found with an error message. Every API uses this pattern.',
+          challenge: 'What status code would you return for a bad request (wrong format)?',
+          quiz: [
+            { question: 'What is `r1["status"]`?', options: ['404', '500', '200', '201'], answer: 2 },
+            { question: 'What is `r2["error"]`?', options: ['"Alice"', 'None', '"User not found"', '404'], answer: 2 },
+            { question: 'What HTTP status code means "not found"?', options: ['200', '500', '201', '404'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'make_response', label: 'make_response' },
+            { id: 'get_user', label: 'get_user' },
+            { id: 'r1', label: 'r1' },
+            { id: 'r2', label: 'r2' },
+          ],
+          edges: [{ from: 'make_response', to: 'get_user' }, { from: 'get_user', to: 'r1' }, { from: 'get_user', to: 'r2' }],
+          steps: [
+            { line: 0, desc: 'Define make_response helper', action: { type: 'fn_def', name: 'make_response', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define get_user endpoint', action: { type: 'fn_def', name: 'get_user', color: '#D85A30' } },
+            { line: 9, desc: 'get_user("u1")', action: { type: 'fn_call', name: 'get_user', arg: '"u1"' } },
+            { line: 4, desc: '"u1" found in users dict', action: { type: 'create', name: 'users', val: '{"u1":"Alice","u2":"Bob"}', color: '#1D9E75' } },
+            { line: 6, desc: 'Return 200 with data "Alice"', action: { type: 'create', name: 'r1', val: '{status:200,data:"Alice"}', color: '#1D9E75' } },
+            { line: 10, desc: 'get_user("u99")', action: { type: 'fn_call', name: 'get_user', arg: '"u99"' } },
+            { line: 7, desc: '"u99" not found → return 404', action: { type: 'create', name: 'r2', val: '{status:404,error:"User not found"}', color: '#ef4444' } },
+            { line: 11, desc: 'Print r1: 200 Alice', action: { type: 'output', val: '200 Alice' } },
+            { line: 12, desc: 'Print r2: 404 User not found', action: { type: 'output', val: '404 User not found' } },
+          ],
+        },
+        {
+          id: 'input-validation',
+          title: 'Input validation',
+          concept: 'Always validate inputs before processing — reject bad data early with clear errors.',
+          code: `def create_user(name, age):
+    errors = []
+    if not name or len(name) < 2:
+        errors.append("name too short")
+    if not isinstance(age, int) or age < 0:
+        errors.append("age must be positive int")
+    if errors:
+        return {"ok": False, "errors": errors}
+    return {"ok": True, "user": {"name": name, "age": age}}
+
+print(create_user("Al", 25))
+print(create_user("", -1))`,
+          explanation: 'Collect all validation errors first. Return them together so the caller can fix everything at once.',
+          challenge: 'What would you add to validate that age is not over 150?',
+          quiz: [
+            { question: 'What does `create_user("Al", 25)` return?', options: ['{"ok":False}', '{"ok":True,"user":{...}}', 'None', 'Error'], answer: 1 },
+            { question: 'What does `create_user("", -1)` return?', options: ['{"ok":True}', 'None', '{"ok":False,"errors":[...]}', '404'], answer: 2 },
+            { question: 'Why collect all errors before returning?', options: ['Faster to process', 'Caller can fix all issues at once, not one by one', 'Required by Python', 'Encrypts the data'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'create_user', label: 'create_user' },
+            { id: 'errors', label: 'errors' },
+          ],
+          edges: [{ from: 'create_user', to: 'errors' }],
+          steps: [
+            { line: 0, desc: 'Define create_user', action: { type: 'fn_def', name: 'create_user', color: '#D85A30' } },
+            { line: 10, desc: 'create_user("Al", 25)', action: { type: 'fn_call', name: 'create_user', arg: '"Al", 25' } },
+            { line: 1, desc: 'errors = []', action: { type: 'create', name: 'errors', val: '[]', color: '#ef4444' } },
+            { line: 2, desc: '"Al" length=2 >= 2 → name OK', action: { type: 'update', name: 'errors', val: '[]', color: '#1D9E75' } },
+            { line: 4, desc: '25 is int and >= 0 → age OK', action: { type: 'update', name: 'errors', val: '[]', color: '#1D9E75' } },
+            { line: 6, desc: 'No errors → return ok user', action: { type: 'output', val: '{"ok": True, "user": {"name": "Al", "age": 25}}' } },
+            { line: 11, desc: 'create_user("", -1)', action: { type: 'fn_call', name: 'create_user', arg: '"", -1' } },
+            { line: 1, desc: 'errors = []', action: { type: 'update', name: 'errors', val: '[]', color: '#ef4444' } },
+            { line: 2, desc: '"" length=0 < 2 → add error', action: { type: 'update', name: 'errors', val: '["name too short"]', color: '#ef4444' } },
+            { line: 4, desc: '-1 < 0 → add error', action: { type: 'update', name: 'errors', val: '["name too short","age must be positive int"]', color: '#ef4444' } },
+            { line: 6, desc: 'errors not empty → return failures', action: { type: 'output', val: '{"ok": False, "errors": ["name too short", "age must be positive int"]}' } },
+          ],
+        },
+        {
+          id: 'api-versioning',
+          title: 'API versioning',
+          concept: 'Version your API so old clients keep working when you make breaking changes.',
+          code: `def get_user_v1(user_id):
+    return {"name": "Alice", "age": 25}
+
+def get_user_v2(user_id):
+    return {"name": "Alice", "age": 25, "email": "alice@example.com"}
+
+def route(version, user_id):
+    if version == "v1":
+        return get_user_v1(user_id)
+    if version == "v2":
+        return get_user_v2(user_id)
+    return {"error": "unknown version"}
+
+print(route("v1", "u1"))
+print(route("v2", "u1"))`,
+          explanation: 'v1 returns name and age. v2 adds email. Both work side by side — old clients use v1, new ones use v2.',
+          challenge: 'What should you do when you want to retire v1 completely?',
+          quiz: [
+            { question: 'What extra field does v2 add?', options: ['"phone"', '"id"', '"email"', '"role"'], answer: 2 },
+            { question: 'What does `route("v3","u1")` return?', options: ['None', 'v1 response', '{"error":"unknown version"}', 'v2 response'], answer: 2 },
+            { question: 'Why is API versioning important?', options: ['Faster response times', 'Old clients break when APIs change without versioning', 'Reduces server load', 'Encrypts API calls'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'get_user_v1', label: 'v1' },
+            { id: 'get_user_v2', label: 'v2' },
+            { id: 'route', label: 'route' },
+          ],
+          edges: [{ from: 'route', to: 'get_user_v1' }, { from: 'route', to: 'get_user_v2' }],
+          steps: [
+            { line: 0, desc: 'Define get_user_v1 (original API)', action: { type: 'fn_def', name: 'get_user_v1', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define get_user_v2 (new API with email)', action: { type: 'fn_def', name: 'get_user_v2', color: '#1D9E75' } },
+            { line: 6, desc: 'Define route (dispatcher)', action: { type: 'fn_def', name: 'route', color: '#D85A30' } },
+            { line: 13, desc: 'route("v1", "u1")', action: { type: 'fn_call', name: 'route', arg: '"v1","u1"' } },
+            { line: 7, desc: 'version == "v1" → call get_user_v1', action: { type: 'fn_call', name: 'get_user_v1', arg: '"u1"' } },
+            { line: 13, desc: 'Print v1 response (no email)', action: { type: 'output', val: '{"name": "Alice", "age": 25}' } },
+            { line: 14, desc: 'route("v2", "u1")', action: { type: 'fn_call', name: 'route', arg: '"v2","u1"' } },
+            { line: 9, desc: 'version == "v2" → call get_user_v2', action: { type: 'fn_call', name: 'get_user_v2', arg: '"u1"' } },
+            { line: 14, desc: 'Print v2 response (with email)', action: { type: 'output', val: '{"name": "Alice", "age": 25, "email": "alice@example.com"}' } },
+          ],
+        },
+        {
+          id: 'batch-processing',
+          title: 'Batch processing',
+          concept: 'Process multiple items together in one operation instead of one at a time.',
+          code: `def process_one(item):
+    return item * 2
+
+def process_batch(items):
+    results = []
+    for item in items:
+        results.append(process_one(item))
+    return results
+
+single = process_one(5)
+batch = process_batch([1, 2, 3, 4, 5])
+print("Single:", single)
+print("Batch:", batch)`,
+          explanation: 'process_batch handles the whole list in one call. This is far more efficient than calling process_one 5 separate times.',
+          challenge: 'What would be the benefit of batching 1000 database writes instead of 1000 individual writes?',
+          quiz: [
+            { question: 'What does `process_batch([1,2,3,4,5])` return?', options: ['[1,2,3,4,5]', '[2,4,6,8,10]', '[1,4,9,16,25]', '[0,2,4,6,8]'], answer: 1 },
+            { question: 'What is `single`?', options: ['5', '25', '10', '2'], answer: 2 },
+            { question: 'Why is batch processing more efficient?', options: ['Uses less CPU', 'Reduces repeated overhead — connect once, process many', 'Avoids using loops', 'Caches all results'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'process_one', label: 'process_one' },
+            { id: 'process_batch', label: 'process_batch' },
+            { id: 'results', label: 'results' },
+          ],
+          edges: [{ from: 'process_one', to: 'process_batch' }, { from: 'process_batch', to: 'results' }],
+          steps: [
+            { line: 0, desc: 'Define process_one (item × 2)', action: { type: 'fn_def', name: 'process_one', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define process_batch', action: { type: 'fn_def', name: 'process_batch', color: '#D85A30' } },
+            { line: 9, desc: 'single = process_one(5) = 10', action: { type: 'create', name: 'single', val: '10', color: '#7C6AF6' } },
+            { line: 10, desc: 'process_batch([1,2,3,4,5])', action: { type: 'fn_call', name: 'process_batch', arg: '[1,2,3,4,5]' } },
+            { line: 4, desc: 'results = []', action: { type: 'create', name: 'results', val: '[]', color: '#1D9E75' } },
+            { line: 5, desc: 'item=1 → process_one(1) = 2', action: { type: 'loop', name: 'item', val: '1', target: 'process_batch', color: '#E24B4A' } },
+            { line: 6, desc: 'results = [2]', action: { type: 'update', name: 'results', val: '[2]', color: '#1D9E75' } },
+            { line: 5, desc: 'item=2 → process_one(2) = 4', action: { type: 'loop', name: 'item', val: '2', target: 'process_batch', color: '#E24B4A' } },
+            { line: 6, desc: 'results = [2,4]', action: { type: 'update', name: 'results', val: '[2,4]', color: '#1D9E75' } },
+            { line: 5, desc: 'item=5 → process_one(5) = 10', action: { type: 'loop', name: 'item', val: '5', target: 'process_batch', color: '#E24B4A' } },
+            { line: 6, desc: 'results = [2,4,6,8,10]', action: { type: 'update', name: 'results', val: '[2,4,6,8,10]', color: '#1D9E75' } },
+            { line: 11, desc: 'Print Single: 10', action: { type: 'output', val: 'Single: 10' } },
+            { line: 12, desc: 'Print Batch: [2,4,6,8,10]', action: { type: 'output', val: 'Batch: [2, 4, 6, 8, 10]' } },
+          ],
+        },
+        {
+          id: 'idempotency',
+          title: 'Idempotency',
+          concept: 'An idempotent operation gives the same result no matter how many times you call it.',
+          code: `processed = set()
+
+def process_payment(payment_id, amount):
+    if payment_id in processed:
+        return "Already processed: " + payment_id
+    processed.add(payment_id)
+    return "Paid: " + str(amount)
+
+print(process_payment("pay_1", 100))
+print(process_payment("pay_1", 100))
+print(process_payment("pay_2", 50))`,
+          explanation: 'The same payment_id processed twice only charges once. This prevents duplicate charges if a request is retried.',
+          challenge: 'Why is idempotency especially important for payment and order APIs?',
+          quiz: [
+            { question: 'What does the second call to process_payment("pay_1", 100) return?', options: ['"Paid: 100"', '"Error"', '"Already processed: pay_1"', 'None'], answer: 2 },
+            { question: 'What data structure tracks processed IDs?', options: ['list', 'dict', 'tuple', 'set'], answer: 3 },
+            { question: 'Why is idempotency important in distributed systems?', options: ['Speeds up processing', 'Network retries can cause duplicate operations without it', 'Reduces memory usage', 'Enables caching'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'processed', label: 'processed' },
+            { id: 'process_payment', label: 'process_payment' },
+          ],
+          edges: [{ from: 'process_payment', to: 'processed' }],
+          steps: [
+            { line: 0, desc: 'processed = set() (seen IDs)', action: { type: 'create', name: 'processed', val: 'set()', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define process_payment', action: { type: 'fn_def', name: 'process_payment', color: '#D85A30' } },
+            { line: 8, desc: 'process_payment("pay_1", 100) — first time', action: { type: 'fn_call', name: 'process_payment', arg: '"pay_1", 100' } },
+            { line: 3, desc: '"pay_1" not in processed → proceed', action: { type: 'update', name: 'processed', val: 'set()', color: '#1D9E75' } },
+            { line: 5, desc: 'Add "pay_1" to processed', action: { type: 'update', name: 'processed', val: '{"pay_1"}', color: '#7C6AF6' } },
+            { line: 8, desc: 'Print Paid: 100', action: { type: 'output', val: 'Paid: 100' } },
+            { line: 9, desc: 'process_payment("pay_1", 100) — duplicate!', action: { type: 'fn_call', name: 'process_payment', arg: '"pay_1", 100' } },
+            { line: 3, desc: '"pay_1" already in processed → block', action: { type: 'update', name: 'processed', val: '{"pay_1"}', color: '#ef4444' } },
+            { line: 9, desc: 'Print Already processed: pay_1', action: { type: 'output', val: 'Already processed: pay_1' } },
+            { line: 10, desc: 'process_payment("pay_2", 50) — new ID', action: { type: 'fn_call', name: 'process_payment', arg: '"pay_2", 50' } },
+            { line: 5, desc: 'Add "pay_2" → processed = {"pay_1","pay_2"}', action: { type: 'update', name: 'processed', val: '{"pay_1","pay_2"}', color: '#7C6AF6' } },
+            { line: 10, desc: 'Print Paid: 50', action: { type: 'output', val: 'Paid: 50' } },
+          ],
+        },
+      ],
+    },
+
+    // ── HARD ── Advanced Patterns ─────────────────────────────────────────
+    hard: {
+      id: 'hard',
+      label: 'Hard',
+      description: 'Master advanced system patterns — pub/sub, circuit breakers, event logs, and hashing.',
+      examples: [
+        {
+          id: 'pubsub',
+          title: 'Pub/Sub pattern',
+          concept: 'Publishers send events without knowing who listens. Subscribers react to events they care about.',
+          code: `subscribers = {}
+
+def subscribe(event, handler):
+    if event not in subscribers:
+        subscribers[event] = []
+    subscribers[event].append(handler)
+
+def publish(event, data):
+    for handler in subscribers.get(event, []):
+        handler(data)
+
+subscribe("login", lambda d: print("Log:", d))
+subscribe("login", lambda d: print("Email:", d))
+publish("login", "user_alice")
+publish("logout", "user_alice")`,
+          explanation: 'Two handlers subscribe to "login". When publish fires, both run. "logout" has no subscribers so nothing happens.',
+          challenge: 'How would you implement an "unsubscribe" function?',
+          quiz: [
+            { question: 'How many handlers are called when "login" is published?', options: ['0', '1', '3', '2'], answer: 3 },
+            { question: 'What happens when "logout" is published?', options: ['Error', 'One handler runs', 'Nothing — no subscribers', 'All handlers run'], answer: 2 },
+            { question: 'What real-world system uses pub/sub?', options: ['SQL databases', 'File systems', 'Kafka / Redis Pub-Sub', 'HTTP load balancers'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'subscribers', label: 'subscribers' },
+            { id: 'subscribe', label: 'subscribe' },
+            { id: 'publish', label: 'publish' },
+          ],
+          edges: [{ from: 'subscribe', to: 'subscribers' }, { from: 'publish', to: 'subscribers' }],
+          steps: [
+            { line: 0, desc: 'subscribers = {} (event registry)', action: { type: 'create', name: 'subscribers', val: '{}', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define subscribe', action: { type: 'fn_def', name: 'subscribe', color: '#1D9E75' } },
+            { line: 7, desc: 'Define publish', action: { type: 'fn_def', name: 'publish', color: '#D85A30' } },
+            { line: 11, desc: 'subscribe("login", log handler)', action: { type: 'fn_call', name: 'subscribe', arg: '"login", handler1' } },
+            { line: 3, desc: 'subscribers = {"login":[handler1]}', action: { type: 'update', name: 'subscribers', val: '{"login":[handler1]}', color: '#7C6AF6' } },
+            { line: 12, desc: 'subscribe("login", email handler)', action: { type: 'fn_call', name: 'subscribe', arg: '"login", handler2' } },
+            { line: 5, desc: 'subscribers = {"login":[h1,h2]}', action: { type: 'update', name: 'subscribers', val: '{"login":[h1,h2]}', color: '#7C6AF6' } },
+            { line: 13, desc: 'publish("login", "user_alice")', action: { type: 'fn_call', name: 'publish', arg: '"login","user_alice"' } },
+            { line: 9, desc: 'Call handler1 → Log: user_alice', action: { type: 'output', val: 'Log: user_alice' } },
+            { line: 9, desc: 'Call handler2 → Email: user_alice', action: { type: 'output', val: 'Email: user_alice' } },
+            { line: 14, desc: 'publish("logout") — no subscribers', action: { type: 'fn_call', name: 'publish', arg: '"logout","user_alice"' } },
+            { line: 8, desc: 'subscribers.get("logout",[]) = [] → nothing runs', action: { type: 'update', name: 'subscribers', val: '{"login":[h1,h2]}', color: '#7C6AF6' } },
+          ],
+        },
+        {
+          id: 'circuit-breaker',
+          title: 'Circuit breaker',
+          concept: 'Stop calling a failing service automatically. Reset after a cooldown period.',
+          code: `state = "CLOSED"
+failures = 0
+THRESHOLD = 3
+
+def call_service():
+    global state, failures
+    if state == "OPEN":
+        return "CIRCUIT OPEN — fast fail"
+    result = None
+    failures = failures + 1
+    if failures >= THRESHOLD:
+        state = "OPEN"
+        return "FAILED — circuit opened!"
+    return "FAILED"
+
+print(call_service())
+print(call_service())
+print(call_service())
+print(call_service())`,
+          explanation: 'After 3 failures the circuit trips to OPEN. The 4th call fast-fails immediately without hitting the service.',
+          challenge: 'How would you add a "half-open" state to test if the service has recovered?',
+          quiz: [
+            { question: 'What does the 4th call return?', options: ['"FAILED"', '"SUCCESS"', '"CIRCUIT OPEN — fast fail"', 'None'], answer: 2 },
+            { question: 'What is `state` after the 3rd call?', options: ['"CLOSED"', '"HALF-OPEN"', '"FAILED"', '"OPEN"'], answer: 3 },
+            { question: 'What is the main benefit of a circuit breaker?', options: ['Caches responses', 'Prevents cascading failures by stopping calls to broken services', 'Retries failed requests', 'Balances load'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'state', label: 'state' },
+            { id: 'failures', label: 'failures' },
+            { id: 'THRESHOLD', label: 'THRESHOLD' },
+          ],
+          edges: [{ from: 'failures', to: 'state' }, { from: 'THRESHOLD', to: 'state' }],
+          steps: [
+            { line: 0, desc: 'state = "CLOSED" (circuit normal)', action: { type: 'create', name: 'state', val: '"CLOSED"', color: '#1D9E75' } },
+            { line: 1, desc: 'failures = 0', action: { type: 'create', name: 'failures', val: '0', color: '#7C6AF6' } },
+            { line: 2, desc: 'THRESHOLD = 3', action: { type: 'create', name: 'THRESHOLD', val: '3', color: '#BA7517' } },
+            { line: 4, desc: 'Define call_service', action: { type: 'fn_def', name: 'call_service', color: '#D85A30' } },
+            { line: 14, desc: 'Call 1: state=CLOSED, failures=0→1', action: { type: 'fn_call', name: 'call_service', arg: '' } },
+            { line: 9, desc: 'failures = 1', action: { type: 'update', name: 'failures', val: '1', color: '#ef4444' } },
+            { line: 14, desc: 'Print FAILED', action: { type: 'output', val: 'FAILED' } },
+            { line: 15, desc: 'Call 2: failures=1→2', action: { type: 'fn_call', name: 'call_service', arg: '' } },
+            { line: 9, desc: 'failures = 2', action: { type: 'update', name: 'failures', val: '2', color: '#ef4444' } },
+            { line: 15, desc: 'Print FAILED', action: { type: 'output', val: 'FAILED' } },
+            { line: 16, desc: 'Call 3: failures=2→3 >= THRESHOLD!', action: { type: 'fn_call', name: 'call_service', arg: '' } },
+            { line: 9, desc: 'failures = 3', action: { type: 'update', name: 'failures', val: '3', color: '#ef4444' } },
+            { line: 10, desc: 'state = "OPEN" (circuit tripped!)', action: { type: 'update', name: 'state', val: '"OPEN"', color: '#ef4444' } },
+            { line: 16, desc: 'Print FAILED — circuit opened!', action: { type: 'output', val: 'FAILED — circuit opened!' } },
+            { line: 17, desc: 'Call 4: state=OPEN → fast fail!', action: { type: 'fn_call', name: 'call_service', arg: '' } },
+            { line: 6, desc: 'state is OPEN → return immediately', action: { type: 'output', val: 'CIRCUIT OPEN — fast fail' } },
+          ],
+        },
+        {
+          id: 'event-log',
+          title: 'Event log (event sourcing)',
+          concept: 'Store every action as an immutable event. Reconstruct current state by replaying events.',
+          code: `events = []
+
+def apply_event(event):
+    events.append(event)
+
+def get_balance():
+    balance = 0
+    for e in events:
+        if e["type"] == "deposit":
+            balance = balance + e["amount"]
+        elif e["type"] == "withdraw":
+            balance = balance - e["amount"]
+    return balance
+
+apply_event({"type": "deposit",  "amount": 100})
+apply_event({"type": "deposit",  "amount": 50})
+apply_event({"type": "withdraw", "amount": 30})
+print(get_balance())
+print(len(events), "events stored")`,
+          explanation: 'Instead of storing "balance=120", we store every transaction. get_balance() replays all events to compute the current state.',
+          challenge: 'What is the benefit of event sourcing over just storing the current balance?',
+          quiz: [
+            { question: 'What does `get_balance()` return?', options: ['100', '150', '120', '80'], answer: 2 },
+            { question: 'How many events are stored?', options: ['1', '2', '4', '3'], answer: 3 },
+            { question: 'What is the main advantage of event sourcing?', options: ['Faster reads', 'Full audit trail — you can replay all history', 'Less storage used', 'No need for a database'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'events', label: 'events' },
+            { id: 'balance', label: 'balance' },
+          ],
+          edges: [{ from: 'events', to: 'balance' }],
+          steps: [
+            { line: 0, desc: 'events = [] (empty event log)', action: { type: 'create', name: 'events', val: '[]', color: '#7C6AF6' } },
+            { line: 2, desc: 'Define apply_event', action: { type: 'fn_def', name: 'apply_event', color: '#D85A30' } },
+            { line: 5, desc: 'Define get_balance (replay)', action: { type: 'fn_def', name: 'get_balance', color: '#1D9E75' } },
+            { line: 14, desc: 'apply_event deposit 100', action: { type: 'fn_call', name: 'apply_event', arg: 'deposit 100' } },
+            { line: 3, desc: 'events = [{deposit:100}]', action: { type: 'update', name: 'events', val: '[{deposit:100}]', color: '#7C6AF6' } },
+            { line: 15, desc: 'apply_event deposit 50', action: { type: 'fn_call', name: 'apply_event', arg: 'deposit 50' } },
+            { line: 3, desc: 'events = [{deposit:100},{deposit:50}]', action: { type: 'update', name: 'events', val: '[{dep:100},{dep:50}]', color: '#7C6AF6' } },
+            { line: 16, desc: 'apply_event withdraw 30', action: { type: 'fn_call', name: 'apply_event', arg: 'withdraw 30' } },
+            { line: 3, desc: 'events = [dep100,dep50,wdw30]', action: { type: 'update', name: 'events', val: '[dep100,dep50,wdw30]', color: '#7C6AF6' } },
+            { line: 17, desc: 'get_balance() — replay all events', action: { type: 'fn_call', name: 'get_balance', arg: '' } },
+            { line: 6, desc: 'balance = 0', action: { type: 'create', name: 'balance', val: '0', color: '#1D9E75' } },
+            { line: 8, desc: 'deposit 100 → balance = 100', action: { type: 'update', name: 'balance', val: '100', color: '#1D9E75' } },
+            { line: 8, desc: 'deposit 50 → balance = 150', action: { type: 'update', name: 'balance', val: '150', color: '#1D9E75' } },
+            { line: 10, desc: 'withdraw 30 → balance = 120', action: { type: 'update', name: 'balance', val: '120', color: '#1D9E75' } },
+            { line: 17, desc: 'Print 120', action: { type: 'output', val: '120' } },
+            { line: 18, desc: 'Print 3 events stored', action: { type: 'output', val: '3 events stored' } },
+          ],
+        },
+        {
+          id: 'consistent-hashing',
+          title: 'Consistent hashing (routing)',
+          concept: 'Use a hash of the key to decide which server handles the request — same key always goes to the same server.',
+          code: `servers = ["s1", "s2", "s3"]
+
+def get_server(key):
+    index = hash(key) % len(servers)
+    return servers[index]
+
+keys = ["user_1", "user_2", "user_3", "user_4"]
+for k in keys:
+    print(k, "→", get_server(k))`,
+          explanation: 'hash(key) % len(servers) gives a consistent index. The same key always routes to the same server — no lookups needed.',
+          challenge: 'What happens to routing when you add a 4th server?',
+          quiz: [
+            { question: 'What ensures the same key always goes to the same server?', options: ['Random selection', 'Round robin', 'hash(key) % len(servers)', 'The server list order'], answer: 2 },
+            { question: 'What is `hash("user_1") % 3` deterministic for?', options: ['It changes every run', 'It always gives the same server for the same key', 'It randomly picks a server', 'It balances by load'], answer: 1 },
+            { question: 'What real system uses consistent hashing?', options: ['SQL joins', 'Distributed caches like Redis Cluster', 'HTTP headers', 'File compression'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'servers', label: 'servers' },
+            { id: 'get_server', label: 'get_server' },
+            { id: 'k', label: 'k' },
+          ],
+          edges: [{ from: 'k', to: 'get_server' }, { from: 'get_server', to: 'servers' }],
+          steps: [
+            { line: 0, desc: 'servers = ["s1","s2","s3"]', action: { type: 'create', name: 'servers', val: '["s1","s2","s3"]', color: '#1D9E75' } },
+            { line: 2, desc: 'Define get_server (hash router)', action: { type: 'fn_def', name: 'get_server', color: '#D85A30' } },
+            { line: 6, desc: 'keys = ["user_1","user_2","user_3","user_4"]', action: { type: 'create', name: 'keys', val: '["user_1",...]', color: '#7C6AF6' } },
+            { line: 7, desc: 'k = "user_1" → hash % 3 → some server', action: { type: 'loop', name: 'k', val: '"user_1"', target: 'keys', color: '#E24B4A' } },
+            { line: 7, desc: 'Print user_1 → s2 (example)', action: { type: 'output', val: 'user_1 → s2' } },
+            { line: 7, desc: 'k = "user_2" → different hash → different server', action: { type: 'loop', name: 'k', val: '"user_2"', target: 'keys', color: '#E24B4A' } },
+            { line: 7, desc: 'Print user_2 → s1 (example)', action: { type: 'output', val: 'user_2 → s1' } },
+            { line: 7, desc: 'k = "user_3"', action: { type: 'loop', name: 'k', val: '"user_3"', target: 'keys', color: '#E24B4A' } },
+            { line: 7, desc: 'Print user_3 → s3 (example)', action: { type: 'output', val: 'user_3 → s3' } },
+            { line: 7, desc: 'k = "user_4"', action: { type: 'loop', name: 'k', val: '"user_4"', target: 'keys', color: '#E24B4A' } },
+            { line: 7, desc: 'Print user_4 → s1 (example)', action: { type: 'output', val: 'user_4 → s1' } },
+          ],
+        },
+        {
+          id: 'connection-pool',
+          title: 'Connection pooling',
+          concept: 'Reuse a fixed set of connections instead of opening a new one for every request.',
+          code: `pool = ["conn_1", "conn_2", "conn_3"]
+in_use = []
+
+def get_connection():
+    if pool:
+        conn = pool.pop(0)
+        in_use.append(conn)
+        print("Got:", conn)
+        return conn
+    print("Pool empty — wait!")
+    return None
+
+def release(conn):
+    in_use.remove(conn)
+    pool.append(conn)
+    print("Released:", conn)
+
+c1 = get_connection()
+c2 = get_connection()
+release(c1)
+c3 = get_connection()
+print("In use:", in_use)`,
+          explanation: 'Only 3 connections exist. get_connection() borrows one. release() returns it. c3 reuses the released connection.',
+          challenge: 'What should happen when all 3 connections are in use and a 4th request comes in?',
+          quiz: [
+            { question: 'What does `get_connection()` return when pool is empty?', options: ['"conn_4"', '"conn_1"', 'None', 'Error'], answer: 2 },
+            { question: 'What does `release(c1)` do?', options: ['Deletes conn_1', 'Moves conn_1 back to pool', 'Closes conn_1', 'Creates a new connection'], answer: 1 },
+            { question: 'Why is connection pooling important?', options: ['Encrypts connections', 'Opening DB connections is expensive — pooling reuses them', 'Doubles throughput', 'Caches query results'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'pool', label: 'pool' },
+            { id: 'in_use', label: 'in_use' },
+          ],
+          edges: [{ from: 'pool', to: 'in_use' }],
+          steps: [
+            { line: 0, desc: 'pool = ["conn_1","conn_2","conn_3"]', action: { type: 'create', name: 'pool', val: '["conn_1","conn_2","conn_3"]', color: '#1D9E75' } },
+            { line: 1, desc: 'in_use = []', action: { type: 'create', name: 'in_use', val: '[]', color: '#7C6AF6' } },
+            { line: 3, desc: 'Define get_connection', action: { type: 'fn_def', name: 'get_connection', color: '#D85A30' } },
+            { line: 11, desc: 'Define release', action: { type: 'fn_def', name: 'release', color: '#1D9E75' } },
+            { line: 16, desc: 'c1 = get_connection()', action: { type: 'fn_call', name: 'get_connection', arg: '' } },
+            { line: 5, desc: 'pool → ["conn_2","conn_3"]', action: { type: 'update', name: 'pool', val: '["conn_2","conn_3"]', color: '#1D9E75' } },
+            { line: 6, desc: 'in_use → ["conn_1"]', action: { type: 'update', name: 'in_use', val: '["conn_1"]', color: '#7C6AF6' } },
+            { line: 16, desc: 'Print Got: conn_1', action: { type: 'output', val: 'Got: conn_1' } },
+            { line: 17, desc: 'c2 = get_connection()', action: { type: 'fn_call', name: 'get_connection', arg: '' } },
+            { line: 5, desc: 'pool → ["conn_3"] | in_use → ["conn_1","conn_2"]', action: { type: 'update', name: 'pool', val: '["conn_3"]', color: '#1D9E75' } },
+            { line: 17, desc: 'Print Got: conn_2', action: { type: 'output', val: 'Got: conn_2' } },
+            { line: 18, desc: 'release(c1) — return conn_1 to pool', action: { type: 'fn_call', name: 'release', arg: 'c1' } },
+            { line: 12, desc: 'in_use → ["conn_2"] | pool → ["conn_3","conn_1"]', action: { type: 'update', name: 'pool', val: '["conn_3","conn_1"]', color: '#1D9E75' } },
+            { line: 18, desc: 'Print Released: conn_1', action: { type: 'output', val: 'Released: conn_1' } },
+            { line: 19, desc: 'c3 = get_connection() — reuses conn_3', action: { type: 'fn_call', name: 'get_connection', arg: '' } },
+            { line: 6, desc: 'in_use → ["conn_2","conn_3"]', action: { type: 'update', name: 'in_use', val: '["conn_2","conn_3"]', color: '#7C6AF6' } },
+            { line: 19, desc: 'Print Got: conn_3', action: { type: 'output', val: 'Got: conn_3' } },
+            { line: 20, desc: 'Print In use: ["conn_2","conn_3"]', action: { type: 'output', val: 'In use: ["conn_2", "conn_3"]' } },
           ],
         },
       ],
