@@ -1,9 +1,40 @@
 import { SignUp } from '@clerk/react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Signup() {
+  const { isDark } = useTheme();
+
+  const clerkAppearance = {
+    variables: {
+      colorBackground:              isDark ? '#1e293b' : '#ffffff',
+      colorText:                    isDark ? '#f1f5f9' : '#111827',
+      colorTextSecondary:           isDark ? '#94a3b8' : '#6b7280',
+      colorInputBackground:         isDark ? '#0f172a' : '#f8fafc',
+      colorInputText:               isDark ? '#f1f5f9' : '#111827',
+      colorPrimary:                 '#4f46e5',
+      colorTextOnPrimaryBackground: '#ffffff',
+      colorNeutral:                 isDark ? '#94a3b8' : '#6b7280',
+      borderRadius:                 '0.75rem',
+      fontFamily:                   'inherit',
+    },
+    elements: {
+      rootBox:    'w-full',
+      card:       '!shadow-none !border-0 p-0 w-full',
+      headerTitle: 'font-bold',
+      formButtonPrimary:
+        'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:opacity-90 transition-opacity font-bold',
+      socialButtonsBlockButton: isDark
+        ? 'border-slate-600 text-slate-200 hover:bg-slate-700'
+        : 'border-gray-200 hover:bg-gray-50',
+      footerActionLink: 'text-indigo-500 font-semibold',
+      footer: isDark ? 'bg-slate-800' : 'bg-white',
+      internal: isDark ? 'bg-slate-800' : 'bg-white',
+    },
+  };
+
   return (
     <main className="min-h-screen grid place-items-center py-7 px-4">
-      <section className="w-[min(900px,96%)] grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-3xl overflow-hidden shadow-card">
+      <section className="w-[min(900px,96%)] grid grid-cols-1 md:grid-cols-2 border border-gray-200 dark:border-slate-700 rounded-3xl overflow-hidden shadow-card">
 
         {/* ── Brand side ── */}
         <aside className="gradient-auth text-white p-10 max-md:p-7 flex flex-col justify-center">
@@ -25,31 +56,11 @@ export default function Signup() {
         </aside>
 
         {/* ── Clerk Sign-Up ── */}
-        <div className="flex items-center justify-center p-8 max-md:p-6">
+        <div className={`flex items-center justify-center p-8 max-md:p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
           <SignUp
             forceRedirectUrl="/dashboard"
             signInUrl="/login"
-            appearance={{
-              elements: {
-                rootBox: 'w-full',
-                card: 'shadow-none border-0 bg-transparent p-0 w-full gap-5',
-                headerTitle: 'text-2xl font-bold text-gray-900',
-                headerSubtitle: 'text-sm text-gray-500',
-                socialButtonsBlockButton: 'border border-gray-200 rounded-xl font-semibold text-sm',
-                dividerLine: 'bg-gray-200',
-                dividerText: 'text-gray-400 text-xs',
-                formFieldLabel: 'text-sm font-semibold text-gray-700',
-                formFieldInput:
-                  'border border-gray-200 rounded-xl px-3.5 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 w-full',
-                formButtonPrimary:
-                  'w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl px-4 py-3 text-sm font-bold shadow-lg transition-all',
-                footerActionLink: 'text-indigo-600 font-bold',
-                identityPreviewText: 'text-sm text-gray-700',
-                identityPreviewEditButton: 'text-indigo-600',
-                alertText: 'text-sm',
-                formFieldErrorText: 'text-xs text-red-600',
-              },
-            }}
+            appearance={clerkAppearance}
           />
         </div>
 
