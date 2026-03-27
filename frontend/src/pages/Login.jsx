@@ -198,7 +198,7 @@ export default function Login() {
                   disabled={loading || !isLoaded}
                   className="w-full gradient-primary text-white rounded-xl px-4 py-3 text-sm font-bold shadow-btn cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  {loading ? 'Signing in…' : 'Login'}
+                  {!isLoaded ? 'Loading…' : loading ? 'Signing in…' : 'Login'}
                 </button>
               </form>
 

@@ -181,7 +181,7 @@ export default function Signup() {
                   disabled={loading || !isLoaded}
                   className="w-full gradient-primary text-white rounded-xl px-4 py-3 text-sm font-bold shadow-btn cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  {loading ? 'Creating account…' : 'Create Account'}
+                  {!isLoaded ? 'Loading…' : loading ? 'Creating account…' : 'Create Account'}
                 </button>
               </form>
 
