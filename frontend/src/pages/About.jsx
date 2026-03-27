@@ -89,7 +89,7 @@ export default function About() {
       </div>
 
       {/* Contact */}
-      <div className="max-w-[900px] mx-auto mb-12 text-center bg-gradient-to-br from-sky-50 to-amber-50 border border-gray-200 rounded-2xl p-10">
+      <div className="max-w-[900px] mx-auto mb-12 text-center bg-gradient-to-br from-sky-50 to-amber-50 border border-gray-200 rounded-2xl p-10 text-gray-900">
         <h2 className="text-2xl font-extrabold mb-4">Get in Touch</h2>
         <p className="text-base leading-[1.8] mb-6">
           Have questions or feedback? We'd love to hear from you!

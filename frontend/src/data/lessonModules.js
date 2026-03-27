@@ -15,7 +15,7 @@ export const lessonsRegistry = [
     description:
       'Understand how data structures work under the hood with interactive visualizations.',
     color: 'bg-emerald-600',
-    available: false,
+    available: true,
   },
   {
     id: 'type-3',
@@ -41,6 +41,8 @@ export function getLessonModule(lessonId) {
   switch (lessonId) {
     case 'type-1':
       return lessonTypeOneModule;
+    case 'type-2':
+      return lessonTypeTwoModule;
     default:
       return null;
   }
@@ -686,6 +688,743 @@ print(c.count)`,
             { line: 9, desc: 'Call c.increment()', action: { type: 'method_call', obj: 'c', method: 'increment', arg: '' } },
             { line: 5, desc: 'count = 1 + 1 = 2', action: { type: 'attr', obj: 'c', attr: 'count', val: '2', color: '#1D9E75', from: ['c'] } },
             { line: 10, desc: 'Print c.count', action: { type: 'output', val: '2' } },
+          ],
+        },
+      ],
+    },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson Type 2 — Data Structures Explorer
+// 4 difficulties × 5 examples = 20 examples
+// Beginner: Lists | Easy: Stacks | Medium: Queues | Hard: Dictionaries
+// ─────────────────────────────────────────────────────────────────────────────
+export const lessonTypeTwoModule = {
+  id: 'data-structures-type-2',
+  title: 'Data Structures Explorer',
+  lessonType: {
+    id: 'type-2',
+    label: 'Type 2',
+    name: 'Data structure visualizer',
+    totalTypes: 4,
+  },
+  summary:
+    "Explore Python's core data structures — lists, stacks, queues, and dictionaries — through animated step-by-step visualizations that show exactly what happens in memory.",
+  difficultyOrder: ['beginner', 'easy', 'medium', 'hard'],
+  difficulties: {
+    // ── BEGINNER ── Lists ──────────────────────────────────────────────────
+    beginner: {
+      id: 'beginner',
+      label: 'Beginner',
+      description: 'Master Python lists — create, access, modify, and remove items.',
+      examples: [
+        {
+          id: 'list-create',
+          title: 'Creating a list',
+          concept: 'A list stores many values in order under a single variable name.',
+          code: `fruits = ["apple", "banana", "cherry"]
+print(fruits[0])
+print(fruits[2])
+print(len(fruits))`,
+          explanation:
+            'Square brackets [ ] create a list. Items are indexed from 0. len() counts all items.',
+          challenge: 'What index would give you "banana"?',
+          quiz: [
+            { question: 'What index is "apple" at?', options: ['0', '1', '2', '-1'], answer: 0 },
+            { question: 'What does `len(fruits)` return?', options: ['2', '3', '4', '1'], answer: 1 },
+            { question: 'Which brackets create a list in Python?', options: ['()', '{}', '[]', '<>'], answer: 2 },
+          ],
+          nodes: [{ id: 'fruits', label: 'fruits' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'Create list with 3 strings', action: { type: 'create', name: 'fruits', val: '["apple","banana","cherry"]', color: '#1D9E75' } },
+            { line: 1, desc: 'Access index 0 → "apple"', action: { type: 'output', val: 'apple' } },
+            { line: 2, desc: 'Access index 2 → "cherry"', action: { type: 'output', val: 'cherry' } },
+            { line: 3, desc: 'len(fruits) = 3', action: { type: 'output', val: '3' } },
+          ],
+        },
+        {
+          id: 'list-index',
+          title: 'Positive and negative indexing',
+          concept: 'Lists support both positive (from start) and negative (from end) indexing.',
+          code: `nums = [10, 20, 30, 40, 50]
+first = nums[0]
+last = nums[-1]
+second_last = nums[-2]
+print(first, last, second_last)`,
+          explanation:
+            'nums[0] is 10 (first). nums[-1] is 50 (last). nums[-2] is 40 (second from end).',
+          challenge: 'What would nums[-3] give you?',
+          quiz: [
+            { question: 'What is `nums[0]`?', options: ['50', '20', '10', '30'], answer: 2 },
+            { question: 'What is `nums[-1]`?', options: ['10', '20', '40', '50'], answer: 3 },
+            { question: 'What is `nums[-2]`?', options: ['30', '40', '20', '10'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'nums', label: 'nums' },
+            { id: 'first', label: 'first' },
+            { id: 'last', label: 'last' },
+            { id: 'second_last', label: 'second_last' },
+          ],
+          edges: [
+            { from: 'nums', to: 'first' },
+            { from: 'nums', to: 'last' },
+            { from: 'nums', to: 'second_last' },
+          ],
+          steps: [
+            { line: 0, desc: 'Create list [10,20,30,40,50]', action: { type: 'create', name: 'nums', val: '[10,20,30,40,50]', color: '#1D9E75' } },
+            { line: 1, desc: 'first = nums[0] = 10', action: { type: 'create', name: 'first', val: '10', color: '#7C6AF6', from: ['nums'] } },
+            { line: 2, desc: 'last = nums[-1] = 50', action: { type: 'create', name: 'last', val: '50', color: '#7C6AF6', from: ['nums'] } },
+            { line: 3, desc: 'second_last = nums[-2] = 40', action: { type: 'create', name: 'second_last', val: '40', color: '#7C6AF6', from: ['nums'] } },
+            { line: 4, desc: 'Print 10 50 40', action: { type: 'output', val: '10 50 40' } },
+          ],
+        },
+        {
+          id: 'list-append',
+          title: 'Appending to a list',
+          concept: 'append() adds an item to the end of a list, growing it in place.',
+          code: `cart = []
+cart.append("shirt")
+cart.append("shoes")
+cart.append("hat")
+print(cart)
+print(len(cart))`,
+          explanation:
+            'We start with an empty list. Each append() call adds one item to the right end.',
+          challenge: 'What would happen if you called cart.append("shirt") twice?',
+          quiz: [
+            { question: 'What does `append()` do?', options: ['Removes the last item', 'Adds to the start', 'Adds to the end', 'Removes the first item'], answer: 2 },
+            { question: 'What is `len(cart)` at the end?', options: ['2', '4', '3', '1'], answer: 2 },
+            { question: 'What is `cart[0]` at the end?', options: ['"hat"', '"shoes"', '"shirt"', 'empty'], answer: 2 },
+          ],
+          nodes: [{ id: 'cart', label: 'cart' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'cart starts as empty list []', action: { type: 'create', name: 'cart', val: '[]', color: '#1D9E75' } },
+            { line: 1, desc: 'append "shirt" → cart = ["shirt"]', action: { type: 'update', name: 'cart', val: '["shirt"]', color: '#1D9E75' } },
+            { line: 2, desc: 'append "shoes" → cart = ["shirt","shoes"]', action: { type: 'update', name: 'cart', val: '["shirt","shoes"]', color: '#1D9E75' } },
+            { line: 3, desc: 'append "hat" → cart = ["shirt","shoes","hat"]', action: { type: 'update', name: 'cart', val: '["shirt","shoes","hat"]', color: '#1D9E75' } },
+            { line: 4, desc: 'Print cart', action: { type: 'output', val: '["shirt", "shoes", "hat"]' } },
+            { line: 5, desc: 'len(cart) = 3', action: { type: 'output', val: '3' } },
+          ],
+        },
+        {
+          id: 'list-update',
+          title: 'Updating a list item',
+          concept: 'You can change any list item by assigning a new value to its index.',
+          code: `grades = [80, 70, 90]
+print(grades[1])
+grades[1] = 85
+print(grades[1])
+print(grades)`,
+          explanation:
+            'grades[1] points to the second slot. Assigning replaces it. The rest of the list stays unchanged.',
+          challenge: 'What would grades[0] need to be for the list to be sorted ascending?',
+          quiz: [
+            { question: 'What is `grades[1]` before the update?', options: ['80', '90', '70', '85'], answer: 2 },
+            { question: 'What is `grades[1]` after the update?', options: ['70', '80', '90', '85'], answer: 3 },
+            { question: 'What will `print(grades)` output?', options: ['[80, 70, 90]', '[80, 85, 90]', '[85, 70, 90]', '[80, 70, 85]'], answer: 1 },
+          ],
+          nodes: [{ id: 'grades', label: 'grades' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'Create grades = [80,70,90]', action: { type: 'create', name: 'grades', val: '[80,70,90]', color: '#1D9E75' } },
+            { line: 1, desc: 'grades[1] = 70 → print 70', action: { type: 'output', val: '70' } },
+            { line: 2, desc: 'Update grades[1] = 85', action: { type: 'update', name: 'grades', val: '[80,85,90]', color: '#1D9E75' } },
+            { line: 3, desc: 'grades[1] is now 85 → print 85', action: { type: 'output', val: '85' } },
+            { line: 4, desc: 'Print full updated list', action: { type: 'output', val: '[80, 85, 90]' } },
+          ],
+        },
+        {
+          id: 'list-remove',
+          title: 'Removing list items',
+          concept: 'pop() removes the last item and returns it. remove() deletes a specific value.',
+          code: `items = ["a", "b", "c", "d"]
+last = items.pop()
+print(last)
+items.remove("b")
+print(items)`,
+          explanation:
+            'pop() pulls "d" off the end and returns it. remove("b") finds and deletes the first "b" by value.',
+          challenge: 'What would items look like if you called pop() one more time after remove?',
+          quiz: [
+            { question: 'What does `pop()` return?', options: ['"a"', '"b"', '"c"', '"d"'], answer: 3 },
+            { question: 'What is `items` after `remove("b")`?', options: ['["a","c"]', '["a","c","d"]', '["a","b","c"]', '["b","c"]'], answer: 0 },
+            { question: 'What is the key difference between pop() and remove()?', options: ['No difference', 'pop removes by value, remove by index', 'pop removes last item, remove removes by value', 'pop adds items'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'items', label: 'items' },
+            { id: 'last', label: 'last' },
+          ],
+          edges: [{ from: 'items', to: 'last' }],
+          steps: [
+            { line: 0, desc: 'items = ["a","b","c","d"]', action: { type: 'create', name: 'items', val: '["a","b","c","d"]', color: '#1D9E75' } },
+            { line: 1, desc: 'pop() removes last → last = "d"', action: { type: 'create', name: 'last', val: '"d"', color: '#7C6AF6', from: ['items'] } },
+            { line: 1, desc: 'items shrinks → ["a","b","c"]', action: { type: 'update', name: 'items', val: '["a","b","c"]', color: '#1D9E75' } },
+            { line: 2, desc: 'Print "d"', action: { type: 'output', val: 'd' } },
+            { line: 3, desc: 'remove("b") → items = ["a","c"]', action: { type: 'update', name: 'items', val: '["a","c"]', color: '#1D9E75' } },
+            { line: 4, desc: 'Print ["a","c"]', action: { type: 'output', val: '["a", "c"]' } },
+          ],
+        },
+      ],
+    },
+
+    // ── EASY ── Stacks ────────────────────────────────────────────────────
+    easy: {
+      id: 'easy',
+      label: 'Easy',
+      description: 'Learn about stacks — LIFO data structures built with Python lists.',
+      examples: [
+        {
+          id: 'stack-intro',
+          title: 'What is a stack?',
+          concept: 'A stack is LIFO — Last In, First Out. Like a stack of plates.',
+          code: `stack = []
+stack.append(1)
+stack.append(2)
+stack.append(3)
+print(stack)
+print(stack[-1])`,
+          explanation:
+            'We build a stack using a list. The last item added (3) is on top and accessed with index -1.',
+          challenge: 'What would stack[-1] be if you appended 5 next?',
+          quiz: [
+            { question: 'What does LIFO stand for?', options: ['Last In First Out', 'Last Item Found On', 'Linked Items For Output', 'Loop In Function Out'], answer: 0 },
+            { question: 'What is `stack[-1]` after appending 1, 2, 3?', options: ['1', '2', '3', '0'], answer: 2 },
+            { question: 'Which end of a stack do you add and remove from?', options: ['The front', 'The middle', 'The top (end)', 'Any position'], answer: 2 },
+          ],
+          nodes: [{ id: 'stack', label: 'stack' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'stack starts empty', action: { type: 'create', name: 'stack', val: '[]', color: '#D85A30' } },
+            { line: 1, desc: 'Push 1 onto stack', action: { type: 'update', name: 'stack', val: '[1]', color: '#D85A30' } },
+            { line: 2, desc: 'Push 2 onto stack', action: { type: 'update', name: 'stack', val: '[1,2]', color: '#D85A30' } },
+            { line: 3, desc: 'Push 3 onto stack', action: { type: 'update', name: 'stack', val: '[1,2,3]', color: '#D85A30' } },
+            { line: 4, desc: 'Print full stack', action: { type: 'output', val: '[1, 2, 3]' } },
+            { line: 5, desc: 'stack[-1] = 3 (top item)', action: { type: 'output', val: '3' } },
+          ],
+        },
+        {
+          id: 'stack-pop',
+          title: 'Popping from a stack',
+          concept: 'pop() removes and returns the top (last) item of the stack.',
+          code: `stack = ["a", "b", "c"]
+top = stack.pop()
+print(top)
+print(stack)`,
+          explanation:
+            'pop() takes "c" off the top and returns it into top. The stack shrinks by one.',
+          challenge: 'What would stack look like after two more pop() calls?',
+          quiz: [
+            { question: 'What is `top` after the pop?', options: ['"a"', '"b"', '"c"', 'empty'], answer: 2 },
+            { question: 'What is `stack` after the pop?', options: ['["a","b","c"]', '["b","c"]', '["a","b"]', '["a"]'], answer: 2 },
+            { question: 'What error does pop() raise on an empty stack?', options: ['ValueError', 'TypeError', 'IndexError', 'KeyError'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'stack', label: 'stack' },
+            { id: 'top', label: 'top' },
+          ],
+          edges: [{ from: 'stack', to: 'top' }],
+          steps: [
+            { line: 0, desc: 'stack = ["a","b","c"]', action: { type: 'create', name: 'stack', val: '["a","b","c"]', color: '#D85A30' } },
+            { line: 1, desc: 'pop() removes top → top = "c"', action: { type: 'create', name: 'top', val: '"c"', color: '#7C6AF6', from: ['stack'] } },
+            { line: 1, desc: 'stack shrinks → ["a","b"]', action: { type: 'update', name: 'stack', val: '["a","b"]', color: '#D85A30' } },
+            { line: 2, desc: 'Print top = "c"', action: { type: 'output', val: 'c' } },
+            { line: 3, desc: 'Print stack = ["a","b"]', action: { type: 'output', val: '["a", "b"]' } },
+          ],
+        },
+        {
+          id: 'stack-peek',
+          title: 'Peeking the top',
+          concept: 'Peeking reads the top item without removing it — use index -1.',
+          code: `stack = [10, 20, 30]
+top = stack[-1]
+print(top)
+print(stack)`,
+          explanation:
+            'stack[-1] reads the last element without modifying the stack. This is called a "peek" operation.',
+          challenge: 'How would you peek at the second item from the top?',
+          quiz: [
+            { question: 'What is `top` after the peek?', options: ['10', '20', '30', 'None'], answer: 2 },
+            { question: 'Is the stack changed after a peek?', options: ['Yes, top is removed', 'Yes, stack is reversed', 'No, it stays the same', 'No, only length changes'], answer: 2 },
+            { question: 'How do you peek the second item from the top?', options: ['stack[-3]', 'stack[0]', 'stack[-2]', 'stack[1]'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'stack', label: 'stack' },
+            { id: 'top', label: 'top' },
+          ],
+          edges: [{ from: 'stack', to: 'top' }],
+          steps: [
+            { line: 0, desc: 'stack = [10,20,30]', action: { type: 'create', name: 'stack', val: '[10,20,30]', color: '#D85A30' } },
+            { line: 1, desc: 'Peek: top = stack[-1] = 30', action: { type: 'create', name: 'top', val: '30', color: '#7C6AF6', from: ['stack'] } },
+            { line: 2, desc: 'Print top = 30', action: { type: 'output', val: '30' } },
+            { line: 3, desc: 'Stack unchanged — print [10,20,30]', action: { type: 'output', val: '[10, 20, 30]' } },
+          ],
+        },
+        {
+          id: 'stack-lifo',
+          title: 'LIFO in action',
+          concept: 'The item you added LAST is always the first one out — reverse of insertion order.',
+          code: `stack = []
+stack.append("first")
+stack.append("second")
+stack.append("third")
+a = stack.pop()
+b = stack.pop()
+print(a, b)`,
+          explanation:
+            '"third" was added last so it pops first. "second" next. This is LIFO — items come out in reverse order.',
+          challenge: 'What order would all three items come out if you kept popping?',
+          quiz: [
+            { question: 'What is `a` after the first pop?', options: ['"first"', '"second"', '"third"', 'None'], answer: 2 },
+            { question: 'What is `b` after the second pop?', options: ['"first"', '"second"', '"third"', 'empty'], answer: 1 },
+            { question: 'In LIFO, items come out in what order relative to insertion?', options: ['Same order', 'Random order', 'Reverse order', 'Sorted order'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'stack', label: 'stack' },
+            { id: 'a', label: 'a' },
+            { id: 'b', label: 'b' },
+          ],
+          edges: [{ from: 'stack', to: 'a' }, { from: 'stack', to: 'b' }],
+          steps: [
+            { line: 0, desc: 'stack starts empty', action: { type: 'create', name: 'stack', val: '[]', color: '#D85A30' } },
+            { line: 1, desc: 'Push "first"', action: { type: 'update', name: 'stack', val: '["first"]', color: '#D85A30' } },
+            { line: 2, desc: 'Push "second"', action: { type: 'update', name: 'stack', val: '["first","second"]', color: '#D85A30' } },
+            { line: 3, desc: 'Push "third"', action: { type: 'update', name: 'stack', val: '["first","second","third"]', color: '#D85A30' } },
+            { line: 4, desc: 'pop() → a = "third" (last in, first out)', action: { type: 'create', name: 'a', val: '"third"', color: '#7C6AF6', from: ['stack'] } },
+            { line: 4, desc: 'stack → ["first","second"]', action: { type: 'update', name: 'stack', val: '["first","second"]', color: '#D85A30' } },
+            { line: 5, desc: 'pop() → b = "second"', action: { type: 'create', name: 'b', val: '"second"', color: '#7C6AF6', from: ['stack'] } },
+            { line: 5, desc: 'stack → ["first"]', action: { type: 'update', name: 'stack', val: '["first"]', color: '#D85A30' } },
+            { line: 6, desc: 'Print "third second"', action: { type: 'output', val: 'third second' } },
+          ],
+        },
+        {
+          id: 'stack-reverse',
+          title: 'Reversing a string with a stack',
+          concept: 'Because of LIFO, popping all items from a stack reverses their order.',
+          code: `word = "hello"
+stack = []
+for ch in word:
+    stack.append(ch)
+result = ""
+for i in range(len(stack)):
+    result = result + stack.pop()
+print(result)`,
+          explanation:
+            'Push each letter of "hello". Popping gives "o","l","l","e","h" — the word reversed.',
+          challenge: 'What would happen if you used "racecar"? Would the result be the same?',
+          quiz: [
+            { question: 'What is printed at the end?', options: ['"hello"', '"olleh"', '"helo"', '"lolhe"'], answer: 1 },
+            { question: 'Why does popping reverse the word?', options: ['Python reverses automatically', 'LIFO gives items back in reverse order', 'The loop runs backwards', 'append() reverses items'], answer: 1 },
+            { question: 'What is `stack` after pushing all letters of "hello"?', options: ['["o","l","l","e","h"]', '["h","e","l","l","o"]', '["hello"]', '["h"]'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'word', label: 'word' },
+            { id: 'stack', label: 'stack' },
+            { id: 'ch', label: 'ch' },
+            { id: 'result', label: 'result' },
+          ],
+          edges: [
+            { from: 'word', to: 'ch' },
+            { from: 'ch', to: 'stack' },
+            { from: 'stack', to: 'result' },
+          ],
+          steps: [
+            { line: 0, desc: 'word = "hello"', action: { type: 'create', name: 'word', val: '"hello"', color: '#7C6AF6' } },
+            { line: 1, desc: 'stack = []', action: { type: 'create', name: 'stack', val: '[]', color: '#D85A30' } },
+            { line: 2, desc: 'Loop: ch = "h"', action: { type: 'loop', name: 'ch', val: '"h"', target: 'word', color: '#E24B4A' } },
+            { line: 3, desc: 'Push "h" → stack = ["h"]', action: { type: 'update', name: 'stack', val: '["h"]', color: '#D85A30' } },
+            { line: 2, desc: 'Loop: ch = "e"', action: { type: 'loop', name: 'ch', val: '"e"', target: 'word', color: '#E24B4A' } },
+            { line: 3, desc: 'Push "e" → stack = ["h","e"]', action: { type: 'update', name: 'stack', val: '["h","e"]', color: '#D85A30' } },
+            { line: 2, desc: 'Loop: ch = "l"', action: { type: 'loop', name: 'ch', val: '"l"', target: 'word', color: '#E24B4A' } },
+            { line: 3, desc: 'Push "l" → stack = ["h","e","l"]', action: { type: 'update', name: 'stack', val: '["h","e","l"]', color: '#D85A30' } },
+            { line: 2, desc: 'Loop: ch = "l"', action: { type: 'loop', name: 'ch', val: '"l"', target: 'word', color: '#E24B4A' } },
+            { line: 3, desc: 'Push "l" → stack = ["h","e","l","l"]', action: { type: 'update', name: 'stack', val: '["h","e","l","l"]', color: '#D85A30' } },
+            { line: 2, desc: 'Loop: ch = "o"', action: { type: 'loop', name: 'ch', val: '"o"', target: 'word', color: '#E24B4A' } },
+            { line: 3, desc: 'Push "o" → stack = ["h","e","l","l","o"]', action: { type: 'update', name: 'stack', val: '["h","e","l","l","o"]', color: '#D85A30' } },
+            { line: 4, desc: 'result = ""', action: { type: 'create', name: 'result', val: '""', color: '#7C6AF6' } },
+            { line: 6, desc: 'pop "o" → result = "o"', action: { type: 'update', name: 'result', val: '"o"', color: '#7C6AF6', from: ['stack'] } },
+            { line: 6, desc: 'pop "l" → result = "ol"', action: { type: 'update', name: 'result', val: '"ol"', color: '#7C6AF6' } },
+            { line: 6, desc: 'pop "l" → result = "oll"', action: { type: 'update', name: 'result', val: '"oll"', color: '#7C6AF6' } },
+            { line: 6, desc: 'pop "e" → result = "olle"', action: { type: 'update', name: 'result', val: '"olle"', color: '#7C6AF6' } },
+            { line: 6, desc: 'pop "h" → result = "olleh"', action: { type: 'update', name: 'result', val: '"olleh"', color: '#7C6AF6' } },
+            { line: 7, desc: 'Print "olleh"', action: { type: 'output', val: 'olleh' } },
+          ],
+        },
+      ],
+    },
+
+    // ── MEDIUM ── Queues ──────────────────────────────────────────────────
+    medium: {
+      id: 'medium',
+      label: 'Medium',
+      description: 'Learn about queues — FIFO data structures for ordered processing.',
+      examples: [
+        {
+          id: 'queue-intro',
+          title: 'What is a queue?',
+          concept: 'A queue is FIFO — First In, First Out. Like a line at a shop.',
+          code: `queue = []
+queue.append("alice")
+queue.append("bob")
+queue.append("charlie")
+print(queue)
+print(queue[0])`,
+          explanation:
+            'Items join the back with append(). queue[0] is always the front — the next one to be served.',
+          challenge: 'Who is at position queue[1]?',
+          quiz: [
+            { question: 'What does FIFO stand for?', options: ['First In First Out', 'Fast Input Fast Output', 'First Item Found Outside', 'Function In Function Out'], answer: 0 },
+            { question: 'What is `queue[0]` after the three appends?', options: ['"charlie"', '"bob"', '"alice"', 'empty'], answer: 2 },
+            { question: 'In a queue, where do new items join?', options: ['The front', 'The middle', 'The back', 'A random position'], answer: 2 },
+          ],
+          nodes: [{ id: 'queue', label: 'queue' }],
+          edges: [],
+          steps: [
+            { line: 0, desc: 'queue starts empty', action: { type: 'create', name: 'queue', val: '[]', color: '#7C6AF6' } },
+            { line: 1, desc: 'Enqueue "alice" — first in line', action: { type: 'update', name: 'queue', val: '["alice"]', color: '#7C6AF6' } },
+            { line: 2, desc: 'Enqueue "bob" — joins the back', action: { type: 'update', name: 'queue', val: '["alice","bob"]', color: '#7C6AF6' } },
+            { line: 3, desc: 'Enqueue "charlie" — joins the back', action: { type: 'update', name: 'queue', val: '["alice","bob","charlie"]', color: '#7C6AF6' } },
+            { line: 4, desc: 'Print full queue', action: { type: 'output', val: '["alice", "bob", "charlie"]' } },
+            { line: 5, desc: 'queue[0] = "alice" (front of line)', action: { type: 'output', val: 'alice' } },
+          ],
+        },
+        {
+          id: 'queue-dequeue',
+          title: 'Dequeuing — removing from front',
+          concept: 'pop(0) removes and returns the FRONT item of the queue.',
+          code: `queue = ["alice", "bob", "charlie"]
+served = queue.pop(0)
+print(served)
+print(queue)`,
+          explanation:
+            'pop(0) removes index 0 — the front. "alice" is served first, then "bob" becomes the new front.',
+          challenge: 'What would queue look like after two more dequeue operations?',
+          quiz: [
+            { question: 'What is `served` after `queue.pop(0)`?', options: ['"charlie"', '"bob"', '"alice"', 'None'], answer: 2 },
+            { question: 'What is `queue` after the dequeue?', options: ['["alice","bob"]', '["bob","charlie"]', '["alice","charlie"]', '["charlie"]'], answer: 1 },
+            { question: 'What argument does pop() need to remove from the front?', options: ['pop(-1)', 'pop()', 'pop(0)', 'pop(front)'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'queue', label: 'queue' },
+            { id: 'served', label: 'served' },
+          ],
+          edges: [{ from: 'queue', to: 'served' }],
+          steps: [
+            { line: 0, desc: 'queue = ["alice","bob","charlie"]', action: { type: 'create', name: 'queue', val: '["alice","bob","charlie"]', color: '#7C6AF6' } },
+            { line: 1, desc: 'pop(0) → served = "alice" (front)', action: { type: 'create', name: 'served', val: '"alice"', color: '#1D9E75', from: ['queue'] } },
+            { line: 1, desc: 'queue → ["bob","charlie"]', action: { type: 'update', name: 'queue', val: '["bob","charlie"]', color: '#7C6AF6' } },
+            { line: 2, desc: 'Print "alice"', action: { type: 'output', val: 'alice' } },
+            { line: 3, desc: 'Print ["bob","charlie"]', action: { type: 'output', val: '["bob", "charlie"]' } },
+          ],
+        },
+        {
+          id: 'queue-fifo',
+          title: 'FIFO in action',
+          concept: 'The first item added is always the first removed — opposite of a stack.',
+          code: `queue = []
+queue.append("task1")
+queue.append("task2")
+queue.append("task3")
+first = queue.pop(0)
+second = queue.pop(0)
+print(first, second)`,
+          explanation:
+            '"task1" was added first so it leaves first. "task2" next. This is FIFO — same order as insertion.',
+          challenge: 'What would happen if you used pop() with no argument instead of pop(0)?',
+          quiz: [
+            { question: 'What is `first` after the first pop(0)?', options: ['"task3"', '"task2"', '"task1"', 'None'], answer: 2 },
+            { question: 'What is `second` after the second pop(0)?', options: ['"task1"', '"task2"', '"task3"', 'empty'], answer: 1 },
+            { question: 'In FIFO, items come out in what order?', options: ['Reverse of insertion', 'Same order as inserted', 'Random order', 'Sorted order'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'queue', label: 'queue' },
+            { id: 'first', label: 'first' },
+            { id: 'second', label: 'second' },
+          ],
+          edges: [{ from: 'queue', to: 'first' }, { from: 'queue', to: 'second' }],
+          steps: [
+            { line: 0, desc: 'queue starts empty', action: { type: 'create', name: 'queue', val: '[]', color: '#7C6AF6' } },
+            { line: 1, desc: 'Enqueue "task1"', action: { type: 'update', name: 'queue', val: '["task1"]', color: '#7C6AF6' } },
+            { line: 2, desc: 'Enqueue "task2"', action: { type: 'update', name: 'queue', val: '["task1","task2"]', color: '#7C6AF6' } },
+            { line: 3, desc: 'Enqueue "task3"', action: { type: 'update', name: 'queue', val: '["task1","task2","task3"]', color: '#7C6AF6' } },
+            { line: 4, desc: 'pop(0) → first = "task1" (first in, first out)', action: { type: 'create', name: 'first', val: '"task1"', color: '#1D9E75', from: ['queue'] } },
+            { line: 4, desc: 'queue → ["task2","task3"]', action: { type: 'update', name: 'queue', val: '["task2","task3"]', color: '#7C6AF6' } },
+            { line: 5, desc: 'pop(0) → second = "task2"', action: { type: 'create', name: 'second', val: '"task2"', color: '#1D9E75', from: ['queue'] } },
+            { line: 5, desc: 'queue → ["task3"]', action: { type: 'update', name: 'queue', val: '["task3"]', color: '#7C6AF6' } },
+            { line: 6, desc: 'Print "task1 task2"', action: { type: 'output', val: 'task1 task2' } },
+          ],
+        },
+        {
+          id: 'queue-size',
+          title: 'Queue size and empty check',
+          concept: 'Use len() to check queue size. Compare to 0 to check if it is empty.',
+          code: `queue = ["x", "y", "z"]
+size = len(queue)
+empty = (size == 0)
+print(size)
+print(empty)
+queue.pop(0)
+queue.pop(0)
+queue.pop(0)
+print(len(queue) == 0)`,
+          explanation:
+            'len() counts items. After popping all three, the queue is empty so len == 0 is True.',
+          challenge: 'How would you check if a queue has at least 2 items?',
+          quiz: [
+            { question: 'What is `size` initially?', options: ['1', '2', '3', '0'], answer: 2 },
+            { question: 'What is `empty` initially?', options: ['True', 'False', 'None', '0'], answer: 1 },
+            { question: 'What is `len(queue) == 0` after popping all items?', options: ['False', 'None', '0', 'True'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'queue', label: 'queue' },
+            { id: 'size', label: 'size' },
+            { id: 'empty', label: 'empty' },
+          ],
+          edges: [
+            { from: 'queue', to: 'size' },
+            { from: 'size', to: 'empty' },
+          ],
+          steps: [
+            { line: 0, desc: 'queue = ["x","y","z"]', action: { type: 'create', name: 'queue', val: '["x","y","z"]', color: '#7C6AF6' } },
+            { line: 1, desc: 'size = len(queue) = 3', action: { type: 'create', name: 'size', val: '3', color: '#1D9E75', from: ['queue'] } },
+            { line: 2, desc: 'empty = (3 == 0) = False', action: { type: 'create', name: 'empty', val: 'False', color: '#BA7517', from: ['size'] } },
+            { line: 3, desc: 'Print size = 3', action: { type: 'output', val: '3' } },
+            { line: 4, desc: 'Print empty = False', action: { type: 'output', val: 'False' } },
+            { line: 5, desc: 'pop(0) → queue = ["y","z"]', action: { type: 'update', name: 'queue', val: '["y","z"]', color: '#7C6AF6' } },
+            { line: 6, desc: 'pop(0) → queue = ["z"]', action: { type: 'update', name: 'queue', val: '["z"]', color: '#7C6AF6' } },
+            { line: 7, desc: 'pop(0) → queue = []', action: { type: 'update', name: 'queue', val: '[]', color: '#7C6AF6' } },
+            { line: 8, desc: 'len(queue) == 0 → True', action: { type: 'output', val: 'True' } },
+          ],
+        },
+        {
+          id: 'queue-simulation',
+          title: 'Queue simulation',
+          concept: 'Real queues process the front item while new items can join the back at any time.',
+          code: `queue = ["order1", "order2"]
+queue.append("order3")
+current = queue.pop(0)
+print("Processing:", current)
+queue.append("order4")
+current = queue.pop(0)
+print("Processing:", current)
+print("Waiting:", queue)`,
+          explanation:
+            'New orders join the back. We process the front one. This mimics a real restaurant or job queue.',
+          challenge: 'What would the final queue contain if you added "order5" before the last pop?',
+          quiz: [
+            { question: 'What is the first item processed?', options: ['"order3"', '"order2"', '"order1"', '"order4"'], answer: 2 },
+            { question: 'What is the second item processed?', options: ['"order1"', '"order3"', '"order2"', '"order4"'], answer: 2 },
+            { question: 'What is still waiting at the end?', options: ['["order3","order4"]', '["order4"]', '["order3"]', 'empty'], answer: 0 },
+          ],
+          nodes: [
+            { id: 'queue', label: 'queue' },
+            { id: 'current', label: 'current' },
+          ],
+          edges: [{ from: 'queue', to: 'current' }],
+          steps: [
+            { line: 0, desc: 'queue = ["order1","order2"]', action: { type: 'create', name: 'queue', val: '["order1","order2"]', color: '#7C6AF6' } },
+            { line: 1, desc: 'append "order3" → queue has 3 orders', action: { type: 'update', name: 'queue', val: '["order1","order2","order3"]', color: '#7C6AF6' } },
+            { line: 2, desc: 'pop(0) → current = "order1"', action: { type: 'create', name: 'current', val: '"order1"', color: '#1D9E75', from: ['queue'] } },
+            { line: 2, desc: 'queue → ["order2","order3"]', action: { type: 'update', name: 'queue', val: '["order2","order3"]', color: '#7C6AF6' } },
+            { line: 3, desc: 'Print Processing: order1', action: { type: 'output', val: 'Processing: order1' } },
+            { line: 4, desc: 'append "order4" → joins the back', action: { type: 'update', name: 'queue', val: '["order2","order3","order4"]', color: '#7C6AF6' } },
+            { line: 5, desc: 'pop(0) → current = "order2"', action: { type: 'update', name: 'current', val: '"order2"', color: '#1D9E75' } },
+            { line: 5, desc: 'queue → ["order3","order4"]', action: { type: 'update', name: 'queue', val: '["order3","order4"]', color: '#7C6AF6' } },
+            { line: 6, desc: 'Print Processing: order2', action: { type: 'output', val: 'Processing: order2' } },
+            { line: 7, desc: 'Print Waiting: ["order3","order4"]', action: { type: 'output', val: 'Waiting: ["order3", "order4"]' } },
+          ],
+        },
+      ],
+    },
+
+    // ── HARD ── Dictionaries ──────────────────────────────────────────────
+    hard: {
+      id: 'hard',
+      label: 'Hard',
+      description: "Master Python dictionaries — key-value hash maps for fast data lookups.",
+      examples: [
+        {
+          id: 'dict-create',
+          title: 'Creating a dictionary',
+          concept: 'A dictionary stores key-value pairs. Look up any value instantly by its key.',
+          code: `person = {"name": "Alice", "age": 22}
+print(person["name"])
+print(person["age"])
+print(len(person))`,
+          explanation:
+            'Curly braces { } with key: value pairs. Access a value with dict[key]. len() counts the pairs.',
+          challenge: "What would happen if you tried person[\"height\"] which doesn't exist?",
+          quiz: [
+            { question: 'What is `person["name"]`?', options: ['"age"', '22', '"Alice"', '"person"'], answer: 2 },
+            { question: 'What is `len(person)`?', options: ['1', '3', '2', '4'], answer: 2 },
+            { question: 'Which brackets create a dictionary?', options: ['[]', '()', '<>', '{}'], answer: 3 },
+          ],
+          nodes: [
+            { id: 'person', label: 'person' },
+            { id: 'person.name', label: 'name key' },
+            { id: 'person.age', label: 'age key' },
+          ],
+          edges: [
+            { from: 'person', to: 'person.name' },
+            { from: 'person', to: 'person.age' },
+          ],
+          steps: [
+            { line: 0, desc: 'Create dict with 2 key-value pairs', action: { type: 'create', name: 'person', val: '{name,age}', color: '#BA7517' } },
+            { line: 0, desc: 'person["name"] = "Alice"', action: { type: 'attr', obj: 'person', attr: 'name', val: '"Alice"', color: '#7C6AF6' } },
+            { line: 0, desc: 'person["age"] = 22', action: { type: 'attr', obj: 'person', attr: 'age', val: '22', color: '#1D9E75' } },
+            { line: 1, desc: 'Print person["name"] = "Alice"', action: { type: 'output', val: 'Alice' } },
+            { line: 2, desc: 'Print person["age"] = 22', action: { type: 'output', val: '22' } },
+            { line: 3, desc: 'len(person) = 2', action: { type: 'output', val: '2' } },
+          ],
+        },
+        {
+          id: 'dict-add-update',
+          title: 'Adding and updating keys',
+          concept: 'Assigning to a new key adds it. Assigning to an existing key updates its value.',
+          code: `scores = {"math": 80}
+scores["science"] = 90
+scores["math"] = 95
+print(scores["math"])
+print(scores["science"])`,
+          explanation:
+            'scores["science"] is new so Python adds it. scores["math"] already exists so it is updated in place.',
+          challenge: 'What would len(scores) be after both assignments?',
+          quiz: [
+            { question: 'What is `scores["math"]` at the end?', options: ['80', '90', '85', '95'], answer: 3 },
+            { question: 'What is `scores["science"]`?', options: ['80', '95', '90', '75'], answer: 2 },
+            { question: 'What is `len(scores)` after both assignments?', options: ['1', '3', '2', '4'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'scores', label: 'scores' },
+            { id: 'scores.math', label: 'math key' },
+            { id: 'scores.science', label: 'science key' },
+          ],
+          edges: [
+            { from: 'scores', to: 'scores.math' },
+            { from: 'scores', to: 'scores.science' },
+          ],
+          steps: [
+            { line: 0, desc: 'scores = {"math": 80}', action: { type: 'create', name: 'scores', val: '{"math":80}', color: '#BA7517' } },
+            { line: 0, desc: 'scores["math"] = 80', action: { type: 'attr', obj: 'scores', attr: 'math', val: '80', color: '#7C6AF6' } },
+            { line: 1, desc: 'New key → scores["science"] = 90', action: { type: 'attr', obj: 'scores', attr: 'science', val: '90', color: '#1D9E75' } },
+            { line: 2, desc: 'Update existing → scores["math"] = 95', action: { type: 'attr', obj: 'scores', attr: 'math', val: '95', color: '#D85A30' } },
+            { line: 3, desc: 'Print scores["math"] = 95', action: { type: 'output', val: '95' } },
+            { line: 4, desc: 'Print scores["science"] = 90', action: { type: 'output', val: '90' } },
+          ],
+        },
+        {
+          id: 'dict-membership',
+          title: 'Checking if a key exists',
+          concept: 'Use the `in` operator to safely check if a key exists before accessing it.',
+          code: `data = {"a": 1, "b": 2}
+has_a = "a" in data
+has_c = "c" in data
+print(has_a)
+print(has_c)`,
+          explanation:
+            '"a" in data is True because "a" is a key. "c" in data is False — that key does not exist.',
+          challenge: 'How would you safely get a value without raising a KeyError if the key is missing?',
+          quiz: [
+            { question: 'What is `has_a`?', options: ['False', 'None', '1', 'True'], answer: 3 },
+            { question: 'What is `has_c`?', options: ['True', 'None', 'False', 'Error'], answer: 2 },
+            { question: 'What does `"x" in data` check?', options: ['If "x" is a value', 'If "x" is a key', 'If data contains the index x', 'The length of data'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'data', label: 'data' },
+            { id: 'has_a', label: 'has_a' },
+            { id: 'has_c', label: 'has_c' },
+          ],
+          edges: [
+            { from: 'data', to: 'has_a' },
+            { from: 'data', to: 'has_c' },
+          ],
+          steps: [
+            { line: 0, desc: 'data = {"a":1, "b":2}', action: { type: 'create', name: 'data', val: '{"a":1,"b":2}', color: '#BA7517' } },
+            { line: 1, desc: '"a" in data → True (key exists)', action: { type: 'create', name: 'has_a', val: 'True', color: '#1D9E75', from: ['data'] } },
+            { line: 2, desc: '"c" in data → False (no such key)', action: { type: 'create', name: 'has_c', val: 'False', color: '#ef4444', from: ['data'] } },
+            { line: 3, desc: 'Print True', action: { type: 'output', val: 'True' } },
+            { line: 4, desc: 'Print False', action: { type: 'output', val: 'False' } },
+          ],
+        },
+        {
+          id: 'dict-loop',
+          title: 'Looping over a dictionary',
+          concept: 'Looping over a dict gives you each key. Use dict[key] to get the matching value.',
+          code: `prices = {"apple": 1.5, "banana": 0.5, "cherry": 2.0}
+total = 0
+for item in prices:
+    total = total + prices[item]
+print(total)`,
+          explanation:
+            'Each iteration, item is a key. prices[item] gives the value. We sum all values to get the total.',
+          challenge: 'What would total be if you only summed items costing more than 1.0?',
+          quiz: [
+            { question: 'What does `item` hold during each loop iteration?', options: ['A value', 'An index', 'A key', 'A tuple'], answer: 2 },
+            { question: 'What is `total` after the loop?', options: ['3.0', '4.0', '3.5', '5.0'], answer: 1 },
+            { question: 'How do you access a value inside a dict loop?', options: ['prices.item', 'item.prices', 'prices[item]', 'item[prices]'], answer: 2 },
+          ],
+          nodes: [
+            { id: 'prices', label: 'prices' },
+            { id: 'total', label: 'total' },
+            { id: 'item', label: 'item' },
+          ],
+          edges: [{ from: 'prices', to: 'item' }, { from: 'item', to: 'total' }],
+          steps: [
+            { line: 0, desc: 'prices = {apple:1.5, banana:0.5, cherry:2.0}', action: { type: 'create', name: 'prices', val: '{apple,banana,cherry}', color: '#BA7517' } },
+            { line: 1, desc: 'total = 0', action: { type: 'create', name: 'total', val: '0', color: '#1D9E75' } },
+            { line: 2, desc: 'Loop: item = "apple"', action: { type: 'loop', name: 'item', val: '"apple"', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 0 + 1.5 = 1.5', action: { type: 'update', name: 'total', val: '1.5', from: ['item', 'total'] } },
+            { line: 2, desc: 'Loop: item = "banana"', action: { type: 'loop', name: 'item', val: '"banana"', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 1.5 + 0.5 = 2.0', action: { type: 'update', name: 'total', val: '2.0', from: ['item', 'total'] } },
+            { line: 2, desc: 'Loop: item = "cherry"', action: { type: 'loop', name: 'item', val: '"cherry"', target: 'prices', color: '#E24B4A' } },
+            { line: 3, desc: 'total = 2.0 + 2.0 = 4.0', action: { type: 'update', name: 'total', val: '4.0', from: ['item', 'total'] } },
+            { line: 4, desc: 'Print total = 4.0', action: { type: 'output', val: '4.0' } },
+          ],
+        },
+        {
+          id: 'dict-frequency',
+          title: 'Frequency counter',
+          concept: 'A dictionary can count how many times each item appears in a list.',
+          code: `words = ["cat", "dog", "cat", "bird", "dog", "cat"]
+freq = {}
+for w in words:
+    if w in freq:
+        freq[w] = freq[w] + 1
+    else:
+        freq[w] = 1
+print(freq)`,
+          explanation:
+            "For each word, check if it's a key already. If yes add 1. If no, start at 1. Result: counts per word.",
+          challenge: 'What would freq look like if "bird" appeared 3 times?',
+          quiz: [
+            { question: 'What is `freq["cat"]` at the end?', options: ['1', '2', '3', '4'], answer: 2 },
+            { question: 'What is `freq["dog"]` at the end?', options: ['3', '2', '1', '4'], answer: 1 },
+            { question: 'What does `if w in freq` check?', options: ['If w is a value', 'If w has been seen before (is a key)', 'If freq is empty', 'If w is a number'], answer: 1 },
+          ],
+          nodes: [
+            { id: 'words', label: 'words' },
+            { id: 'freq', label: 'freq' },
+            { id: 'w', label: 'w' },
+          ],
+          edges: [{ from: 'words', to: 'w' }, { from: 'w', to: 'freq' }],
+          steps: [
+            { line: 0, desc: 'words = ["cat","dog","cat","bird","dog","cat"]', action: { type: 'create', name: 'words', val: '["cat","dog",...]', color: '#7C6AF6' } },
+            { line: 1, desc: 'freq = {} (empty dict)', action: { type: 'create', name: 'freq', val: '{}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "cat" (1st time)', action: { type: 'loop', name: 'w', val: '"cat"', target: 'words', color: '#E24B4A' } },
+            { line: 6, desc: '"cat" not in freq → freq["cat"] = 1', action: { type: 'update', name: 'freq', val: '{"cat":1}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "dog" (1st time)', action: { type: 'loop', name: 'w', val: '"dog"', target: 'words', color: '#E24B4A' } },
+            { line: 6, desc: '"dog" not in freq → freq["dog"] = 1', action: { type: 'update', name: 'freq', val: '{"cat":1,"dog":1}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "cat" (2nd time)', action: { type: 'loop', name: 'w', val: '"cat"', target: 'words', color: '#E24B4A' } },
+            { line: 4, desc: '"cat" in freq → freq["cat"] = 2', action: { type: 'update', name: 'freq', val: '{"cat":2,"dog":1}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "bird"', action: { type: 'loop', name: 'w', val: '"bird"', target: 'words', color: '#E24B4A' } },
+            { line: 6, desc: '"bird" not in freq → freq["bird"] = 1', action: { type: 'update', name: 'freq', val: '{"cat":2,"dog":1,"bird":1}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "dog" (2nd time)', action: { type: 'loop', name: 'w', val: '"dog"', target: 'words', color: '#E24B4A' } },
+            { line: 4, desc: '"dog" in freq → freq["dog"] = 2', action: { type: 'update', name: 'freq', val: '{"cat":2,"dog":2,"bird":1}', color: '#BA7517' } },
+            { line: 2, desc: 'Loop: w = "cat" (3rd time)', action: { type: 'loop', name: 'w', val: '"cat"', target: 'words', color: '#E24B4A' } },
+            { line: 4, desc: '"cat" in freq → freq["cat"] = 3', action: { type: 'update', name: 'freq', val: '{"cat":3,"dog":2,"bird":1}', color: '#BA7517' } },
+            { line: 7, desc: 'Print {"cat":3,"dog":2,"bird":1}', action: { type: 'output', val: '{"cat": 3, "dog": 2, "bird": 1}' } },
           ],
         },
       ],
