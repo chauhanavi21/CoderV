@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
-import { lessonsRegistry } from '../data/lessonModules';
+import { useLessonsContext } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
 
 const tabs = [
@@ -11,10 +11,13 @@ const tabs = [
 ];
 
 export default function LessonsLanding() {
+  const { registry, registryLoading } = useLessonsContext();
   const { getLessonProgress, getTotalProgress, progressLoading } = useProgress();
   const total = getTotalProgress();
 
-  if (progressLoading) {
+  const isLoading = registryLoading || progressLoading;
+
+  if (isLoading) {
     return (
       <AppLayout tabs={tabs} sidebarId="lessonsSidebar">
         <SkeletonHero className="mb-2" />
@@ -55,7 +58,7 @@ export default function LessonsLanding() {
       {/* Lesson cards */}
       <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">All Lessons</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {lessonsRegistry.map((lesson) => {
+        {registry.map((lesson) => {
           const progress = getLessonProgress(lesson.id);
           return (
             <article

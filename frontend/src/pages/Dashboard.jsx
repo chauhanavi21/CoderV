@@ -3,17 +3,18 @@ import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../hooks/useProgress';
-import { lessonsRegistry } from '../data/lessonModules';
+import { useLessonsContext } from '../contexts/LessonsContext';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { registry } = useLessonsContext();
   const { getTotalProgress, getLessonProgress, progressLoading } = useProgress();
 
   const firstName = user?.displayName?.split(' ')?.[0] || user?.email?.split('@')?.[0] || 'there';
   const total = getTotalProgress();
 
   // Build per-lesson progress for the cards
-  const lessonCards = lessonsRegistry.map((lesson) => ({
+  const lessonCards = registry.map((lesson) => ({
     ...lesson,
     progress: lesson.available ? getLessonProgress(lesson.id) : null,
   }));

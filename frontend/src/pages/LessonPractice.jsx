@@ -4,46 +4,54 @@ import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import QuizSection from '../components/QuizSection';
 import { SkeletonCard } from '../components/SkeletonCard';
-import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
+import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
+import { fetchExample } from '../api/lessons';
 import { useProgress } from '../hooks/useProgress';
 
 export default function LessonPractice() {
   const { lessonId, difficulty } = useParams();
-  const lesson = lessonsRegistry.find((l) => l.id === lessonId);
-  const module = getLessonModule(lessonId);
+  const { registry } = useLessonsContext();
+  const { module, loading: moduleLoading } = useLessonDetail(lessonId);
+  const lesson = registry.find((l) => l.id === lessonId);
+
   const difficultyData = module?.difficulties?.[difficulty];
 
-  const [activeExampleId,       setActiveExampleId]       = useState(
-    difficultyData?.examples?.[0]?.id ?? ''
-  );
+  const [activeExampleId, setActiveExampleId] = useState(null);
+  const [activeExample, setActiveExample] = useState(null);
+  const [exampleLoading, setExampleLoading] = useState(false);
   const [hasStartedVisualizer, setHasStartedVisualizer] = useState(false);
+
   const { markComplete, isComplete, progressLoading } = useProgress();
 
+  // Set first example when difficulty data loads
   useEffect(() => {
-    if (difficultyData?.examples?.[0]) {
-      setActiveExampleId(difficultyData.examples[0].id);
-    }
-  }, [difficulty]);
+    const firstId = difficultyData?.examples?.[0]?.id;
+    if (firstId) setActiveExampleId(firstId);
+  }, [difficultyData]);
 
-  // Reset quiz gate whenever the active example changes
+  // Fetch full example whenever active example ID changes
   useEffect(() => {
+    if (!activeExampleId) return;
+    setExampleLoading(true);
+    setActiveExample(null);
     setHasStartedVisualizer(false);
+    fetchExample(activeExampleId)
+      .then(setActiveExample)
+      .catch(() => setActiveExample(null))
+      .finally(() => setExampleLoading(false));
   }, [activeExampleId]);
 
-  if (!lesson || !module || !difficultyData) {
-    return <Navigate to="/lessons" replace />;
-  }
-
-  const activeExample =
-    difficultyData.examples.find((e) => e.id === activeExampleId) ??
-    difficultyData.examples[0];
+  // Reset gate on difficulty change
+  useEffect(() => {
+    setHasStartedVisualizer(false);
+  }, [difficulty]);
 
   const tabs = [
-    { to: `/lessons/${lessonId}`, label: `Lesson ${lesson.number}` },
-    { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData.label },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
+    { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData?.label ?? difficulty },
   ];
 
-  if (progressLoading) {
+  if (moduleLoading || progressLoading) {
     return (
       <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
         <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
@@ -55,6 +63,10 @@ export default function LessonPractice() {
         </div>
       </AppLayout>
     );
+  }
+
+  if (!module || !difficultyData) {
+    return <Navigate to="/lessons" replace />;
   }
 
   return (
@@ -91,14 +103,14 @@ export default function LessonPractice() {
           </div>
 
           <div className="mt-4 grid gap-3">
-            {difficultyData.examples.map((example, index) => {
-              const isSelected = example.id === activeExample.id;
-              const done = isComplete(lessonId, difficulty, example.id);
+            {difficultyData.examples.map((ex, index) => {
+              const isSelected = ex.id === activeExampleId;
+              const done = isComplete(lessonId, difficulty, ex.id);
               return (
                 <button
-                  key={example.id}
+                  key={ex.id}
                   type="button"
-                  onClick={() => setActiveExampleId(example.id)}
+                  onClick={() => setActiveExampleId(ex.id)}
                   className={`rounded-xl border p-4 text-left transition-all ${
                     isSelected
                       ? 'border-primary dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-sm'
@@ -115,93 +127,105 @@ export default function LessonPractice() {
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-1 font-bold text-slate-900 dark:text-slate-100">
-                    {example.title}
-                  </h3>
+                  <h3 className="mt-1 font-bold text-slate-900 dark:text-slate-100">{ex.title}</h3>
                 </button>
               );
             })}
           </div>
         </aside>
 
-        {/* Main content area */}
+        {/* Main content */}
         <div className="grid gap-6">
-          {/* Example info */}
-          <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              <h2 className="text-2xl font-extrabold dark:text-slate-100">{activeExample.title}</h2>
-              <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300">
-                {activeExample.nodes.length} node
-                {activeExample.nodes.length !== 1 ? 's' : ''} /{' '}
-                {activeExample.edges.length} edge
-                {activeExample.edges.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-
-            <p className="mt-4 text-base leading-relaxed text-muted dark:text-slate-400">
-              {activeExample.explanation}
-            </p>
-
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  What you learn
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                  {activeExample.concept}
-                </p>
-              </div>
-              <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/20 p-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                  Think about this
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-amber-900 dark:text-amber-200">
-                  {activeExample.challenge}
-                </p>
-              </div>
-            </div>
-
-            {isComplete(lessonId, difficulty, activeExample.id) && (
-              <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 px-5 py-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                <span>&#10003;</span> Completed
-              </div>
-            )}
-          </article>
-
-          {/* Step visualizer */}
-          {activeExample.steps && activeExample.steps.length > 0 && (
-            <StepVisualizer
-              key={activeExample.id}
-              example={activeExample}
-              onFirstInteraction={() => setHasStartedVisualizer(true)}
-            />
-          )}
-
-          {/* Quiz — only shown after user interacts with the visualizer (or if already complete) */}
-          {activeExample.quiz && activeExample.quiz.length > 0 && (
-            hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id)
-              ? (
-                <div className="animate-fade-in">
-                  <QuizSection
-                    key={`quiz-${activeExample.id}`}
-                    quiz={activeExample.quiz}
-                    alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
-                    onAllCorrect={() => markComplete(lessonId, difficulty, activeExample.id)}
-                  />
+          {exampleLoading || !activeExample ? (
+            <>
+              <SkeletonCard />
+              <SkeletonCard className="h-72" />
+            </>
+          ) : (
+            <>
+              {/* Example info */}
+              <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <h2 className="text-2xl font-extrabold dark:text-slate-100">
+                    {activeExample.title}
+                  </h2>
+                  <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {activeExample.nodes.length} node
+                    {activeExample.nodes.length !== 1 ? 's' : ''} /{' '}
+                    {activeExample.edges.length} edge
+                    {activeExample.edges.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8 text-center">
-                  <p className="text-sm text-muted dark:text-slate-400">
-                    Step through the visualizer above to unlock the quiz.
-                  </p>
-                  <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-indigo-500">
-                    <span>Press</span>
-                    <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">Step →</kbd>
-                    <span>or</span>
-                    <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">▶ Run All</kbd>
+
+                <p className="mt-4 text-base leading-relaxed text-muted dark:text-slate-400">
+                  {activeExample.explanation}
+                </p>
+
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      What you learn
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                      {activeExample.concept}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/20 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                      Think about this
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-amber-900 dark:text-amber-200">
+                      {activeExample.challenge}
+                    </p>
                   </div>
                 </div>
-              )
+
+                {isComplete(lessonId, difficulty, activeExample.id) && (
+                  <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 px-5 py-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                    <span>&#10003;</span> Completed
+                  </div>
+                )}
+              </article>
+
+              {/* Step visualizer */}
+              {activeExample.steps?.length > 0 && (
+                <StepVisualizer
+                  key={activeExample.id}
+                  example={activeExample}
+                  onFirstInteraction={() => setHasStartedVisualizer(true)}
+                />
+              )}
+
+              {/* Quiz */}
+              {activeExample.quiz?.length > 0 && (
+                hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id) ? (
+                  <div className="animate-fade-in">
+                    <QuizSection
+                      key={`quiz-${activeExample.id}`}
+                      quiz={activeExample.quiz}
+                      alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
+                      onAllCorrect={() => markComplete(lessonId, difficulty, activeExample.id)}
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8 text-center">
+                    <p className="text-sm text-muted dark:text-slate-400">
+                      Step through the visualizer above to unlock the quiz.
+                    </p>
+                    <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-indigo-500">
+                      <span>Press</span>
+                      <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">
+                        Step →
+                      </kbd>
+                      <span>or</span>
+                      <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">
+                        ▶ Run All
+                      </kbd>
+                    </div>
+                  </div>
+                )
+              )}
+            </>
           )}
         </div>
       </section>

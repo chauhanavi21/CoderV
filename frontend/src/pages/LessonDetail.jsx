@@ -1,7 +1,7 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
-import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
+import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
 
 const difficultyTone = {
@@ -29,25 +29,18 @@ const difficultyTone = {
 
 export default function LessonDetail() {
   const { lessonId } = useParams();
-  const lesson = lessonsRegistry.find((l) => l.id === lessonId);
-  const module = getLessonModule(lessonId);
+  const { registry } = useLessonsContext();
+  const { module, loading: moduleLoading, error: moduleError } = useLessonDetail(lessonId);
   const { getLessonProgress, getDifficultyProgress, progressLoading } = useProgress();
 
-  if (!lesson || !lesson.available || !module) {
-    return <Navigate to="/lessons" replace />;
-  }
-  const progress = getLessonProgress(lesson.id);
-  const totalExamples = module.difficultyOrder.reduce(
-    (count, dId) => count + module.difficulties[dId].examples.length,
-    0
-  );
+  const lesson = registry.find((l) => l.id === lessonId);
 
   const tabs = [
     { to: '/lessons', label: 'All Lessons' },
-    { to: `/lessons/${lesson.id}`, label: `Lesson ${lesson.number}` },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
   ];
 
-  if (progressLoading) {
+  if (moduleLoading || progressLoading) {
     return (
       <AppLayout tabs={tabs} sidebarId="lessonDetailSidebar">
         <SkeletonHero className="mb-2" />
@@ -56,6 +49,16 @@ export default function LessonDetail() {
       </AppLayout>
     );
   }
+
+  if (moduleError || !module || (lesson && !lesson.available)) {
+    return <Navigate to="/lessons" replace />;
+  }
+
+  const progress = getLessonProgress(lessonId);
+  const totalExamples = module.difficultyOrder.reduce(
+    (count, dId) => count + (module.difficulties[dId]?.examples?.length ?? 0),
+    0
+  );
 
   return (
     <AppLayout tabs={tabs} sidebarId="lessonDetailSidebar">
@@ -74,9 +77,9 @@ export default function LessonDetail() {
         <div>
           <div className="mb-3 flex items-center gap-2 flex-wrap">
             <span
-              className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide text-white ${lesson.color}`}
+              className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide text-white ${lesson?.color ?? 'bg-indigo-600'}`}
             >
-              Lesson {lesson.number}
+              Lesson {lesson?.number}
             </span>
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
               {module.lessonType.name}
@@ -113,9 +116,7 @@ export default function LessonDetail() {
               <dt className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
                 Total examples
               </dt>
-              <dd className="text-2xl font-extrabold text-indigo-950">
-                {totalExamples}
-              </dd>
+              <dd className="text-2xl font-extrabold text-indigo-950">{totalExamples}</dd>
             </div>
           </dl>
           <div className="mt-4 w-full bg-indigo-100 rounded-full h-2">
@@ -131,33 +132,28 @@ export default function LessonDetail() {
       <section className="mt-8">
         <h2 className="text-xl font-bold">Choose a difficulty</h2>
         <p className="text-sm text-muted mt-1">
-          Each level contains five examples. Complete them all to master this
-          lesson.
+          Each level contains five examples. Complete them all to master this lesson.
         </p>
 
         <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
           {module.difficultyOrder.map((diffId) => {
             const diff = module.difficulties[diffId];
-            const dp = getDifficultyProgress(lesson.id, diffId);
+            const dp = getDifficultyProgress(lessonId, diffId);
             const tone = difficultyTone[diffId] || difficultyTone.beginner;
 
             return (
               <Link
                 key={diffId}
-                to={`/lessons/${lesson.id}/${diffId}`}
+                to={`/lessons/${lessonId}/${diffId}`}
                 className={`border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-hover ${tone.card}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-bold text-lg">{diff.label}</h3>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-bold ${tone.badge}`}
-                  >
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${tone.badge}`}>
                     {diff.examples.length} examples
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed opacity-80 flex-1">
-                  {diff.description}
-                </p>
+                <p className="text-sm leading-relaxed opacity-80 flex-1">{diff.description}</p>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1 bg-white/50 rounded-full h-2">
                     <div
