@@ -43,7 +43,8 @@ export default function Login() {
     variables: clerkVars,
     elements: {
       rootBox: 'w-full',
-      card: '!shadow-none !border-0 w-full',
+      /* force card to be fluid — overrides Clerk's hardcoded 25rem width */
+      card: '!shadow-none !border-0 !w-full',
       formButtonPrimary: 'font-bold hover:opacity-90 transition-opacity',
       footerActionLink: isDark
         ? 'text-indigo-600 font-semibold'
@@ -99,15 +100,13 @@ export default function Login() {
         </aside>
 
         {/* ── Clerk Sign-In ── */}
-        <div className={`flex items-center justify-center py-10 transition-colors ${panelBg}`}>
-          {/* max-w wrapper ensures consistent horizontal margin on all screens */}
-          <div className="w-full max-w-[320px] px-2">
-            <SignIn
-              forceRedirectUrl="/dashboard"
-              signUpUrl="/signup"
-              appearance={clerkAppearance}
-            />
-          </div>
+        {/* px-10 gives equal breathing room on both sides; card is forced fluid */}
+        <div className={`flex items-center justify-center py-10 px-10 transition-colors ${panelBg}`}>
+          <SignIn
+            forceRedirectUrl="/dashboard"
+            signUpUrl="/signup"
+            appearance={clerkAppearance}
+          />
         </div>
 
       </section>

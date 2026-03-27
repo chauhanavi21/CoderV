@@ -38,7 +38,7 @@ export default function Signup() {
     variables: clerkVars,
     elements: {
       rootBox: 'w-full',
-      card: '!shadow-none !border-0 w-full',
+      card: '!shadow-none !border-0 !w-full',
       formButtonPrimary: 'font-bold hover:opacity-90 transition-opacity',
       footerActionLink: isDark
         ? 'text-indigo-600 font-semibold'
@@ -94,14 +94,12 @@ export default function Signup() {
         </aside>
 
         {/* ── Clerk Sign-Up ── */}
-        <div className={`flex items-center justify-center py-10 transition-colors ${panelBg}`}>
-          <div className="w-full max-w-[320px] px-2">
-            <SignUp
-              forceRedirectUrl="/dashboard"
-              signInUrl="/login"
-              appearance={clerkAppearance}
-            />
-          </div>
+        <div className={`flex items-center justify-center py-10 px-10 transition-colors ${panelBg}`}>
+          <SignUp
+            forceRedirectUrl="/dashboard"
+            signInUrl="/login"
+            appearance={clerkAppearance}
+          />
         </div>
 
       </section>
