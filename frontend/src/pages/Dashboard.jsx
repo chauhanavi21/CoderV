@@ -5,27 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../hooks/useProgress';
 import { lessonsRegistry } from '../data/lessonModules';
 
-const upcomingLessons = [
-  {
-    title: 'Type 1: Python Graph Explorer',
-    desc: 'Learn nodes, edges, traversals, and paths with 4 difficulties and 20 examples.',
-    to: '/lessons/type-1',
-    cta: 'Start Type 1',
-  },
-  {
-    title: 'Type 2: Coming soon',
-    desc: 'Reserved for the second lesson type in the learning system.',
-    to: '/lessons',
-    cta: 'View all lessons',
-  },
-  {
-    title: 'Type 3: Coming soon',
-    desc: 'Reserved for the third lesson type so the lesson area can grow consistently.',
-    to: '/lessons',
-    cta: 'View all lessons',
-  },
-];
-
 export default function Dashboard() {
   const { user } = useAuth();
   const { getTotalProgress, getLessonProgress, progressLoading } = useProgress();
@@ -33,14 +12,17 @@ export default function Dashboard() {
   const firstName = user?.displayName?.split(' ')?.[0] || user?.email?.split('@')?.[0] || 'there';
   const total = getTotalProgress();
 
-  // Find the first available lesson that has any progress, or just the first available one
-  const availableLessons = lessonsRegistry.filter((l) => l.available);
-  const activeLesson = availableLessons.find((l) => {
-    const p = getLessonProgress(l.id);
-    return p.completed > 0 && p.completed < p.total;
-  }) || availableLessons[0];
+  // Build per-lesson progress for the cards
+  const lessonCards = lessonsRegistry.map((lesson) => ({
+    ...lesson,
+    progress: lesson.available ? getLessonProgress(lesson.id) : null,
+  }));
 
-  const activeLessonProgress = activeLesson ? getLessonProgress(activeLesson.id) : null;
+  // Hero CTA: first in-progress lesson, else first available
+  const activeLesson =
+    lessonCards.find((l) => l.available && l.progress?.completed > 0 && l.progress?.completed < l.progress?.total) ||
+    lessonCards.find((l) => l.available);
+  const activeLessonProgress = activeLesson?.progress ?? null;
 
   if (progressLoading) {
     return (
@@ -119,24 +101,84 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Upcoming lessons */}
-      <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">Upcoming lessons</h2>
+      {/* My Lessons */}
+      <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">My Lessons</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {upcomingLessons.map((lesson) => (
-          <article
-            key={lesson.title}
-            className="border border-gray-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200"
-          >
-            <h3 className="font-bold text-base dark:text-slate-100">{lesson.title}</h3>
-            <p className="text-muted dark:text-slate-400 text-sm leading-relaxed flex-1">{lesson.desc}</p>
-            <Link
-              to={lesson.to}
-              className="w-full text-center bg-indigo-50 dark:bg-indigo-900/30 text-primary dark:text-indigo-300 rounded-xl px-4 py-3 text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/40 hover:shadow-md transition-all"
+        {lessonCards.map((lesson) => {
+          const p = lesson.progress;
+          const started   = p && p.completed > 0;
+          const completed = p && p.completed === p.total && p.total > 0;
+
+          return (
+            <article
+              key={lesson.id}
+              className={`border rounded-xl p-5 flex flex-col gap-3 transition-all duration-200 ${
+                lesson.available
+                  ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:-translate-y-1 hover:shadow-hover'
+                  : 'border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 opacity-60'
+              }`}
             >
-              {lesson.cta}
-            </Link>
-          </article>
-        ))}
+              {/* Header row */}
+              <div className="flex items-center gap-3">
+                <span className={`w-9 h-9 rounded-xl grid place-items-center text-sm font-extrabold text-white shrink-0 ${lesson.color}`}>
+                  {lesson.number}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm dark:text-slate-100 truncate">{lesson.title}</h3>
+                  {lesson.available && p && (
+                    <p className="text-xs text-muted dark:text-slate-400">
+                      {completed ? 'All done ✓' : `${p.completed} / ${p.total} examples`}
+                    </p>
+                  )}
+                </div>
+                {completed && (
+                  <span className="ml-auto shrink-0 text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-full">
+                    Done
+                  </span>
+                )}
+                {!lesson.available && (
+                  <span className="ml-auto shrink-0 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 px-2.5 py-1 rounded-full">
+                    Soon
+                  </span>
+                )}
+              </div>
+
+              <p className="text-muted dark:text-slate-400 text-sm leading-relaxed flex-1">
+                {lesson.description}
+              </p>
+
+              {/* Progress bar — only for available + started */}
+              {lesson.available && started && (
+                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-500 ${completed ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+                    style={{ width: `${p.percent}%` }}
+                  />
+                </div>
+              )}
+
+              {/* CTA */}
+              {lesson.available ? (
+                <Link
+                  to={`/lessons/${lesson.id}`}
+                  className={`w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                    completed
+                      ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
+                      : started
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm'
+                      : 'bg-indigo-50 dark:bg-indigo-900/30 text-primary dark:text-indigo-300 hover:bg-violet-100 dark:hover:bg-violet-900/40'
+                  }`}
+                >
+                  {completed ? 'Review' : started ? `Continue ${lesson.title}` : `Start ${lesson.title}`}
+                </Link>
+              ) : (
+                <div className="w-full text-center bg-gray-100 dark:bg-slate-700/50 text-gray-400 dark:text-slate-500 rounded-xl px-4 py-3 text-sm font-semibold cursor-not-allowed">
+                  Coming Soon
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
     </AppLayout>
   );
