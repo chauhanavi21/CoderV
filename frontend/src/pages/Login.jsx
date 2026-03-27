@@ -7,6 +7,8 @@ import {
 import { auth } from '../lib/firebase';
 import { useTheme } from '../contexts/ThemeContext';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+
 function firebaseError(code) {
   switch (code) {
     case 'auth/invalid-credential':
@@ -34,7 +36,20 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+      // Ensure user exists in Supabase (handles first login + keeps profile fresh)
+      const token = await user.getIdToken();
+      fetch(`${API_BASE}/api/users/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+        }),
+      }).catch(() => {}); // fire-and-forget, non-blocking
+
       navigate('/dashboard');
     } catch (err) {
       setError(firebaseError(err.code));
