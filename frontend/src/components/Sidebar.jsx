@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useUser, useClerk } from '@clerk/react';
+import { useAuth } from '../contexts/AuthContext';
 
 const sidebarLinks = [
-  { to: '/dashboard', label: 'Home' },
-  { to: '/lessons', label: 'Learning' },
+  { to: '/dashboard',  label: 'Home' },
+  { to: '/lessons',    label: 'Learning' },
   { to: '/playground', label: 'Playground' },
-  { to: '/quiz', label: 'Extra Quiz' },
-  { to: '/ai', label: 'Ask AI' },
+  { to: '/quiz',       label: 'Extra Quiz' },
+  { to: '/ai',         label: 'Ask AI' },
 ];
 
 export default function Sidebar({ id }) {
-  const [hidden, setHidden] = useState(true);
+  const [hidden,   setHidden]   = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 840);
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const check = () => {
@@ -32,7 +31,7 @@ export default function Sidebar({ id }) {
     if (!isMobile) return;
     const handler = (e) => {
       const sidebar = document.getElementById(id);
-      const btn = document.getElementById(`${id}-toggle`);
+      const btn     = document.getElementById(`${id}-toggle`);
       if (sidebar && btn && !sidebar.contains(e.target) && !btn.contains(e.target)) {
         setHidden(true);
       }
@@ -41,13 +40,14 @@ export default function Sidebar({ id }) {
     return () => document.removeEventListener('click', handler);
   }, [isMobile, id]);
 
-  const initials = isLoaded && user
-    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() || 'U'
-    : '?';
+  // Derive display values from Firebase user
+  const displayName = user?.displayName?.trim()
+    || user?.email?.split('@')[0]
+    || 'User';
 
-  const displayName = isLoaded && user
-    ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.primaryEmailAddress?.emailAddress?.split('@')[0] || 'User'
-    : 'Loading...';
+  const initials = user?.displayName
+    ? user.displayName.trim().split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+    : (user?.email?.[0]?.toUpperCase() ?? 'U');
 
   return (
     <>
@@ -76,9 +76,9 @@ export default function Sidebar({ id }) {
       >
         {/* User chip */}
         <div className="flex items-center gap-2.5 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 p-3 rounded-xl mb-4">
-          {isLoaded && user?.imageUrl ? (
+          {user?.photoURL ? (
             <img
-              src={user.imageUrl}
+              src={user.photoURL}
               alt={displayName}
               className="w-[38px] h-[38px] rounded-full object-cover"
             />
@@ -113,14 +113,13 @@ export default function Sidebar({ id }) {
           ))}
         </nav>
 
-        {/* spacer pushes sign-out to bottom */}
         <div className="flex-1" />
 
-        {/* Sign out at bottom */}
+        {/* Sign out */}
         <button
           type="button"
-          onClick={() => signOut({ redirectUrl: '/login' })}
-          className="mt-4 w-full text-left px-3 py-2.5 rounded-lg font-semibold text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+          onClick={() => signOut()}
+          className="w-full text-left px-3 py-2 rounded-lg font-semibold text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
         >
           Sign out
         </button>

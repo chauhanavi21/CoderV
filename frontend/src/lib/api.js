@@ -2,11 +2,11 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrende
 
 /**
  * Authenticated fetch wrapper.
- * Pass Clerk's `getToken` to automatically attach the Bearer token.
+ * Pass Firebase's `getToken` (from useAuth context) to attach the Bearer token.
  *
  * @param {string}   path      e.g. '/api/progress'
  * @param {object}   options   standard fetch options
- * @param {Function} getToken  Clerk's getToken() from useAuth()
+ * @param {Function} getToken  getToken() from useAuth()
  */
 export async function apiRequest(path, options = {}, getToken = null) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers ?? {}) };

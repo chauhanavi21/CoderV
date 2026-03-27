@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from '@clerk/react';
+import { useAuth } from '../contexts/AuthContext';
 import { lessonsRegistry, getLessonModule } from '../data/lessonModules';
 
 const STORAGE_KEY = 'coderv-progress';
@@ -33,11 +33,11 @@ function rowsToProgress(rows = []) {
 // ── Hook ─────────────────────────────────────────────────────────────────────
 export function useProgress() {
   const [progress, setProgress] = useState(loadLocal);
-  const { getToken, isSignedIn, isLoaded } = useAuth();
+  const { user, loading, getToken } = useAuth();
 
   // Hydrate from backend when the user is signed in
   useEffect(() => {
-    if (!isLoaded || !isSignedIn) return;
+    if (loading || !user) return;
 
     async function syncFromBackend() {
       try {
@@ -56,7 +56,7 @@ export function useProgress() {
     }
 
     syncFromBackend();
-  }, [isLoaded, isSignedIn, getToken]);
+  }, [loading, user, getToken]);
 
   const markComplete = useCallback(
     async (lessonId, difficulty, exampleId) => {
@@ -73,7 +73,7 @@ export function useProgress() {
       });
 
       // Persist to backend if authenticated
-      if (isSignedIn) {
+      if (user) {
         try {
           const token = await getToken();
           await fetch(`${API_BASE}/api/progress/complete`, {
@@ -89,7 +89,7 @@ export function useProgress() {
         }
       }
     },
-    [isSignedIn, getToken]
+    [user, getToken]
   );
 
   const isComplete = useCallback(
