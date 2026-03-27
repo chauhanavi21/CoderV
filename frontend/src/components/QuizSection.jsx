@@ -48,7 +48,7 @@ export default function QuizSection({ quiz, onAllCorrect, alreadyComplete }) {
   const correctCount = Object.values(revealed).filter(Boolean).length;
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <section className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden text-gray-900">
       {/* Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-violet-50 border-b border-gray-200 flex items-center justify-between">
         <div>
@@ -155,7 +155,7 @@ export default function QuizSection({ quiz, onAllCorrect, alreadyComplete }) {
                       >
                         {LETTERS[optIdx]}
                       </span>
-                      <span className="leading-snug">{opt}</span>
+                      <span className="leading-snug text-gray-800">{opt}</span>
                     </button>
                   );
                 })}
