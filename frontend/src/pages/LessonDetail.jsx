@@ -72,7 +72,7 @@ export default function LessonDetail() {
               {module.lessonType.name}
             </span>
           </div>
-          <h1 className="text-[clamp(1.75rem,3vw,2.4rem)] font-extrabold leading-tight">
+          <h1 className="text-[clamp(1.75rem,3vw,2.4rem)] font-extrabold leading-tight text-gray-900 dark:text-white">
             {module.title}
           </h1>
           <p className="mt-3 max-w-3xl text-muted text-base leading-relaxed">

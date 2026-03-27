@@ -12,9 +12,10 @@ export default function LessonPractice() {
   const module = getLessonModule(lessonId);
   const difficultyData = module?.difficulties?.[difficulty];
 
-  const [activeExampleId, setActiveExampleId] = useState(
+  const [activeExampleId,       setActiveExampleId]       = useState(
     difficultyData?.examples?.[0]?.id ?? ''
   );
+  const [hasStartedVisualizer, setHasStartedVisualizer] = useState(false);
   const { markComplete, isComplete } = useProgress();
 
   useEffect(() => {
@@ -22,6 +23,11 @@ export default function LessonPractice() {
       setActiveExampleId(difficultyData.examples[0].id);
     }
   }, [difficulty]);
+
+  // Reset quiz gate whenever the active example changes
+  useEffect(() => {
+    setHasStartedVisualizer(false);
+  }, [activeExampleId]);
 
   if (!lesson || !module || !difficultyData) {
     return <Navigate to="/lessons" replace />;
@@ -149,19 +155,38 @@ export default function LessonPractice() {
 
           {/* Step visualizer */}
           {activeExample.steps && activeExample.steps.length > 0 && (
-            <StepVisualizer key={activeExample.id} example={activeExample} />
+            <StepVisualizer
+              key={activeExample.id}
+              example={activeExample}
+              onFirstInteraction={() => setHasStartedVisualizer(true)}
+            />
           )}
 
-          {/* Quiz */}
+          {/* Quiz — only shown after user interacts with the visualizer (or if already complete) */}
           {activeExample.quiz && activeExample.quiz.length > 0 && (
-            <QuizSection
-              key={`quiz-${activeExample.id}`}
-              quiz={activeExample.quiz}
-              alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
-              onAllCorrect={() =>
-                markComplete(lessonId, difficulty, activeExample.id)
-              }
-            />
+            hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id)
+              ? (
+                <div className="animate-fade-in">
+                  <QuizSection
+                    key={`quiz-${activeExample.id}`}
+                    quiz={activeExample.quiz}
+                    alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
+                    onAllCorrect={() => markComplete(lessonId, difficulty, activeExample.id)}
+                  />
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8 text-center">
+                  <p className="text-sm text-muted dark:text-slate-400">
+                    Step through the visualizer above to unlock the quiz.
+                  </p>
+                  <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-indigo-500">
+                    <span>Press</span>
+                    <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">Step →</kbd>
+                    <span>or</span>
+                    <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">▶ Run All</kbd>
+                  </div>
+                </div>
+              )
           )}
         </div>
       </section>

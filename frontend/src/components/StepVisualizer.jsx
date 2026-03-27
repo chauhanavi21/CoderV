@@ -96,14 +96,22 @@ function layoutNodes(nodeList, w, h) {
 }
 
 /* ─── component ───────────────────────────────────────────────────────────── */
-export default function StepVisualizer({ example }) {
+export default function StepVisualizer({ example, onFirstInteraction }) {
   const steps = useMemo(() => example.steps || [], [example.steps]);
   const lines = useMemo(() => example.code.split('\n'), [example.code]);
 
-  const [cursor,   setCursor]   = useState(0);
-  const [outputs,  setOutputs]  = useState([]);
-  const [running,  setRunning]  = useState(false);
+  const [cursor,       setCursor]       = useState(0);
+  const [outputs,      setOutputs]      = useState([]);
+  const [running,      setRunning]      = useState(false);
+  const [interacted,   setInteracted]   = useState(false);
   const timerRef = useRef(null);
+
+  const notifyFirstInteraction = useCallback(() => {
+    if (!interacted) {
+      setInteracted(true);
+      onFirstInteraction?.();
+    }
+  }, [interacted, onFirstInteraction]);
 
   const reset = useCallback(() => {
     clearInterval(timerRef.current);
@@ -120,15 +128,17 @@ export default function StepVisualizer({ example }) {
   }, []);
 
   const stepOnce = useCallback(() => {
+    notifyFirstInteraction();
     setCursor(prev => {
       const next = prev + 1;
       if (next > steps.length) return prev;
       applyStep(steps[next - 1]);
       return next;
     });
-  }, [steps, applyStep]);
+  }, [steps, applyStep, notifyFirstInteraction]);
 
   const runAll = useCallback(() => {
+    notifyFirstInteraction();
     reset();
     setRunning(true);
     let i = 0;
