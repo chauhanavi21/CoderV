@@ -37,7 +37,7 @@ export default function Signup() {
   const clerkAppearance = {
     variables: clerkVars,
     elements: {
-      rootBox: 'w-full max-w-[340px] mx-auto',
+      rootBox: 'w-full',
       card: '!shadow-none !border-0 w-full',
       formButtonPrimary: 'font-bold hover:opacity-90 transition-opacity',
       footerActionLink: isDark
@@ -94,12 +94,14 @@ export default function Signup() {
         </aside>
 
         {/* ── Clerk Sign-Up ── */}
-        <div className={`flex items-center justify-center px-6 py-10 md:px-10 transition-colors ${panelBg}`}>
-          <SignUp
-            forceRedirectUrl="/dashboard"
-            signInUrl="/login"
-            appearance={clerkAppearance}
-          />
+        <div className={`flex items-center justify-center py-10 transition-colors ${panelBg}`}>
+          <div className="w-full max-w-[320px] px-2">
+            <SignUp
+              forceRedirectUrl="/dashboard"
+              signInUrl="/login"
+              appearance={clerkAppearance}
+            />
+          </div>
         </div>
 
       </section>

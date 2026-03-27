@@ -42,9 +42,7 @@ export default function Login() {
   const clerkAppearance = {
     variables: clerkVars,
     elements: {
-      /* constrain width so form never touches panel edges */
-      rootBox: 'w-full max-w-[340px] mx-auto',
-      /* Clerk's own card: kill shadow/border, keep its internal padding */
+      rootBox: 'w-full',
       card: '!shadow-none !border-0 w-full',
       formButtonPrimary: 'font-bold hover:opacity-90 transition-opacity',
       footerActionLink: isDark
@@ -101,12 +99,15 @@ export default function Login() {
         </aside>
 
         {/* ── Clerk Sign-In ── */}
-        <div className={`flex items-center justify-center px-6 py-10 md:px-10 transition-colors ${panelBg}`}>
-          <SignIn
-            forceRedirectUrl="/dashboard"
-            signUpUrl="/signup"
-            appearance={clerkAppearance}
-          />
+        <div className={`flex items-center justify-center py-10 transition-colors ${panelBg}`}>
+          {/* max-w wrapper ensures consistent horizontal margin on all screens */}
+          <div className="w-full max-w-[320px] px-2">
+            <SignIn
+              forceRedirectUrl="/dashboard"
+              signUpUrl="/signup"
+              appearance={clerkAppearance}
+            />
+          </div>
         </div>
 
       </section>
