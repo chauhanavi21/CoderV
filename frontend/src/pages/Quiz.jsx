@@ -61,7 +61,7 @@ export default function Quiz() {
   return (
     <AppLayout tabs={tabs} sidebarId="quizSidebar">
       {/* Hero */}
-      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 items-center mb-2">
+      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 items-center mb-2 text-gray-900">
         <div>
           <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-extrabold mb-2.5">
             Extra Practice Quizzes
@@ -88,7 +88,7 @@ export default function Quiz() {
         {quizzes.map((q) => (
           <article
             key={q.title}
-            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200"
+            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 text-gray-900"
           >
             <div className="text-[2.5rem] mb-2">{q.icon}</div>
             <h3 className="font-bold text-base">{q.title}</h3>

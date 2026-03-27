@@ -55,7 +55,7 @@ export default function About() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="bg-white border border-gray-200 rounded-xl p-6 text-center shadow-sm hover:-translate-y-1 hover:shadow-hover transition-all duration-200"
+              className="bg-white border border-gray-200 rounded-xl p-6 text-center shadow-sm hover:-translate-y-1 hover:shadow-hover transition-all duration-200 text-gray-900"
             >
               <div className="text-[2.5rem] mb-3">{f.icon}</div>
               <h3 className="font-bold text-base mb-2">{f.title}</h3>

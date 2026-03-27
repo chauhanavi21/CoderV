@@ -46,7 +46,7 @@ export default function Lesson() {
   return (
     <div className="grid md:grid-cols-[230px_1fr] min-h-screen">
       {/* Mobile top bar */}
-      <div className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+      <div className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 text-gray-900">
         <strong className="text-sm font-bold">Lesson View</strong>
         <button
           ref={toggleRef}
@@ -97,7 +97,7 @@ export default function Lesson() {
       {/* Main content */}
       <main className="p-5 max-md:p-4">
         {/* Lesson header */}
-        <div className="border border-gray-200 rounded-xl bg-white px-4 py-3.5 flex items-center justify-between gap-3 flex-wrap">
+        <div className="border border-gray-200 rounded-xl bg-white px-4 py-3.5 flex items-center justify-between gap-3 flex-wrap text-gray-900">
           <span className="font-extrabold text-sm">Lesson name and number</span>
           <span className="px-2.5 py-1.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
             Question / Puzzle Mode
@@ -106,7 +106,7 @@ export default function Lesson() {
 
         {/* Q&A section */}
         <div className="mt-4 grid gap-3.5">
-          <article className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <article className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-gray-900">
             <h3 className="mt-0 mb-2 font-bold">Learning / Question / Puzzle</h3>
             <p className="text-muted text-sm leading-relaxed">
               If a class has 40 students and 25 percent are absent, how many are present?
@@ -114,7 +114,7 @@ export default function Lesson() {
             </p>
           </article>
 
-          <article className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <article className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-gray-900">
             <h3 className="mt-0 mb-2 font-bold">Answer</h3>
             <textarea
               placeholder="Type your solution here..."

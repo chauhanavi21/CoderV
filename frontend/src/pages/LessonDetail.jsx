@@ -60,7 +60,7 @@ export default function LessonDetail() {
       </div>
 
       {/* Hero */}
-      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 xl:grid-cols-[1.4fr_260px] gap-6 items-start">
+      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 xl:grid-cols-[1.4fr_260px] gap-6 items-start text-gray-900">
         <div>
           <div className="mb-3 flex items-center gap-2 flex-wrap">
             <span

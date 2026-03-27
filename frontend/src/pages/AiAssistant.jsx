@@ -54,7 +54,7 @@ export default function AiAssistant() {
         </div>
 
         {/* Chat container */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-card mb-6">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-card mb-6 text-gray-900">
           {/* Messages */}
           <div className="min-h-[400px] max-h-[500px] overflow-y-auto p-6 bg-gray-50">
             {messages.map((msg, idx) => (
@@ -66,7 +66,7 @@ export default function AiAssistant() {
                 >
                   {msg.role === 'ai' ? '🤖' : '👤'}
                 </div>
-                <div className="bg-white border border-gray-200 rounded-xl px-4 py-3.5 max-w-[85%] shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-xl px-4 py-3.5 max-w-[85%] shadow-sm text-gray-900">
                   <p className="text-sm leading-relaxed">{msg.text}</p>
                 </div>
               </div>
@@ -93,7 +93,7 @@ export default function AiAssistant() {
         </div>
 
         {/* Suggestions */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-card">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-card text-gray-900">
           <h3 className="font-bold text-sm mb-4">Quick Questions</h3>
           <div className="flex flex-wrap gap-2.5 max-md:justify-center">
             {quickQuestions.map((q) => (

@@ -176,7 +176,7 @@ export default function GraphModule() {
 
   return (
     <AppLayout tabs={tabs} sidebarId="graphModuleSidebar">
-      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 xl:grid-cols-[1.4fr_260px] gap-6 items-start">
+      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 xl:grid-cols-[1.4fr_260px] gap-6 items-start text-gray-900">
         <div>
           <div className="mb-3 flex items-center gap-2 flex-wrap">
             <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-indigo-800">
@@ -248,7 +248,7 @@ export default function GraphModule() {
                 className={`rounded-2xl border p-4 text-left transition-all ${
                   isActive
                     ? `shadow-card -translate-y-0.5 ${difficultyTone[difficultyId]}`
-                    : 'border-gray-200 bg-white hover:-translate-y-0.5 hover:shadow-hover'
+                    : 'border-gray-200 bg-white text-gray-900 hover:-translate-y-0.5 hover:shadow-hover'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
@@ -267,7 +267,7 @@ export default function GraphModule() {
       </section>
 
       <section className="mt-8 grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-6">
-        <aside className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        <aside className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-gray-900">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-bold">{activeDifficultyData.label} examples</h2>
@@ -304,7 +304,7 @@ export default function GraphModule() {
         </aside>
 
         <div className="grid gap-6">
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm text-gray-900">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
                 <p className="text-xs font-bold uppercase tracking-wide text-primary">

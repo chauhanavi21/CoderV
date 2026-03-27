@@ -42,7 +42,7 @@ export default function Resources() {
         {guides.map((g) => (
           <article
             key={g.title}
-            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200"
+            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 text-gray-900"
           >
             <div className="text-[2.5rem] mb-2">{g.icon}</div>
             <h3 className="font-bold text-base">{g.title}</h3>
@@ -60,7 +60,7 @@ export default function Resources() {
         {videos.map((v) => (
           <article
             key={v.title}
-            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 relative"
+            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 relative text-gray-900"
           >
             <div className="w-full h-40 gradient-quiz-badge rounded-lg grid place-items-center text-5xl text-white mb-3">
               ▶️
@@ -84,7 +84,7 @@ export default function Resources() {
           <a
             key={link.title}
             href="#"
-            className="flex items-center gap-4 p-5 bg-white border border-gray-200 rounded-xl transition-all hover:border-primary hover:shadow-[0_8px_20px_rgba(99,102,241,0.12)] hover:translate-x-1 group"
+            className="flex items-center gap-4 p-5 bg-white border border-gray-200 rounded-xl transition-all hover:border-primary hover:shadow-[0_8px_20px_rgba(99,102,241,0.12)] hover:translate-x-1 group text-gray-900"
           >
             <div className="text-[2rem] w-[50px] h-[50px] bg-gray-100 rounded-lg grid place-items-center shrink-0">
               {link.icon}
