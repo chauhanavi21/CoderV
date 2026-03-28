@@ -4,26 +4,38 @@ import { fetchLessonsRegistry, fetchLessonDetail } from '../api/lessons';
 const LessonsContext = createContext(null);
 
 /**
- * Provides lesson registry + on-demand module detail (cached).
+ * Provides lesson registry + eagerly-cached module details.
  *
- * registry        — flat list of lesson types (same shape as old lessonsRegistry)
+ * registry        — flat list of lesson types
  * getModuleData   — async fn(lessonId) → cached module detail
- * modulesCache    — map of already-fetched modules (for sync reads in useProgress)
- * registryLoading — true while initial registry fetch is in flight
+ * modulesCache    — ref map of cached modules (sync readable by useProgress)
+ * registryLoading — true until registry AND all module details are loaded
  */
 export function LessonsProvider({ children }) {
   const [registry, setRegistry] = useState([]);
   const [registryLoading, setRegistryLoading] = useState(true);
   const [registryError, setRegistryError] = useState(null);
 
-  // Cache of lessonId → module detail (populated lazily)
+  // Cache of lessonId → module detail
   const modulesCache = useRef({});
-  // Track in-flight fetches to avoid duplicates
   const inFlight = useRef({});
 
   useEffect(() => {
-    fetchLessonsRegistry()
-      .then((lessons) => setRegistry(lessons))
+    async function init() {
+      // 1. Fetch registry
+      const lessons = await fetchLessonsRegistry();
+      setRegistry(lessons);
+
+      // 2. Eagerly fetch ALL available module details in parallel so that
+      //    useProgress has correct totals the moment the app renders.
+      const available = lessons.filter((l) => l.available);
+      const mods = await Promise.all(available.map((l) => fetchLessonDetail(l.id)));
+      available.forEach((l, i) => {
+        modulesCache.current[l.id] = mods[i];
+      });
+    }
+
+    init()
       .catch((err) => setRegistryError(err.message))
       .finally(() => setRegistryLoading(false));
   }, []);
@@ -31,7 +43,7 @@ export function LessonsProvider({ children }) {
   const getModuleData = useCallback(async (lessonId) => {
     if (modulesCache.current[lessonId]) return modulesCache.current[lessonId];
 
-    // Deduplicate concurrent requests for the same lessonId
+    // Deduplicate concurrent requests
     if (!inFlight.current[lessonId]) {
       inFlight.current[lessonId] = fetchLessonDetail(lessonId).then((mod) => {
         modulesCache.current[lessonId] = mod;

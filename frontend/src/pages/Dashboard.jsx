@@ -7,7 +7,7 @@ import { useLessonsContext } from '../contexts/LessonsContext';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { registry } = useLessonsContext();
+  const { registry, registryLoading } = useLessonsContext();
   const { getTotalProgress, getLessonProgress, progressLoading } = useProgress();
 
   const firstName = user?.displayName?.split(' ')?.[0] || user?.email?.split('@')?.[0] || 'there';
@@ -25,7 +25,7 @@ export default function Dashboard() {
     lessonCards.find((l) => l.available);
   const activeLessonProgress = activeLesson?.progress ?? null;
 
-  if (progressLoading) {
+  if (progressLoading || registryLoading) {
     return (
       <AppLayout sidebarId="dashboardSidebar">
         <SkeletonHero className="mb-2" />

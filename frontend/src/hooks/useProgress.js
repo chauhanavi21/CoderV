@@ -111,15 +111,14 @@ export function useProgress() {
       const mod = modulesCache.current?.[lessonId];
       const examples = mod?.difficulties?.[difficultyId]?.examples || [];
       const total = examples.length;
-      const completed =
-        total > 0
-          ? examples.filter((ex) => progress[lessonId]?.[difficultyId]?.includes(ex.id)).length
-          : (progress[lessonId]?.[difficultyId]?.length ?? 0);
-      const safeTotal = total || completed;
+      if (total === 0) return { completed: 0, total: 0, percent: 0 };
+      const completed = examples.filter(
+        (ex) => progress[lessonId]?.[difficultyId]?.includes(ex.id)
+      ).length;
       return {
         completed,
-        total: safeTotal,
-        percent: safeTotal > 0 ? Math.round((completed / safeTotal) * 100) : 0,
+        total,
+        percent: Math.round((completed / total) * 100),
       };
     },
     [progress, modulesCache]
@@ -129,14 +128,8 @@ export function useProgress() {
     (lessonId) => {
       const mod = modulesCache.current?.[lessonId];
       if (!mod) {
-        // Module not cached yet — sum up what we know from progress object
-        let completed = 0;
-        let total = 0;
-        const lessonProgress = progress[lessonId] || {};
-        for (const ids of Object.values(lessonProgress)) completed += ids.length;
-        // We can't know total without module data; use completed as minimum
-        total = completed;
-        return { completed, total, percent: completed > 0 ? 100 : 0 };
+        // Module not cached yet — return zeros so totals aren't inflated
+        return { completed: 0, total: 0, percent: 0 };
       }
       let total = 0;
       let completed = 0;
