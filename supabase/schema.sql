@@ -107,6 +107,45 @@ CREATE TABLE IF NOT EXISTS graph_edges (
   to_node    TEXT NOT NULL
 );
 
+-- ── 11. Extra practice quizzes ───────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS extra_quizzes (
+  id           TEXT PRIMARY KEY,        -- e.g. 'data-structures-quiz'
+  title        TEXT NOT NULL,
+  description  TEXT,
+  icon         TEXT,                    -- emoji
+  difficulty   TEXT NOT NULL,           -- 'easy' | 'medium' | 'hard'
+  time_limit   INT  NOT NULL,           -- seconds (e.g. 1200 = 20 min)
+  sort_order   INT  DEFAULT 0
+);
+
+-- ── 12. Extra quiz questions ──────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS extra_quiz_questions (
+  id            SERIAL PRIMARY KEY,
+  quiz_id       TEXT NOT NULL REFERENCES extra_quizzes(id) ON DELETE CASCADE,
+  sort_order    INT  NOT NULL,
+  question_text TEXT NOT NULL,
+  correct_index INT  NOT NULL
+);
+
+-- ── 13. Extra quiz options ────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS extra_quiz_options (
+  id          SERIAL PRIMARY KEY,
+  question_id INT  NOT NULL REFERENCES extra_quiz_questions(id) ON DELETE CASCADE,
+  sort_order  INT  NOT NULL,
+  option_text TEXT NOT NULL
+);
+
+-- ── 14. Extra quiz attempts (track user results) ──────────────────────────────
+CREATE TABLE IF NOT EXISTS extra_quiz_attempts (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  quiz_id     TEXT NOT NULL REFERENCES extra_quizzes(id) ON DELETE CASCADE,
+  score       INT  NOT NULL,            -- number of correct answers
+  total       INT  NOT NULL,            -- total questions
+  time_taken  INT  NOT NULL,            -- seconds spent
+  attempted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ── Indexes for common query patterns ────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_user_progress_user   ON user_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_difficulties_lesson  ON difficulties(lesson_id);
@@ -116,14 +155,22 @@ CREATE INDEX IF NOT EXISTS idx_steps_example        ON example_steps(example_id)
 CREATE INDEX IF NOT EXISTS idx_questions_example    ON quiz_questions(example_id);
 CREATE INDEX IF NOT EXISTS idx_options_question     ON quiz_options(question_id);
 CREATE INDEX IF NOT EXISTS idx_nodes_example        ON graph_nodes(example_id);
-CREATE INDEX IF NOT EXISTS idx_edges_example        ON graph_edges(example_id);
+CREATE INDEX IF NOT EXISTS idx_edges_example           ON graph_edges(example_id);
+CREATE INDEX IF NOT EXISTS idx_extra_questions_quiz    ON extra_quiz_questions(quiz_id);
+CREATE INDEX IF NOT EXISTS idx_extra_options_question  ON extra_quiz_options(question_id);
+CREATE INDEX IF NOT EXISTS idx_extra_attempts_user     ON extra_quiz_attempts(user_id);
+CREATE INDEX IF NOT EXISTS idx_extra_attempts_quiz     ON extra_quiz_attempts(quiz_id);
 
 -- ── Row Level Security ────────────────────────────────────────────────────────
 -- Lesson content is read-only public (no RLS needed — backend uses service role).
 -- User data is protected — only the backend (service role) can write.
 
-ALTER TABLE users          ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_progress  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_progress        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extra_quizzes        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extra_quiz_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extra_quiz_options   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extra_quiz_attempts  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lesson_types   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE difficulties   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE examples       ENABLE ROW LEVEL SECURITY;
@@ -159,3 +206,12 @@ CREATE POLICY "graph_nodes are publicly readable"
 
 CREATE POLICY "graph_edges are publicly readable"
   ON graph_edges FOR SELECT USING (true);
+
+CREATE POLICY "extra_quizzes are publicly readable"
+  ON extra_quizzes FOR SELECT USING (true);
+
+CREATE POLICY "extra_quiz_questions are publicly readable"
+  ON extra_quiz_questions FOR SELECT USING (true);
+
+CREATE POLICY "extra_quiz_options are publicly readable"
+  ON extra_quiz_options FOR SELECT USING (true);

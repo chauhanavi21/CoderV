@@ -3,7 +3,7 @@ import Topbar from './Topbar';
 
 const defaultTabs = [
   { to: '/dashboard', label: 'How to use' },
-  { to: '/resources', label: 'Extra resources' },
+  { to: '/resources', label: 'Resources' },
   { to: '/about', label: 'About' },
 ];
 

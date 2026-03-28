@@ -11,6 +11,7 @@ import LessonDetail from './pages/LessonDetail';
 import LessonPractice from './pages/LessonPractice';
 import Playground from './pages/Playground';
 import Quiz from './pages/Quiz';
+import QuizTake from './pages/QuizTake';
 import AiAssistant from './pages/AiAssistant';
 import Resources from './pages/Resources';
 import About from './pages/About';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/lessons/:lessonId/:difficulty" element={<P><LessonPractice /></P>} />
         <Route path="/playground" element={<P><Playground /></P>} />
         <Route path="/quiz" element={<P><Quiz /></P>} />
+        <Route path="/quiz/:quizId" element={<P><QuizTake /></P>} />
         <Route path="/ai" element={<P><AiAssistant /></P>} />
         <Route path="/resources" element={<P><Resources /></P>} />
         <Route path="/about" element={<P><About /></P>} />
