@@ -35,7 +35,7 @@ A structured, interactive platform for learning Python through lessons, code vis
 |------------|---------|
 | Node.js + Express | REST API server |
 | Firebase Admin SDK | Verify Firebase ID tokens on every protected request |
-| Supabase JS SDK | Data storage (users, progress) via service role key |
+| Supabase JS SDK | Data storage (users, progress, lessons, quizzes) via service role key |
 | Python (`sys.settrace`) | Dynamic code tracer — runs user code step-by-step |
 
 ### Hosting
@@ -56,6 +56,8 @@ Browser (React)
   ├── Firebase Auth SDK
   │     └── signIn / signUp / getIdToken()
   │
+  ├── LessonsContext  → GET /api/lessons (registry + all modules eagerly cached)
+  │
   └── fetch() with  Authorization: Bearer <firebase-id-token>
         │
         ▼
@@ -65,15 +67,29 @@ Browser (React)
         │     └── firebase-admin.auth().verifyIdToken(token)
         │           populates req.auth = { userId, email, name }
         │
-        ├── /api/users/sync   → upsert user row in Supabase
-        ├── /api/progress     → read / write user_progress rows
-        ├── /api/trace        → run Python tracer subprocess
-        └── /api/health       → status check
+        ├── /api/users/sync       → upsert user row in Supabase
+        ├── /api/progress         → read / write user_progress rows
+        ├── /api/trace            → run Python tracer subprocess
+        ├── /api/lessons          → lesson registry + module detail from DB
+        ├── /api/examples/:id     → full example (steps, quiz, nodes, edges)
+        ├── /api/quizzes          → extra quiz listing + per-quiz questions
+        └── /api/health           → status check
               │
               ▼
         Supabase (PostgreSQL)
-              ├── users          (id = Firebase UID)
-              └── user_progress  (FK → users.id)
+              ├── users                  (Firebase UID as PK)
+              ├── user_progress          (lesson completion tracking)
+              ├── lesson_types           (4 lesson types)
+              ├── difficulties           (16 difficulty levels)
+              ├── examples               (80 examples)
+              ├── example_steps          (~900 trace steps)
+              ├── quiz_questions         (240 lesson quiz questions)
+              ├── quiz_options           (960 answer options)
+              ├── graph_nodes / edges    (visualizer graph data)
+              ├── extra_quizzes          (6 timed practice quizzes)
+              ├── extra_quiz_questions   (60 questions)
+              ├── extra_quiz_options     (240 options)
+              └── extra_quiz_attempts    (user quiz results)
 ```
 
 ---
@@ -84,32 +100,37 @@ Browser (React)
 final_sem/
 ├── frontend/              # React + Vite app (deployed to Vercel)
 │   ├── src/
-│   │   ├── contexts/      # AuthContext (Firebase), ThemeContext
+│   │   ├── contexts/      # AuthContext (Firebase), ThemeContext, LessonsContext
 │   │   ├── components/    # Sidebar, Topbar, ProtectedRoute, StepVisualizer,
-│   │   │                  # QuizSection, SkeletonCard, ErrorBoundary, …
+│   │   │                  # QuizSection, SkeletonCard, ErrorBoundary, AppLayout
 │   │   ├── pages/         # Login, Signup, Dashboard, Lessons, LessonDetail,
-│   │   │                  # LessonPractice, Playground, About, Resources, …
+│   │   │                  # LessonPractice, Playground, Quiz, QuizTake,
+│   │   │                  # About, Resources, AiAssistant, NotFound
 │   │   ├── hooks/         # useProgress (localStorage cache + Supabase sync)
-│   │   ├── lib/           # firebase.js config, api.js fetch wrapper
-│   │   └── data/          # lessonModules.js — all 4 lesson types, 80 examples
-│   └── .env.example       # Documents required VITE_* vars
+│   │   ├── api/           # visualizer.js, lessons.js — raw fetch wrappers
+│   │   ├── lib/           # firebase.js, supabase.js, api.js
+│   │   └── data/          # lessonModules.js (seed source — not used at runtime)
+│   └── .env.example
 │
 ├── backend/               # Express server (separate GitHub repo, on Render)
 │   ├── src/
 │   │   ├── config/        # supabase.js, firebase.js (Admin SDK init)
 │   │   ├── middleware/     # auth.js (requireAuth — Firebase token verify)
-│   │   ├── controllers/   # traceController, progressController, userController
-│   │   ├── models/        # progressModel, userModel (Supabase queries)
-│   │   ├── routes/        # traceRoutes, progressRoutes, userRoutes, healthRoutes
+│   │   ├── controllers/   # traceController, progressController,
+│   │   │                  # userController, lessonController, quizController
+│   │   ├── models/        # progressModel, userModel, lessonModel, quizModel
+│   │   ├── routes/        # all route files
 │   │   └── app.js         # Express app setup, CORS, route mounting
-│   ├── tracer.py          # Python sys.settrace code visualiser (captures locals)
-│   ├── server.js          # Entry point (loads .env, starts server)
-│   └── .env.example       # Documents required backend env vars
+│   ├── tracer.py          # Python sys.settrace code visualiser
+│   ├── server.js          # Entry point
+│   ├── seed.js            # One-time: populates lesson data from lessonModules.js
+│   ├── seedQuizzes.js     # One-time: populates 6 extra practice quizzes
+│   └── .env.example
 │
 ├── supabase/
-│   └── schema.sql         # CREATE TABLE statements for users + user_progress
+│   └── schema.sql         # Full DB schema — run once in Supabase SQL Editor
 │
-└── vercel.json            # Vercel routing config for SPA
+└── vercel.json            # Vercel SPA routing config
 ```
 
 ---
@@ -124,46 +145,38 @@ final_sem/
 
 ---
 
-## Database Schema (Supabase)
+## Database Tables (Supabase)
 
-```sql
--- Users (synced from Firebase on login/signup)
-users (
-  id          TEXT PRIMARY KEY,   -- Firebase UID
-  email       TEXT,
-  first_name  TEXT,
-  last_name   TEXT,
-  image_url   TEXT,
-  created_at  TIMESTAMPTZ,
-  updated_at  TIMESTAMPTZ
-)
-
--- Learning progress
-user_progress (
-  id           UUID PRIMARY KEY,
-  user_id      TEXT REFERENCES users(id) ON DELETE CASCADE,
-  lesson_id    TEXT,
-  difficulty   TEXT,
-  example_id   TEXT,
-  completed_at TIMESTAMPTZ,
-  UNIQUE(user_id, lesson_id, difficulty, example_id)
-)
-```
+| Table | Purpose |
+|-------|---------|
+| `users` | One row per user — Firebase UID, email, name. Synced on every login/signup |
+| `user_progress` | Every completed example: `user_id + lesson_id + difficulty + example_id` |
+| `lesson_types` | The 4 lesson types — title, color, description, summary |
+| `difficulties` | 4 difficulties per lesson type (beginner / easy / medium / hard) |
+| `examples` | 80 examples — Python code, explanation, concept, challenge |
+| `example_steps` | ~900 trace steps per example — line number, description, `action` JSONB |
+| `quiz_questions` | 3 questions per example = 240 rows — question text + correct answer index |
+| `quiz_options` | 4 options per question = 960 rows — the A/B/C/D answer choices |
+| `graph_nodes` | Nodes for the concept graph shown in the visualizer |
+| `graph_edges` | Edges connecting graph nodes |
+| `extra_quizzes` | 6 timed practice quizzes — title, icon, difficulty, time limit (seconds) |
+| `extra_quiz_questions` | 10 questions per extra quiz = 60 rows |
+| `extra_quiz_options` | 4 options per question = 240 rows |
+| `extra_quiz_attempts` | Every quiz attempt a user takes — score, total, time taken, timestamp |
 
 ---
 
 ## Lesson Modules
 
-All lesson content lives in `frontend/src/data/lessonModules.js`. There are currently **4 lesson types**, each with **4 difficulties × 5 examples = 20 examples** (80 examples total). Every example includes Python code, step-by-step trace, quiz questions, and a concept explanation.
+All 4 lesson types are stored in Supabase (seeded from `lessonModules.js`).
+Each type has **4 difficulties × 5 examples = 20 examples** (80 total).
 
-| # | Lesson Type | Difficulties | Theme |
-|---|-------------|-------------|-------|
-| 1 | Python Step Visualizer | Beginner → Hard | Variables, loops, functions, recursion |
-| 2 | Data Structures Explorer | Beginner → Hard | Lists, stacks, queues, dictionaries |
-| 3 | Algorithm Patterns | Beginner → Hard | Searching, sorting, recursion, two pointers |
-| 4 | System Design Basics | Beginner → Hard | Caching, load balancing, API patterns, advanced patterns |
-
-Progress for all lesson types is tracked in Supabase under `user_progress` using the flexible `lesson_id` + `difficulty` + `example_id` composite key.
+| # | Lesson Type | Theme |
+|---|-------------|-------|
+| 1 | Python Step Visualizer | Variables, loops, functions, recursion |
+| 2 | Data Structures Explorer | Lists, stacks, queues, dictionaries |
+| 3 | Algorithm Patterns | Searching, sorting, recursion, two pointers |
+| 4 | System Design Basics | Caching, load balancing, API patterns, advanced patterns |
 
 ---
 
@@ -206,7 +219,30 @@ npm run dev        # http://localhost:5173
 cd backend
 npm install
 node server.js     # http://localhost:5000
+
+# One-time database seed (run after schema.sql is applied in Supabase)
+node seed.js         # Lesson data (4 types, 80 examples)
+node seedQuizzes.js  # Extra quiz data (6 quizzes, 60 questions)
 ```
+
+---
+
+## Backend API Endpoints
+
+| Method | Route | Auth | Purpose |
+|--------|-------|------|---------|
+| GET | `/api/health` | No | Service health check |
+| POST | `/api/users/sync` | Yes | Upsert Firebase user into Supabase |
+| GET | `/api/progress` | Yes | Get user's completed examples |
+| POST | `/api/progress/complete` | Yes | Mark an example as complete |
+| POST | `/api/trace` | No | Run Python code through tracer |
+| GET | `/api/lessons` | No | All lesson types (registry) |
+| GET | `/api/lessons/:lessonId` | No | Lesson detail with difficulties + example titles |
+| GET | `/api/examples/:exampleId` | No | Full example (steps, quiz, nodes, edges) |
+| GET | `/api/quizzes` | No | All extra practice quizzes |
+| GET | `/api/quizzes/:quizId` | No | Quiz with all questions and options |
+| POST | `/api/quizzes/:quizId/submit` | Yes | Save quiz attempt result |
+| GET | `/api/quizzes/my-attempts` | Yes | User's past quiz attempts |
 
 ---
 
@@ -219,34 +255,36 @@ node server.js     # http://localhost:5000
 - [x] `AuthContext` with `user`, `loading`, `getToken`, `signOut`
 
 ### UI & Theme
-- [x] Dark / Light mode toggle — persists to `localStorage`, available on all pages including login/signup
-- [x] Consistent white-card text visibility — all white-background cards force `text-gray-900` regardless of theme
-- [x] Loading skeleton system — `SkeletonCard`, `SkeletonHero`, `SkeletonList` shimmer placeholders
-- [x] Global error boundary — catches runtime JS errors and shows a friendly fallback UI
-- [x] 404 Not Found page — improved copy and "Go back" button
-- [x] Mobile-responsive visualizer — tab switcher (Code / Graph & Vars) on small screens
+- [x] Dark / Light mode toggle — persists to `localStorage`, on all pages
+- [x] Consistent white-card text — all white-background cards force `text-gray-900`
+- [x] Loading skeleton system — `SkeletonCard`, `SkeletonHero`, `SkeletonList`
+- [x] Global error boundary — friendly fallback UI for runtime JS errors
+- [x] 404 Not Found page with "Go back" button
+- [x] Mobile-responsive visualizer — Code / Graph & Vars tab switcher on small screens
+- [x] Consistent header tabs — "Resources" label unified across all pages
 
-### Lessons & Learning
-- [x] Lesson registry with 4 lesson types, all marked `available: true`
-- [x] **Lesson Type 1 — Python Step Visualizer** (20 examples: variables, loops, functions, recursion)
-- [x] **Lesson Type 2 — Data Structures Explorer** (20 examples: lists, stacks, queues, dictionaries)
-- [x] **Lesson Type 3 — Algorithm Patterns** (20 examples: searching, sorting, recursion, two pointers)
-- [x] **Lesson Type 4 — System Design Basics** (20 examples: caching, traffic, API patterns, advanced patterns)
-- [x] Difficulty progression within each lesson (Beginner → Easy → Medium → Hard)
-- [x] Visualize-first then quiz logic — quiz only appears after first visualizer interaction
+### Lessons & Learning (fully dynamic from Supabase)
+- [x] `LessonsContext` — eagerly fetches all module data on boot, caches for instant progress calculations
+- [x] **Lesson Type 1 — Python Step Visualizer** (20 examples)
+- [x] **Lesson Type 2 — Data Structures Explorer** (20 examples)
+- [x] **Lesson Type 3 — Algorithm Patterns** (20 examples)
+- [x] **Lesson Type 4 — System Design Basics** (20 examples)
+- [x] Difficulty progression (Beginner → Easy → Medium → Hard)
+- [x] Visualize-first then quiz — quiz unlocks after interacting with visualizer
+- [x] Examples fetched on-demand from `/api/examples/:id` (no more hardcoded data at runtime)
 
 ### Progress Tracking
-- [x] `useProgress` hook — `markComplete`, `isComplete`, `getLessonProgress`, `getTotalProgress`
-- [x] `localStorage` as fast cache layer — hydrates instantly on page load
+- [x] `useProgress` hook — uses `LessonsContext` for totals (no hardcoded modules)
+- [x] `localStorage` fast cache layer — hydrates instantly on page load
 - [x] Supabase sync — progress persisted to backend on `markComplete`
 - [x] `progressLoading` state — skeleton shown while remote data loads
-- [x] `ensureUser` guard in backend progress controller — auto-upserts user before any write
+- [x] Progress calculations wait for module cache before showing stats (fixes false 100%)
 
 ### Dashboard
 - [x] Dynamic hero with real progress percentage (conic-gradient ring)
-- [x] Quick stats row (completed lessons, total examples, etc.)
-- [x] "Continue Learning" section — only shows lessons the user has started
-- [x] "No lessons started yet" placeholder card with Browse Lessons CTA if nothing started
+- [x] Quick stats row (completed, remaining, total, percent)
+- [x] "Continue Learning" section — only lessons the user has started
+- [x] "No lessons started yet" placeholder card with Browse Lessons CTA
 
 ### Python Visualizer (Playground)
 - [x] Step-by-step code execution using `sys.settrace` in `tracer.py`
@@ -255,31 +293,40 @@ node server.js     # http://localhost:5000
 - [x] 4 quick-example buttons
 - [x] "Waking backend…" cold-start status for Render free tier
 
+### Extra Practice Quizzes
+- [x] 6 timed quizzes fully stored in Supabase (seeded via `seedQuizzes.js`)
+- [x] Quiz listing page (`/quiz`) — fetches live from DB, shows count/difficulty/time
+- [x] Quiz-taking page (`/quiz/:id`) with 3 phases: Ready → Active → Results
+- [x] Countdown timer — auto-submits when time runs out, red pulse when ≤ 30s
+- [x] Per-question instant feedback — correct (green) / incorrect (red) after each answer
+- [x] Score ring on results screen with percentage, grade label, full answer review
+- [x] Attempt saved to `extra_quiz_attempts` in Supabase after finish
+- [x] "Try Again" resets the quiz; "All Quizzes" returns to listing
+
 ### Backend (MVC)
 - [x] Express app with MVC structure — config / middleware / controllers / models / routes
 - [x] Firebase Admin SDK token verification middleware (`requireAuth`)
-- [x] `POST /api/users/sync` — upsert Firebase user into Supabase
-- [x] `GET/POST /api/progress` — read and write user progress
-- [x] `POST /api/trace` — run Python tracer subprocess
-- [x] `GET /api/health` — service health check
+- [x] `lessonModel` + `lessonController` + `lessonRoutes` — full lesson API
+- [x] `quizModel` + `quizController` + `quizRoutes` — full quiz API with attempt saving
+- [x] `seed.js` — one-time migration from `lessonModules.js` → Supabase
+- [x] `seedQuizzes.js` — one-time seed for 6 extra practice quizzes
 
 ---
 
 ## What's Left 🔲
 
 ### High Priority
-- [ ] **AI Assistant** — currently scaffolded (`AiAssistant.jsx`), needs real LLM API integration (e.g. OpenAI / Gemini)
-- [ ] **Dynamic quiz questions** — quiz data is currently hardcoded in `lessonModules.js`; a future API + database table would allow adding/editing questions without a redeploy
-- [ ] **Graph / Tree Explorer lesson (Type 5)** — visualise tree traversals and graph algorithms with animated node graphs
+- [ ] **AI Assistant** — currently scaffolded (`AiAssistant.jsx`), needs real LLM API integration (OpenAI / Gemini)
+- [ ] **Graph / Tree Explorer lesson (Type 5)** — visualise tree traversals and graph algorithms
 
 ### Medium Priority
 - [ ] **User profile page** — show name, email, joined date, overall stats
 - [ ] **Streak tracking** — daily login streak saved to Supabase, shown on dashboard
 - [ ] **Lesson search / filter** — filter by difficulty or topic on the Lessons landing page
-- [ ] **Backend cold-start fix** — Render free tier sleeps after inactivity; consider upgrading or adding a keep-alive ping
+- [ ] **Quiz leaderboard** — show top scores per quiz across all users
+- [ ] **Backend cold-start fix** — Render free tier sleeps after inactivity; keep-alive ping
 
 ### Nice to Have
-- [ ] **Leaderboard** — compare progress with other users
 - [ ] **Bookmarks** — save favourite examples to revisit
 - [ ] **Share snippet** — share a visualizer state via URL
 - [ ] **Export progress** — download progress as PDF or CSV
