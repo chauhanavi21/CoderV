@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLessonsContext } from '../contexts/LessonsContext';
 
 const STORAGE_KEY = 'coderv-progress';
-const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
 // ── Local storage helpers ────────────────────────────────────────────────────
 function loadLocal() {

@@ -13,7 +13,7 @@ A structured, interactive platform for learning Python through lessons, code vis
 | Service  | URL |
 |----------|-----|
 | Frontend | https://coder-v.vercel.app |
-| Backend  | https://coderv-backend.onrender.com |
+| Backend  | https://coderv.onrender.com |
 | Backend source (separate repo) | https://github.com/chauhanavi21/coderv-backend |
 
 ---
@@ -184,7 +184,7 @@ Each type has **4 difficulties × 5 examples = 20 examples** (80 total).
 
 ### Frontend (`frontend/.env.local` — never commit)
 ```
-VITE_API_URL=https://coderv-backend.onrender.com
+VITE_API_URL=https://coderv.onrender.com
 VITE_FIREBASE_API_KEY=...
 VITE_FIREBASE_AUTH_DOMAIN=...
 VITE_FIREBASE_PROJECT_ID=...

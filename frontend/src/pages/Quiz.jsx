@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { SkeletonList } from '../components/SkeletonCard';
 
-const BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+const BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
 const difficultyStyles = {
   easy:   { badge: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500' },

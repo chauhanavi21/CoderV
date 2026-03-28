@@ -7,7 +7,7 @@ import {
 import { auth } from '../lib/firebase';
 import { useTheme } from '../contexts/ThemeContext';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
 function firebaseError(code) {
   switch (code) {

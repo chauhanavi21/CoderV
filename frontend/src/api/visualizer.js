@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
 /**
  * Send Python code to the backend tracer and return { code, steps }.

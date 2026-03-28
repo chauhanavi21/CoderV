@@ -4,7 +4,7 @@ import AppLayout from '../components/AppLayout';
 import { SkeletonCard } from '../components/SkeletonCard';
 import { useAuth } from '../contexts/AuthContext';
 
-const BASE = import.meta.env.VITE_API_URL || 'https://coderv-backend.onrender.com';
+const BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
 const difficultyStyles = {
   easy:   'bg-emerald-100 text-emerald-800',
