@@ -3,6 +3,7 @@ import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
+import { isDifficultyAccessible } from '../utils/lessonProgressGates';
 
 const difficultyTone = {
   beginner: {
@@ -31,7 +32,7 @@ export default function LessonDetail() {
   const { lessonId } = useParams();
   const { registry } = useLessonsContext();
   const { module, loading: moduleLoading, error: moduleError } = useLessonDetail(lessonId);
-  const { getLessonProgress, getDifficultyProgress, progressLoading } = useProgress();
+  const { getLessonProgress, getDifficultyProgress, progressLoading, isComplete } = useProgress();
 
   const lesson = registry.find((l) => l.id === lessonId);
 
@@ -140,22 +141,31 @@ export default function LessonDetail() {
             const diff = module.difficulties[diffId];
             const dp = getDifficultyProgress(lessonId, diffId);
             const tone = difficultyTone[diffId] || difficultyTone.beginner;
+            const accessible = isDifficultyAccessible(module, lessonId, diffId, isComplete);
 
-            return (
-              <Link
-                key={diffId}
-                to={`/lessons/${lessonId}/${diffId}`}
-                className={`border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-hover ${tone.card}`}
-              >
+            const cardInner = (
+              <>
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-bold text-lg">{diff.label}</h3>
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${tone.badge}`}>
-                    {diff.examples.length} examples
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {!accessible && (
+                      <span className="rounded-full bg-slate-200 dark:bg-slate-600 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                        Locked
+                      </span>
+                    )}
+                    <span className={`rounded-full px-3 py-1 text-xs font-bold ${tone.badge}`}>
+                      {diff.examples.length} examples
+                    </span>
+                  </div>
                 </div>
                 <p className="text-sm leading-relaxed opacity-80 flex-1">{diff.description}</p>
+                {!accessible && (
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    Complete every example in the previous difficulty with at least 80% on each quiz.
+                  </p>
+                )}
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1 bg-white/50 rounded-full h-2">
+                  <div className="flex-1 bg-white/50 dark:bg-white/10 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all duration-500 ${tone.bar}`}
                       style={{ width: `${dp.percent}%` }}
@@ -165,7 +175,28 @@ export default function LessonDetail() {
                     {dp.completed}/{dp.total}
                   </span>
                 </div>
-              </Link>
+              </>
+            );
+
+            if (accessible) {
+              return (
+                <Link
+                  key={diffId}
+                  to={`/lessons/${lessonId}/${diffId}`}
+                  className={`border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-hover dark:border-slate-700 ${tone.card}`}
+                >
+                  {cardInner}
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={diffId}
+                className={`border rounded-2xl p-6 flex flex-col gap-4 cursor-not-allowed opacity-70 dark:border-slate-700 ${tone.card}`}
+              >
+                {cardInner}
+              </div>
             );
           })}
         </div>

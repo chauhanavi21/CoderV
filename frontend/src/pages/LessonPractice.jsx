@@ -7,6 +7,11 @@ import { SkeletonCard } from '../components/SkeletonCard';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { fetchExample } from '../api/lessons';
 import { useProgress } from '../hooks/useProgress';
+import {
+  getSuggestedExampleId,
+  isDifficultyAccessible,
+  isExampleUnlocked,
+} from '../utils/lessonProgressGates';
 
 export default function LessonPractice() {
   const { lessonId, difficulty } = useParams();
@@ -20,14 +25,26 @@ export default function LessonPractice() {
   const [activeExample, setActiveExample] = useState(null);
   const [exampleLoading, setExampleLoading] = useState(false);
   const [hasStartedVisualizer, setHasStartedVisualizer] = useState(false);
+  const [challengeAccepted, setChallengeAccepted] = useState(false);
 
   const { markComplete, isComplete, progressLoading } = useProgress();
 
-  // Set first example when difficulty data loads
   useEffect(() => {
-    const firstId = difficultyData?.examples?.[0]?.id;
-    if (firstId) setActiveExampleId(firstId);
-  }, [difficultyData]);
+    if (progressLoading || !difficultyData?.examples?.length) return;
+
+    setActiveExampleId((prev) => {
+      const examples = difficultyData.examples;
+      const fallback =
+        getSuggestedExampleId(examples, lessonId, difficulty, isComplete) ?? examples[0].id;
+
+      if (!prev) return fallback;
+
+      const idx = examples.findIndex((e) => e.id === prev);
+      if (idx < 0) return fallback;
+      if (!isExampleUnlocked(examples, idx, lessonId, difficulty, isComplete)) return fallback;
+      return prev;
+    });
+  }, [difficultyData, lessonId, difficulty, isComplete, progressLoading]);
 
   // Fetch full example whenever active example ID changes
   useEffect(() => {
@@ -35,6 +52,7 @@ export default function LessonPractice() {
     setExampleLoading(true);
     setActiveExample(null);
     setHasStartedVisualizer(false);
+    setChallengeAccepted(false);
     fetchExample(activeExampleId)
       .then(setActiveExample)
       .catch(() => setActiveExample(null))
@@ -44,6 +62,7 @@ export default function LessonPractice() {
   // Reset gate on difficulty change
   useEffect(() => {
     setHasStartedVisualizer(false);
+    setChallengeAccepted(false);
   }, [difficulty]);
 
   const tabs = [
@@ -67,6 +86,10 @@ export default function LessonPractice() {
 
   if (!module || !difficultyData) {
     return <Navigate to="/lessons" replace />;
+  }
+
+  if (!isDifficultyAccessible(module, lessonId, difficulty, isComplete)) {
+    return <Navigate to={`/lessons/${lessonId}`} replace />;
   }
 
   return (
@@ -106,13 +129,28 @@ export default function LessonPractice() {
             {difficultyData.examples.map((ex, index) => {
               const isSelected = ex.id === activeExampleId;
               const done = isComplete(lessonId, difficulty, ex.id);
+              const unlocked = isExampleUnlocked(
+                difficultyData.examples,
+                index,
+                lessonId,
+                difficulty,
+                isComplete
+              );
               return (
                 <button
                   key={ex.id}
                   type="button"
-                  onClick={() => setActiveExampleId(ex.id)}
+                  disabled={!unlocked}
+                  title={
+                    unlocked
+                      ? undefined
+                      : 'Complete the previous example with at least 80% on the quiz to unlock.'
+                  }
+                  onClick={() => unlocked && setActiveExampleId(ex.id)}
                   className={`rounded-xl border p-4 text-left transition-all ${
-                    isSelected
+                    !unlocked
+                      ? 'border-gray-200 dark:border-slate-700 opacity-50 cursor-not-allowed'
+                      : isSelected
                       ? 'border-primary dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-sm'
                       : 'border-gray-200 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
                   }`}
@@ -199,14 +237,32 @@ export default function LessonPractice() {
               {/* Quiz */}
               {activeExample.quiz?.length > 0 && (
                 hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id) ? (
-                  <div className="animate-fade-in">
-                    <QuizSection
-                      key={`quiz-${activeExample.id}`}
-                      quiz={activeExample.quiz}
-                      alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
-                      onAllCorrect={() => markComplete(lessonId, difficulty, activeExample.id)}
-                    />
-                  </div>
+                  challengeAccepted ? (
+                    <div className="animate-fade-in">
+                      <QuizSection
+                        key={`quiz-${activeExample.id}`}
+                        quiz={activeExample.quiz}
+                        alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
+                        onPass={() => markComplete(lessonId, difficulty, activeExample.id)}
+                      />
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        Ready when you are.
+                      </p>
+                      <p className="mt-2 text-sm text-muted dark:text-slate-400">
+                        Open the quiz only if you want a quick check on this example.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setChallengeAccepted(true)}
+                        className="mt-6 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:ring-offset-slate-900"
+                      >
+                        Challenge me
+                      </button>
+                    </div>
+                  )
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8 text-center">
                     <p className="text-sm text-muted dark:text-slate-400">
