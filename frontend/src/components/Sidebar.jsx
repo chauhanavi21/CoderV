@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useWebLabUiCustomizeOptional } from '../contexts/WebLabUiCustomizeContext';
 
 const sidebarLinks = [
   { to: '/dashboard',  label: 'Home' },
@@ -14,6 +15,7 @@ export default function Sidebar({ id }) {
   const [hidden,   setHidden]   = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 840);
   const { user, signOut } = useAuth();
+  const uiCustomize = useWebLabUiCustomizeOptional();
 
   useEffect(() => {
     const check = () => {
@@ -66,6 +68,7 @@ export default function Sidebar({ id }) {
       {/* Sidebar */}
       <aside
         id={id}
+        data-coderv-sidebar-shell=""
         className={`
           border-r border-gray-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm p-4
           flex flex-col sticky top-0 h-screen
@@ -95,10 +98,16 @@ export default function Sidebar({ id }) {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-0.5 py-2">
-          {sidebarLinks.map((link) => (
+          {sidebarLinks.map((link) => {
+            const label =
+              link.to === '/lessons' && uiCustomize?.learningNavLabel != null && uiCustomize.learningNavLabel !== ''
+                ? uiCustomize.learningNavLabel
+                : link.label;
+            return (
             <NavLink
               key={link.to}
               to={link.to}
+              {...(link.to === '/lessons' ? { 'data-coderv-sidebar-learning': '' } : {})}
               onClick={() => isMobile && setHidden(true)}
               className={({ isActive }) =>
                 `px-3 py-2 rounded-lg font-semibold text-sm transition-colors ${
@@ -108,9 +117,10 @@ export default function Sidebar({ id }) {
                 }`
               }
             >
-              {link.label}
+              {label}
             </NavLink>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="flex-1" />
@@ -118,10 +128,13 @@ export default function Sidebar({ id }) {
         {/* Sign out */}
         <button
           type="button"
+          data-coderv-sidebar-signout=""
           onClick={() => signOut()}
           className="w-full text-left px-3 py-2 rounded-lg font-semibold text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
         >
-          Sign out
+          {uiCustomize?.signOutLabel != null && uiCustomize.signOutLabel !== ''
+            ? uiCustomize.signOutLabel
+            : 'Sign out'}
         </button>
       </aside>
     </>

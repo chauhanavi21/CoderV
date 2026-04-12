@@ -1,17 +1,24 @@
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
+import { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../hooks/useProgress';
 import { useLessonsContext } from '../contexts/LessonsContext';
+import { useWebLabDashboardHackOptional } from '../contexts/WebLabDashboardHackContext';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { registry, registryLoading } = useLessonsContext();
   const { getTotalProgress, getLessonProgress, progressLoading } = useProgress();
+  const dashboardHack = useWebLabDashboardHackOptional();
 
   const firstName = user?.displayName?.split(' ')?.[0] || user?.email?.split('@')?.[0] || 'there';
-  const total = getTotalProgress();
+  const totalRaw = getTotalProgress();
+  const total = useMemo(
+    () => (dashboardHack ? dashboardHack.mergeTotalProgress(totalRaw) : totalRaw),
+    [dashboardHack, totalRaw]
+  );
 
   // Build per-lesson progress for the cards
   const lessonCards = registry.map((lesson) => ({

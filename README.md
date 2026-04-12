@@ -195,7 +195,7 @@ VITE_FIREBASE_APP_ID=...
 
 ### Backend (`backend/.env` — never commit)
 ```
-PORT=5000
+PORT=5050
 PYTHON_CMD=python
 ALLOWED_ORIGINS=https://coder-v.vercel.app,http://localhost:5173
 FIREBASE_PROJECT_ID=...
@@ -218,7 +218,7 @@ npm run dev        # http://localhost:5173
 # Backend
 cd backend
 npm install
-node server.js     # http://localhost:5000
+node server.js     # http://localhost:5050 (default; avoids macOS AirPlay on 5000)
 
 # One-time database seed (run after schema.sql is applied in Supabase)
 node seed.js         # Lesson data (4 types, 80 examples)

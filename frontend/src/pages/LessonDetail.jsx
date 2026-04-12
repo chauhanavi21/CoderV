@@ -133,7 +133,9 @@ export default function LessonDetail() {
       <section className="mt-8">
         <h2 className="text-xl font-bold">Choose a difficulty</h2>
         <p className="text-sm text-muted mt-1">
-          Each level contains five examples. Complete them all to master this lesson.
+          {lessonId === 'web-lab'
+            ? 'Complete HTML, then CSS, then JS: HTML/CSS edit the real sidebar and reset when you change stage, mark complete, or leave the lesson; JS runs a temporary in-memory “hack” of dashboard scores (not saved). Mark each stage when done.'
+            : 'Each level contains five examples. Complete them all to master this lesson.'}
         </p>
 
         <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -161,7 +163,9 @@ export default function LessonDetail() {
                 <p className="text-sm leading-relaxed opacity-80 flex-1">{diff.description}</p>
                 {!accessible && (
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Complete every example in the previous difficulty with at least 80% on each quiz.
+                    {lessonId === 'web-lab'
+                      ? 'Open the previous stage in the lab and use Mark stage complete before this step unlocks.'
+                      : 'Complete every example in the previous difficulty with at least 80% on each quiz.'}
                   </p>
                 )}
                 <div className="flex items-center justify-between gap-3">

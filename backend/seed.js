@@ -5,29 +5,50 @@
  *   node seed.js
  *
  * Requires: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in backend/.env
+ *
+ * Loads backend/.env from this file's directory so it works even if your shell
+ * cwd is not the backend folder.
  */
 
-import 'dotenv/config';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: join(__dirname, '.env') });
+
+const supabaseUrl = process.env.SUPABASE_URL?.trim();
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+if (!supabaseUrl || !supabaseKey) {
+  console.error('\n✗ Missing Supabase credentials for seed.js.');
+  console.error(`  Expected file: ${join(__dirname, '.env')}`);
+  console.error('  Required variables: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY');
+  if (!supabaseUrl && process.env.VITE_SUPABASE_URL) {
+    console.error(
+      '\n  Hint: VITE_SUPABASE_URL is set (often in frontend/.env). Copy SUPABASE_URL and\n' +
+        '  SUPABASE_SERVICE_ROLE_KEY into backend/.env — the server seed uses unprefixed names.\n'
+    );
+  }
+  process.exit(1);
+}
 import {
   lessonsRegistry,
   lessonTypeOneModule,
   lessonTypeTwoModule,
   lessonTypeThreeModule,
   lessonTypeFourModule,
+  webLabModule,
 } from '../frontend/src/data/lessonModules.js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { persistSession: false } }
-);
+const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
 const MODULES = {
   'type-1': lessonTypeOneModule,
   'type-2': lessonTypeTwoModule,
   'type-3': lessonTypeThreeModule,
   'type-4': lessonTypeFourModule,
+  'web-lab': webLabModule,
 };
 
 async function upsert(table, rows, conflict) {
@@ -98,6 +119,37 @@ async function seed() {
     });
     await upsert('difficulties', diffRows, 'lesson_id,difficulty_key');
     console.log(`  ✓ ${diffRows.length} difficulties`);
+
+    // Drop difficulties (and their examples) removed from the module definition
+    const { data: allDiffKeys, error: diffListErr } = await supabase
+      .from('difficulties')
+      .select('difficulty_key')
+      .eq('lesson_id', lessonId);
+    if (diffListErr) throw diffListErr;
+    for (const { difficulty_key: dk } of allDiffKeys || []) {
+      if (mod.difficultyOrder.includes(dk)) continue;
+      const { data: orphanedEx, error: exListErr } = await supabase
+        .from('examples')
+        .select('id')
+        .eq('lesson_id', lessonId)
+        .eq('difficulty_key', dk);
+      if (exListErr) throw exListErr;
+      for (const { id: exId } of orphanedEx || []) {
+        await deleteWhere('example_steps', 'example_id', exId);
+        await deleteWhere('graph_edges', 'example_id', exId);
+        await deleteWhere('graph_nodes', 'example_id', exId);
+        const qRows = await getQuestionIds(exId);
+        for (const q of qRows) {
+          const { error: optDelErr } = await supabase.from('quiz_options').delete().eq('question_id', q.id);
+          if (optDelErr) throw new Error(`[delete quiz_options] ${optDelErr.message}`);
+        }
+        await deleteWhere('quiz_questions', 'example_id', exId);
+        const { error: exDelErr } = await supabase.from('examples').delete().eq('id', exId);
+        if (exDelErr) throw new Error(`[delete examples] ${exDelErr.message}`);
+      }
+      const { error: diffDelErr } = await supabase.from('difficulties').delete().eq('lesson_id', lessonId).eq('difficulty_key', dk);
+      if (diffDelErr) throw new Error(`[delete difficulties] ${diffDelErr.message}`);
+    }
 
     let exCount = 0;
     let stepCount = 0;

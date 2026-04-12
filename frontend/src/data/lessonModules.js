@@ -35,6 +35,15 @@ export const lessonsRegistry = [
     color: 'bg-rose-600',
     available: true,
   },
+  {
+    id: 'web-lab',
+    number: 5,
+    title: 'Customize the website',
+    description:
+      'Change the real sidebar with HTML and CSS (changes clear when you switch stages, mark complete, or leave the lesson), then use JavaScript for a short live “hack” of dashboard scores (not saved).',
+    color: 'bg-cyan-600',
+    available: true,
+  },
 ];
 
 export function getLessonModule(lessonId) {
@@ -47,6 +56,8 @@ export function getLessonModule(lessonId) {
       return lessonTypeThreeModule;
     case 'type-4':
       return lessonTypeFourModule;
+    case 'web-lab':
+      return webLabModule;
     default:
       return null;
   }
@@ -3237,6 +3248,81 @@ print("In use:", in_use)`,
             { line: 19, desc: 'Print Got: conn_3', action: { type: 'output', val: 'Got: conn_3' } },
             { line: 20, desc: 'Print In use: ["conn_2","conn_3"]', action: { type: 'output', val: 'In use: ["conn_2", "conn_3"]' } },
           ],
+        },
+      ],
+    },
+  },
+};
+
+/** Hands-on: edit real app chrome; completion from lab UI. */
+export const webLabModule = {
+  id: 'web-lab',
+  title: 'Customize the website',
+  lessonType: {
+    id: 'web-lab',
+    label: 'Web',
+    name: 'Real UI labels',
+    totalTypes: 5,
+  },
+  summary:
+    'Edit real HTML and CSS for the left sidebar (live while you work; resets when you switch HTML/CSS/JS tabs, mark a stage complete, or leave this lesson). Then run sandboxed JS that temporarily rewires the dashboard totals you see on Home — nothing is written to the database.',
+  difficultyOrder: ['html', 'css', 'js'],
+  difficulties: {
+    html: {
+      id: 'html',
+      label: 'Sidebar HTML',
+      description: 'Edit a short HTML fragment; the app parses your tags and updates the real sidebar.',
+      examples: [
+        {
+          id: 'web-lab-html',
+          title: 'Sidebar HTML fragment',
+          concept: 'User-visible strings can be driven from app state.',
+          code: '',
+          explanation: '',
+          challenge: '',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+      ],
+    },
+    css: {
+      id: 'css',
+      label: 'Sidebar CSS',
+      description: 'Write CSS for colors, fonts, and spacing; rules are scoped to the real sidebar only.',
+      examples: [
+        {
+          id: 'web-lab-css',
+          title: 'Sidebar stylesheet',
+          concept: 'Selectors can target attributes on real DOM nodes.',
+          code: '',
+          explanation: '',
+          challenge: '',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+      ],
+    },
+    js: {
+      id: 'js',
+      label: 'Dashboard JS',
+      description:
+        'After customizing the sidebar (including the sign-out row), write JavaScript that updates your Home progress numbers for a short in-memory session only (not saved).',
+      examples: [
+        {
+          id: 'web-lab-js',
+          title: 'Live dashboard totals',
+          concept: 'postMessage can update parent UI state without persisting to an API.',
+          code: '',
+          explanation: '',
+          challenge: '',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
         },
       ],
     },

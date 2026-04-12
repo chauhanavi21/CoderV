@@ -19,6 +19,10 @@ import NotFound from './pages/NotFound';
 
 const P = ({ children }) => <ProtectedRoute>{children}</ProtectedRoute>;
 
+function LegacyWebLabRedirect() {
+  return <Navigate to="/lessons/web-lab/html" replace />;
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -35,6 +39,7 @@ function App() {
         <Route path="/lessons/:lessonId" element={<P><LessonDetail /></P>} />
         <Route path="/lessons/:lessonId/:difficulty" element={<P><LessonPractice /></P>} />
         <Route path="/playground" element={<P><Playground /></P>} />
+        <Route path="/web-lab/*" element={<P><LegacyWebLabRedirect /></P>} />
         <Route path="/quiz" element={<P><Quiz /></P>} />
         <Route path="/quiz/:quizId" element={<P><QuizTake /></P>} />
         <Route path="/ai" element={<P><AiAssistant /></P>} />

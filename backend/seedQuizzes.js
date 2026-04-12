@@ -5,14 +5,23 @@
  *   node seedQuizzes.js
  */
 
-import 'dotenv/config';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { persistSession: false } }
-);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: join(__dirname, '.env') });
+
+const supabaseUrl = process.env.SUPABASE_URL?.trim();
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+if (!supabaseUrl || !supabaseKey) {
+  console.error('\n✗ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');
+  console.error(`  Put them in: ${join(__dirname, '.env')}\n`);
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Quiz data — 6 quizzes, 10 questions each

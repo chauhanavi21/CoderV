@@ -6,6 +6,8 @@ import App from './App.jsx';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { LessonsProvider } from './contexts/LessonsContext.jsx';
+import { WebLabUiCustomizeProvider } from './contexts/WebLabUiCustomizeContext.jsx';
+import { WebLabDashboardHackProvider } from './contexts/WebLabDashboardHackContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,7 +15,11 @@ createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <ThemeProvider>
           <LessonsProvider>
-            <App />
+            <WebLabUiCustomizeProvider>
+              <WebLabDashboardHackProvider>
+                <App />
+              </WebLabDashboardHackProvider>
+            </WebLabUiCustomizeProvider>
           </LessonsProvider>
         </ThemeProvider>
       </AuthProvider>
