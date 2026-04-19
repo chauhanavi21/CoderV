@@ -9,6 +9,7 @@ import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { fetchExample } from '../api/lessons';
 import { useProgress } from '../hooks/useProgress';
 import WebCustomizeLab from './WebCustomizeLab';
+import BugFixLab from './BugFixLab';
 import {
   getSuggestedExampleId,
   isDifficultyAccessible,
@@ -71,6 +72,23 @@ export default function LessonPractice() {
     { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
     { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData?.label ?? difficulty },
   ];
+
+  if (lessonId === 'basics') {
+    if (moduleLoading || progressLoading) {
+      return (
+        <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
+          <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+            <SkeletonCard className="h-64" />
+            <div className="grid gap-6">
+              <SkeletonCard />
+              <SkeletonCard className="h-56" />
+            </div>
+          </div>
+        </AppLayout>
+      );
+    }
+    return <BugFixLab />;
+  }
 
   if (lessonId === 'web-lab') {
     if (difficulty !== 'html' && difficulty !== 'css' && difficulty !== 'js') {

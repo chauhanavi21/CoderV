@@ -39,6 +39,7 @@ import {
   lessonTypeThreeModule,
   lessonTypeFourModule,
   webLabModule,
+  basicsToKnowModule,
 } from '../frontend/src/data/lessonModules.js';
 
 const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
@@ -49,6 +50,7 @@ const MODULES = {
   'type-3': lessonTypeThreeModule,
   'type-4': lessonTypeFourModule,
   'web-lab': webLabModule,
+  'basics': basicsToKnowModule,
 };
 
 async function upsert(table, rows, conflict) {

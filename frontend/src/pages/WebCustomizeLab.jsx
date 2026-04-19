@@ -65,6 +65,7 @@ export default function WebCustomizeLab() {
     parseHints,
     resetSidebarLabels,
     resetSidebarCss,
+    clearSidebarCustomizations,
   } = useWebLabUiCustomize();
 
   const lesson = registry.find((l) => l.id === lessonId);
@@ -81,6 +82,8 @@ export default function WebCustomizeLab() {
   const underLessonPathRef = useRef(null);
   const prevStageRef = useRef(null);
 
+  // Loads the starter HTML+CSS into the editor (and into the live sidebar),
+  // used when the learner enters or switches stages within the lab.
   const resetLabSidebar = useCallback(() => {
     resetSidebarLabels();
     resetSidebarCss();
@@ -90,10 +93,12 @@ export default function WebCustomizeLab() {
     const under = pathname.startsWith(`/lessons/${lessonId}`);
     const prev = underLessonPathRef.current;
     underLessonPathRef.current = under;
-    if (prev === true && under === false) resetLabSidebar();
+    // Leaving the lab: wipe customizations so the rest of the app shows
+    // the plain default sidebar (no purple Learning, no demo styling).
+    if (prev === true && under === false) clearSidebarCustomizations();
     if (prev === false && under === true) resetLabSidebar();
     if (prev === null && under === true) resetLabSidebar();
-  }, [pathname, lessonId, resetLabSidebar]);
+  }, [pathname, lessonId, resetLabSidebar, clearSidebarCustomizations]);
 
   useEffect(() => {
     if (prevStageRef.current !== null && prevStageRef.current !== stage) {
@@ -101,6 +106,14 @@ export default function WebCustomizeLab() {
     }
     prevStageRef.current = stage;
   }, [stage, resetLabSidebar]);
+
+  // Belt-and-suspenders: if this page unmounts for any reason (route change,
+  // logout, etc.), wipe the customizations so the sidebar snaps back.
+  useEffect(() => {
+    return () => {
+      clearSidebarCustomizations();
+    };
+  }, [clearSidebarCustomizations]);
 
   const jsSrcDoc = useMemo(() => buildJsSrcDoc(jsCode), [jsCode]);
 
@@ -404,7 +417,7 @@ export default function WebCustomizeLab() {
               type="button"
               onClick={() => {
                 markComplete(lessonId, stage, exampleId);
-                resetLabSidebar();
+                clearSidebarCustomizations();
               }}
               className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700"
             >

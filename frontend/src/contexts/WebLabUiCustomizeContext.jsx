@@ -114,8 +114,12 @@ export function parseSidebarLabHtml(html) {
 const WebLabUiCustomizeContext = createContext(null);
 
 export function WebLabUiCustomizeProvider({ children }) {
-  const [sidebarHtmlSource, setSidebarHtmlSourceState] = useState(DEFAULT_SIDEBAR_HTML);
-  const [sidebarCssSource, setSidebarCssSourceState] = useState(DEFAULT_SIDEBAR_CSS);
+  // Start empty so the real sidebar looks like the plain default app UI
+  // until the learner actually opens the Web Lab. The starter templates
+  // (DEFAULT_SIDEBAR_HTML / DEFAULT_SIDEBAR_CSS) are loaded into the
+  // editor by WebCustomizeLab when it mounts.
+  const [sidebarHtmlSource, setSidebarHtmlSourceState] = useState('');
+  const [sidebarCssSource, setSidebarCssSourceState] = useState('');
 
   const parsed = useMemo(() => parseSidebarLabHtml(sidebarHtmlSource), [sidebarHtmlSource]);
 
@@ -127,6 +131,8 @@ export function WebLabUiCustomizeProvider({ children }) {
     setSidebarCssSourceState(String(value ?? ''));
   }, []);
 
+  // "Reset to starter template" buttons inside the lab — load the demo
+  // HTML/CSS so the learner sees the example again.
   const resetSidebarLabels = useCallback(() => {
     setSidebarHtmlSourceState(DEFAULT_SIDEBAR_HTML);
     clearLegacySidebarStorage();
@@ -134,6 +140,14 @@ export function WebLabUiCustomizeProvider({ children }) {
 
   const resetSidebarCss = useCallback(() => {
     setSidebarCssSourceState(DEFAULT_SIDEBAR_CSS);
+    clearLegacySidebarStorage();
+  }, []);
+
+  // Used when leaving the lab — wipe both sources so the real sidebar
+  // returns to the default app styling (no injected CSS, default labels).
+  const clearSidebarCustomizations = useCallback(() => {
+    setSidebarHtmlSourceState('');
+    setSidebarCssSourceState('');
     clearLegacySidebarStorage();
   }, []);
 
@@ -149,8 +163,7 @@ export function WebLabUiCustomizeProvider({ children }) {
   // and its own pathname-based reset logic).
   const revertTimerRef = useRef(null);
   useEffect(() => {
-    const isCustomized =
-      sidebarHtmlSource !== DEFAULT_SIDEBAR_HTML || sidebarCssSource !== DEFAULT_SIDEBAR_CSS;
+    const isCustomized = sidebarHtmlSource !== '' || sidebarCssSource !== '';
 
     if (revertTimerRef.current) {
       clearTimeout(revertTimerRef.current);
@@ -161,8 +174,8 @@ export function WebLabUiCustomizeProvider({ children }) {
 
     revertTimerRef.current = setTimeout(() => {
       revertTimerRef.current = null;
-      setSidebarHtmlSourceState(DEFAULT_SIDEBAR_HTML);
-      setSidebarCssSourceState(DEFAULT_SIDEBAR_CSS);
+      setSidebarHtmlSourceState('');
+      setSidebarCssSourceState('');
     }, SIDEBAR_PREVIEW_TTL_MS);
 
     return () => {
@@ -200,6 +213,7 @@ export function WebLabUiCustomizeProvider({ children }) {
       parseHints: parsed.hints,
       resetSidebarLabels,
       resetSidebarCss,
+      clearSidebarCustomizations,
     }),
     [
       sidebarHtmlSource,
@@ -211,6 +225,7 @@ export function WebLabUiCustomizeProvider({ children }) {
       parsed.hints,
       resetSidebarLabels,
       resetSidebarCss,
+      clearSidebarCustomizations,
     ]
   );
 
