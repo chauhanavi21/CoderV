@@ -8,33 +8,50 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#4f46e5',
-        'primary-light': '#6366f1',
-        'primary-dark': '#4338ca',
-        secondary: '#06b6d4',
-        accent: '#f59e0b',
-        success: '#10b981',
-        danger: '#ef4444',
-        muted: '#6b7280',
-        surface: '#ffffff',
-        'bg-start': '#eef2ff',
-        'bg-mid': '#ecfeff',
-        'bg-end': '#fff7ed',
+        // Linear / Vercel-inspired neutral palette.
+        // We deliberately repaint the "indigo" / "primary" tokens used across
+        // the codebase so existing class names keep working but render as a
+        // restrained monochrome system.
+        primary:        '#e5e7eb', // near-white foreground accent (light side)
+        'primary-light':'#f3f4f6',
+        'primary-dark': '#a1a1aa',
+        secondary:      '#a1a1aa',
+        accent:         '#f4f4f5',
+        success:        '#22c55e',
+        danger:         '#ef4444',
+        muted:          '#71717a',
+        surface:        '#0a0a0a',
+        'bg-start':     '#0a0a0a',
+        'bg-mid':       '#0a0a0a',
+        'bg-end':       '#0a0a0a',
       },
       borderRadius: {
-        'card': '16px',
-        'pill': '14px',
+        // Sharper edges across the app. Anything that asks for "2xl" gets 8px.
+        'sm':   '4px',
+        DEFAULT:'6px',
+        'md':   '6px',
+        'lg':   '6px',
+        'xl':   '8px',
+        '2xl':  '8px',
+        '3xl':  '10px',
+        'card': '8px',
+        'pill': '9999px',
       },
       boxShadow: {
-        'card': '0 12px 30px rgba(79, 70, 229, 0.12)',
-        'hover': '0 12px 30px rgba(79, 70, 229, 0.15)',
-        'btn': '0 10px 18px rgba(79, 70, 229, 0.25)',
+        // Replace puffy colored shadows with hairline borders + a tiny lift.
+        'card':  '0 0 0 1px rgba(255,255,255,0.06)',
+        'hover': '0 0 0 1px rgba(255,255,255,0.12), 0 1px 2px rgba(0,0,0,0.4)',
+        'btn':   '0 0 0 1px rgba(255,255,255,0.08)',
+        'sm':    '0 1px 2px rgba(0,0,0,0.4)',
       },
       fontFamily: {
-        sans: ['"Inter"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"Inter"', '"SF Pro Text"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
+      },
+      letterSpacing: {
+        tightish: '-0.011em',
       },
     },
   },
   plugins: [],
 }
-
