@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Check, X } from 'lucide-react';
 import { LESSON_QUIZ_PASS_THRESHOLD_PCT } from '../utils/lessonProgressGates';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -56,34 +57,31 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
     : Object.keys(answers).length;
 
   return (
-    <section className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden text-gray-900 dark:text-slate-100">
-      <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950/40 dark:to-violet-950/40 border-b border-gray-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <section className="hairline rounded-md bg-elevated overflow-hidden text-fg">
+      <div className="px-4 py-3 hairline-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h3 className="text-lg font-extrabold text-indigo-900 dark:text-indigo-200">
+          <h3 className="text-[13px] font-medium text-fg">
             Knowledge Check
           </h3>
-          <p className="text-sm text-indigo-600 dark:text-indigo-300 mt-0.5">
-            Score {LESSON_QUIZ_PASS_THRESHOLD_PCT}% or higher on this check to complete this example.
+          <p className="text-[11px] mono text-fg-subtle mt-0.5">
+            Score {LESSON_QUIZ_PASS_THRESHOLD_PCT}%+ to complete this example.
           </p>
         </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {quiz.map((_, i) => {
-            let dot = 'bg-gray-300 dark:bg-slate-600';
+            let dot = 'bg-zinc-300 dark:bg-zinc-700';
             if (submitted) {
-              dot =
-                answers[i] === quiz[i].answer
-                  ? 'bg-emerald-500'
-                  : 'bg-red-400';
+              dot = answers[i] === quiz[i].answer ? 'bg-emerald-500' : 'bg-red-500';
             }
-            return <span key={i} className={`w-3 h-3 rounded-full transition-colors duration-300 ${dot}`} />;
+            return <span key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${dot}`} />;
           })}
-          <span className="ml-2 text-xs font-bold text-indigo-700 dark:text-indigo-300">
+          <span className="ml-2 text-[11px] mono text-fg-subtle tabular-nums">
             {submitted ? `${correctCount}/${quiz.length}` : `${Object.keys(answers).length}/${quiz.length}`}
           </span>
         </div>
       </div>
 
-      <div className="p-6 grid gap-6">
+      <div className="p-4 grid gap-4">
         {quiz.map((q, qIdx) => {
           const selected = answers[qIdx];
           const isRevealed = submitted || alreadyComplete;
@@ -93,53 +91,48 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
           return (
             <div
               key={qIdx}
-              className={`rounded-xl border p-5 transition-all duration-300 ${
+              className={`hairline rounded-md p-4 transition-colors ${
                 isRevealed
                   ? isCorrect
-                    ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20'
-                    : 'border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30'
-                  : 'border-gray-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50'
+                    ? 'border-emerald-500/30 bg-emerald-500/5'
+                    : 'border-red-500/30 bg-red-500/5'
+                  : 'bg-app'
               }`}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2.5">
                 <span
-                  className={`flex-shrink-0 w-7 h-7 rounded-lg grid place-items-center text-xs font-extrabold ${
+                  className={`flex-shrink-0 w-6 h-6 rounded-md grid place-items-center text-[11px] font-medium mono ${
                     isRevealed
                       ? isCorrect
-                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                        : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
-                      : 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-red-500 text-white'
+                      : 'hairline bg-elevated text-fg-muted'
                   }`}
                 >
-                  {isRevealed && isCorrect ? '✓' : qIdx + 1}
+                  {isRevealed && isCorrect ? <Check size={11} strokeWidth={2.5} /> : qIdx + 1}
                 </span>
-                <p className="font-bold text-slate-900 dark:text-slate-100 text-[15px] leading-snug pt-0.5">
+                <p className="font-medium text-fg text-[13.5px] leading-snug pt-0.5">
                   {q.question}
                 </p>
               </div>
 
-              <div className="mt-4 grid gap-2">
+              <div className="mt-3 grid gap-1.5">
                 {q.options.map((opt, optIdx) => {
                   const isThisSelected = selected === optIdx;
                   const isThisCorrectAnswer = optIdx === q.answer;
 
-                  let optionStyle =
-                    'border-gray-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer';
+                  let optionStyle = 'bg-elevated hover:border-app-strong cursor-pointer';
 
                   if (isRevealed) {
                     if (isThisCorrectAnswer) {
-                      optionStyle =
-                        'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-900 dark:text-emerald-200';
+                      optionStyle = 'border-emerald-500/40 bg-emerald-500/5 text-fg';
                     } else if (isThisSelected && isWrong) {
-                      optionStyle =
-                        'border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200 line-through opacity-80';
+                      optionStyle = 'border-red-500/40 bg-red-500/5 text-fg line-through opacity-80';
                     } else {
-                      optionStyle =
-                        'border-gray-100 dark:border-slate-700 opacity-50 cursor-default text-slate-500 dark:text-slate-400';
+                      optionStyle = 'opacity-50 cursor-default text-fg-subtle';
                     }
                   } else if (isThisSelected) {
-                    optionStyle =
-                      'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/40';
+                    optionStyle = 'border-app-strong bg-zinc-50 dark:bg-zinc-900';
                   }
 
                   return (
@@ -148,34 +141,34 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
                       type="button"
                       disabled={isRevealed}
                       onClick={() => handleSelect(qIdx, optIdx)}
-                      className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all ${optionStyle}`}
+                      className={`hairline flex items-center gap-2.5 rounded-md px-3 py-2.5 text-left text-[12.5px] transition-all ${optionStyle}`}
                     >
                       <span
-                        className={`flex-shrink-0 w-6 h-6 rounded-md grid place-items-center text-xs font-bold ${
+                        className={`flex-shrink-0 w-5 h-5 rounded grid place-items-center text-[10px] font-medium mono ${
                           isRevealed && isThisCorrectAnswer
-                            ? 'bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-100'
+                            ? 'bg-emerald-500 text-white'
                             : isRevealed && isThisSelected && isWrong
-                            ? 'bg-red-200 dark:bg-red-900 text-red-800 dark:text-red-200'
-                            : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
+                            ? 'bg-red-500 text-white'
+                            : 'hairline bg-app text-fg-muted'
                         }`}
                       >
                         {LETTERS[optIdx]}
                       </span>
-                      <span className="leading-snug text-gray-800 dark:text-slate-200">{opt}</span>
+                      <span className="leading-snug text-fg">{opt}</span>
                     </button>
                   );
                 })}
               </div>
 
               {isWrong && (
-                <p className="mt-3 text-sm text-red-600 dark:text-red-400 font-medium">
-                  Incorrect — correct answer is highlighted.
+                <p className="mt-2.5 text-[11.5px] text-red-500 font-medium inline-flex items-center gap-1">
+                  <X size={11} strokeWidth={2.5} /> Incorrect — correct answer highlighted.
                 </p>
               )}
 
               {isRevealed && isCorrect && (
-                <p className="mt-3 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                  Correct!
+                <p className="mt-2.5 text-[11.5px] font-medium text-emerald-500 inline-flex items-center gap-1">
+                  <Check size={11} strokeWidth={2.5} /> Correct
                 </p>
               )}
             </div>
@@ -184,36 +177,34 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
       </div>
 
       {!alreadyComplete && (
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="px-4 py-3 hairline-t bg-app flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           {!submitted ? (
             <button
               type="button"
               disabled={!allAnswered}
               onClick={handleSubmit}
-              className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-45 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:ring-offset-slate-900"
+              className="inline-flex items-center justify-center rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-4 h-9 text-[12px] font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               Check my answers
             </button>
           ) : passed ? (
-            <div className="flex items-center gap-3 w-full sm:w-auto bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-xl px-4 py-3 border border-emerald-200 dark:border-emerald-800/50">
-              <span className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 grid place-items-center text-sm font-bold">
-                ✓
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-md bg-emerald-500 text-white grid place-items-center">
+                <Check size={12} strokeWidth={2.5} />
               </span>
-              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
-                You passed! This example is now complete.
+              <p className="text-[12.5px] font-medium text-emerald-500">
+                You passed — example complete.
               </p>
             </div>
           ) : (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                You scored{' '}
-                {Math.round((correctCount / quiz.length) * 100)}%. You need at least{' '}
-                {LESSON_QUIZ_PASS_THRESHOLD_PCT}% to continue.
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+              <p className="text-[12px] mono text-fg-muted">
+                Scored {Math.round((correctCount / quiz.length) * 100)}% — need {LESSON_QUIZ_PASS_THRESHOLD_PCT}%.
               </p>
               <button
                 type="button"
                 onClick={handleTryAgain}
-                className="inline-flex items-center justify-center rounded-xl border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-extrabold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+                className="hairline inline-flex items-center justify-center rounded-md px-3 h-8 text-[12px] font-medium text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               >
                 Try again
               </button>
@@ -223,11 +214,11 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
       )}
 
       {alreadyComplete && (
-        <div className="px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border-t border-emerald-200 dark:border-emerald-800/50 flex items-center gap-3">
-          <span className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 grid place-items-center text-sm font-bold">
-            ✓
+        <div className="px-4 py-3 hairline-t border-emerald-500/20 bg-emerald-500/5 flex items-center gap-2">
+          <span className="w-6 h-6 rounded-md bg-emerald-500 text-white grid place-items-center">
+            <Check size={12} strokeWidth={2.5} />
           </span>
-          <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+          <p className="text-[12.5px] font-medium text-emerald-500">
             Example already completed
           </p>
         </div>

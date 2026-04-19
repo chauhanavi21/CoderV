@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { Sparkles, User, RotateCcw, Lightbulb, BookOpen, Scissors, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
@@ -7,8 +8,8 @@ const greetingMessage = (count) => ({
   role: 'assistant',
   content:
     count > 1
-      ? `Hi! I'm CoderV's AI tutor. Which question would you like a hint on? Reply with a number from 1 to ${count}.`
-      : `Hi! I'm CoderV's AI tutor. Tap the question number below (1) and ask me anything about it.`,
+      ? `Which question would you like a hint on? Reply with a number from 1 to ${count}.`
+      : `Tap the question number below (1) and ask me anything about it.`,
 });
 
 function buildHelpHint(qIndex) {
@@ -150,36 +151,34 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
   }
 
   return (
-    <section className="rounded-2xl border border-indigo-200 dark:border-indigo-800/60 bg-white dark:bg-slate-800 shadow-sm overflow-hidden text-gray-900 dark:text-slate-100">
+    <section className="hairline rounded-md bg-elevated overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950/40 dark:to-violet-950/40 border-b border-indigo-100 dark:border-indigo-900/40 text-left transition-colors hover:bg-indigo-100/60 dark:hover:bg-indigo-900/30"
+        className="w-full flex items-center gap-3 px-4 h-12 hairline-b text-left transition-colors hover:bg-zinc-100/40 dark:hover:bg-zinc-900/40"
         aria-expanded={open}
       >
-        <span className="grid place-items-center w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white text-lg shadow-sm shrink-0">
-          🤖
+        <span className="hairline grid place-items-center w-7 h-7 rounded-md bg-app text-fg shrink-0">
+          <Sparkles size={13} strokeWidth={1.75} />
         </span>
         <span className="flex-1 min-w-0">
-          <span className="block font-extrabold text-indigo-900 dark:text-indigo-200 text-sm">
-            Stuck? Ask the AI tutor
-          </span>
-          <span className="block text-xs text-indigo-700/80 dark:text-indigo-300/80 mt-0.5">
-            Get hints for any question — no spoilers, just nudges in the right direction.
+          <span className="block text-[13px] font-medium text-fg">Stuck? Ask the AI tutor</span>
+          <span className="block text-[11px] text-fg-subtle mt-0.5">
+            Hints only — no spoilers.
           </span>
         </span>
-        <span className="text-indigo-700 dark:text-indigo-300 text-xs font-bold shrink-0">
-          {open ? 'Hide ▲' : 'Open ▼'}
+        <span className="text-fg-muted">
+          {open ? <ChevronUp size={14} strokeWidth={2} /> : <ChevronDown size={14} strokeWidth={2} />}
         </span>
       </button>
 
       {open && (
-        <div className="p-5 grid gap-4">
+        <div className="p-4 grid gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+            <p className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle mb-2">
               Pick a question
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 items-center">
               {quiz.map((_, idx) => {
                 const isActive = idx === activeIdx;
                 return (
@@ -187,10 +186,10 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
                     key={idx}
                     type="button"
                     onClick={() => selectQuestion(idx)}
-                    className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-extrabold border transition-all ${
+                    className={`min-w-[28px] h-7 px-2 rounded-md text-[12px] font-medium mono transition ${
                       isActive
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                        ? 'bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950'
+                        : 'hairline text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900'
                     }`}
                   >
                     {idx + 1}
@@ -201,19 +200,19 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
                 <button
                   type="button"
                   onClick={resetChat}
-                  className="ml-auto text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                  className="ml-auto inline-flex items-center gap-1.5 text-[11px] mono font-medium text-fg-subtle hover:text-fg transition-colors"
                 >
-                  ↻ Reset chat
+                  <RotateCcw size={11} strokeWidth={2} /> reset
                 </button>
               )}
             </div>
 
             {activeQuestion && (
-              <div className="mt-3 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 px-3 py-2">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <div className="mt-3 hairline rounded-md bg-app px-3 py-2">
+                <p className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle">
                   Q{activeIdx + 1}
                 </p>
-                <p className="text-sm text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">
+                <p className="text-[13px] text-fg mt-0.5 leading-snug">
                   {activeQuestion.question}
                 </p>
               </div>
@@ -222,60 +221,60 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
 
           <div
             ref={scrollRef}
-            className="rounded-xl border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-4 max-h-72 overflow-y-auto grid gap-3"
+            className="hairline rounded-md bg-app p-3 max-h-72 overflow-y-auto grid gap-2.5"
           >
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex gap-2.5 ${
+                className={`flex gap-2 ${
                   msg.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}
               >
                 {msg.role === 'assistant' && (
-                  <span className="grid place-items-center w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white text-sm shrink-0">
-                    🤖
+                  <span className="hairline grid place-items-center w-6 h-6 rounded-md bg-elevated text-fg shrink-0">
+                    <Sparkles size={11} strokeWidth={1.75} />
                   </span>
                 )}
                 <div
-                  className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                  className={`max-w-[80%] px-3 py-2 rounded-md text-[12px] leading-relaxed whitespace-pre-wrap ${
                     msg.role === 'user'
-                      ? 'bg-indigo-600 text-white rounded-br-md'
+                      ? 'bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950'
                       : msg.isError
-                      ? 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800/50 rounded-bl-md'
-                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-gray-200 dark:border-slate-700 rounded-bl-md'
+                      ? 'hairline border-red-500/30 bg-red-500/5 text-red-600 dark:text-red-300'
+                      : 'hairline bg-elevated text-fg'
                   }`}
                 >
                   {msg.content}
                 </div>
                 {msg.role === 'user' && (
-                  <span className="grid place-items-center w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-sm font-bold shrink-0">
-                    👤
+                  <span className="grid place-items-center w-6 h-6 rounded-md bg-zinc-100 dark:bg-zinc-900 text-fg-muted shrink-0">
+                    <User size={11} strokeWidth={1.75} />
                   </span>
                 )}
               </div>
             ))}
 
             {sending && (
-              <div className="flex gap-2.5 justify-start">
-                <span className="grid place-items-center w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white text-sm shrink-0">
-                  🤖
+              <div className="flex gap-2 justify-start">
+                <span className="hairline grid place-items-center w-6 h-6 rounded-md bg-elevated text-fg shrink-0">
+                  <Sparkles size={11} strokeWidth={1.75} />
                 </span>
-                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl rounded-bl-md px-3.5 py-2.5 text-sm text-slate-500 dark:text-slate-400 italic">
-                  Thinking…
+                <div className="hairline bg-elevated rounded-md px-3 py-2 text-[12px] text-fg-subtle italic inline-flex items-center gap-1.5">
+                  <Loader2 size={11} className="animate-spin" /> Thinking
                 </div>
               </div>
             )}
           </div>
 
           {activeIdx != null && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => send(buildHelpHint(activeIdx))}
                 disabled={sending}
-                className="text-xs font-bold rounded-full px-3 py-1.5 border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="hairline inline-flex items-center gap-1.5 rounded-md px-2.5 h-7 text-[11px] font-medium text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-50 transition-colors"
               >
-                💡 Give me a hint
+                <Lightbulb size={11} strokeWidth={1.75} /> Give me a hint
               </button>
               <button
                 type="button"
@@ -285,9 +284,9 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
                   )
                 }
                 disabled={sending}
-                className="text-xs font-bold rounded-full px-3 py-1.5 border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="hairline inline-flex items-center gap-1.5 rounded-md px-2.5 h-7 text-[11px] font-medium text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-50 transition-colors"
               >
-                📚 Explain the concept
+                <BookOpen size={11} strokeWidth={1.75} /> Explain the concept
               </button>
               <button
                 type="button"
@@ -297,9 +296,9 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
                   )
                 }
                 disabled={sending}
-                className="text-xs font-bold rounded-full px-3 py-1.5 border border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="hairline inline-flex items-center gap-1.5 rounded-md px-2.5 h-7 text-[11px] font-medium text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-50 transition-colors"
               >
-                ✂️ Eliminate an option
+                <Scissors size={11} strokeWidth={1.75} /> Eliminate an option
               </button>
             </div>
           )}
@@ -318,28 +317,28 @@ export default function QuizAiBot({ quiz, exampleTitle, exampleConcept }) {
               onChange={(e) => setInput(e.target.value)}
               placeholder={
                 activeIdx == null
-                  ? `Type a number 1–${questionCount} to pick a question…`
+                  ? `Type a number 1–${questionCount}…`
                   : 'Ask the bot for a hint…'
               }
               disabled={sending}
-              className="flex-1 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+              className="flex-1 hairline bg-app rounded-md px-3 h-9 text-[13px] outline-none focus:border-app-strong disabled:opacity-50 text-fg placeholder:text-fg-subtle"
             />
             <button
               type="submit"
               disabled={sending || !input.trim()}
-              className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-45 disabled:cursor-not-allowed transition-colors"
+              className="rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-4 h-9 text-[12px] font-medium disabled:opacity-40 hover:opacity-90 transition"
             >
               Send
             </button>
           </form>
 
           {error && (
-            <p className="text-xs text-red-600 dark:text-red-400 font-semibold">
+            <p className="text-[11px] mono text-red-500">
               {error}
             </p>
           )}
 
-          <p className="text-[11px] text-slate-500 dark:text-slate-500 text-center">
+          <p className="text-[10px] mono text-fg-subtle text-center">
             The AI tutor only gives hints — it will never reveal the correct answer.
           </p>
         </div>
