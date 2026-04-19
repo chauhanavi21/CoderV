@@ -44,6 +44,15 @@ export const lessonsRegistry = [
     color: 'bg-cyan-600',
     available: true,
   },
+  {
+    id: 'basics',
+    number: 6,
+    title: 'Basics to Know',
+    description:
+      'The code is broken. Fix indentation, ranges, missing colons, off-by-one bugs, and other Python basics — then run it to see if your output matches.',
+    color: 'bg-fuchsia-600',
+    available: true,
+  },
 ];
 
 export function getLessonModule(lessonId) {
@@ -58,6 +67,8 @@ export function getLessonModule(lessonId) {
       return lessonTypeFourModule;
     case 'web-lab':
       return webLabModule;
+    case 'basics':
+      return basicsToKnowModule;
     default:
       return null;
   }
@@ -3326,5 +3337,429 @@ export const webLabModule = {
         },
       ],
     },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson 6 — Basics to Know (Fix the bugs lab)
+// 3 difficulties × 5 examples = 15 broken Python snippets.
+// Easy: indentation, missing colons, range basics, == vs =
+// Medium: nested indents, elif/else issues, off-by-one ranges
+// Hard: loop logic, accumulator bugs, string/list iteration mistakes
+// ─────────────────────────────────────────────────────────────────────────────
+export const basicsToKnowModule = {
+  id: 'basics-to-know',
+  title: 'Basics to Know',
+  lessonType: {
+    id: 'basics',
+    label: 'Bug fix',
+    name: 'Fix the broken code',
+    totalTypes: 6,
+  },
+  summary:
+    'Each example shows broken Python code. Read the description, spot the bug, edit the code, then click Run my fix. Your output has to match the expected output to mark the example complete.',
+  difficultyOrder: ['easy', 'medium', 'hard'],
+  difficulties: {
+    easy: {
+      id: 'easy',
+      label: 'Easy',
+      description: 'Single-bug fixes: indentation, missing colon, wrong range, = vs ==.',
+      examples: [
+        {
+          id: 'basics-easy-1',
+          title: 'Indent the print',
+          concept: 'Python uses indentation to group code under an if/for/while.',
+          code: `x = 5
+if x > 0:
+print("positive")`,
+          explanation:
+            'The print line belongs inside the if. Python expects the body of an if statement to be indented (four spaces is standard).',
+          challenge: 'Indent the print so it runs only when x > 0. Expected output: positive',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-easy-2',
+          title: 'Range that prints 1 to 5',
+          concept: 'range(stop) goes from 0 up to (but not including) stop.',
+          code: `for i in range(5):
+    print(i)`,
+          explanation:
+            'range(5) gives 0, 1, 2, 3, 4. To print 1 through 5, you need range(start, stop) where stop is one past the last value you want.',
+          challenge: 'Make this print the numbers 1 2 3 4 5 (each on their own line).',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-easy-3',
+          title: 'Missing colon',
+          concept: 'Every for, while, if, elif, else, def, and class header ends with a colon.',
+          code: `for i in range(3)
+    print(i)`,
+          explanation:
+            "Python complains with a SyntaxError when a header is missing its colon. The body's indentation only matters once the colon is there.",
+          challenge: 'Add the missing punctuation so the loop runs. Expected output: 0 1 2',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-easy-4',
+          title: 'Equality vs assignment',
+          concept: '= assigns a value. == compares two values.',
+          code: `age = 18
+if age = 18:
+    print("adult")
+else:
+    print("not adult")`,
+          explanation:
+            "Inside an if condition you compare with ==. Using a single = is an assignment, which is a SyntaxError inside an if.",
+          challenge: 'Fix the comparison so the program prints: adult',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-easy-5',
+          title: 'While loop indentation',
+          concept: 'Lines inside a loop body must share the same indentation.',
+          code: `count = 1
+while count <= 3:
+print(count)
+    count = count + 1`,
+          explanation:
+            'Both lines that belong to the while loop need to be indented at the same level. As written, print is outside the loop and the next line is over-indented.',
+          challenge: 'Line up the indentation so it prints 1, then 2, then 3.',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+      ],
+    },
+    medium: {
+      id: 'medium',
+      label: 'Medium',
+      description: 'Two-step fixes: off-by-one, elif typos, nested indents, range steps.',
+      examples: [
+        {
+          id: 'basics-medium-1',
+          title: 'Off-by-one in a list loop',
+          concept: 'len(list) gives the count, range(len(list)) covers every index from 0.',
+          code: `nums = [10, 20, 30, 40]
+for i in range(1, len(nums)):
+    print(nums[i])`,
+          explanation:
+            'Starting the range at 1 skips index 0. To touch every element you have to start at 0 (or just use range(len(nums))).',
+          challenge: 'Make this print all four numbers: 10 20 30 40 (one per line).',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-medium-2',
+          title: 'elseif is not Python',
+          concept: 'Python writes else-if as elif (no space, no “else”).',
+          code: `score = 85
+if score >= 90:
+    print("A")
+elseif score >= 80:
+    print("B")
+else:
+    print("C")`,
+          explanation:
+            'Many languages use else if or elseif, but Python only accepts elif. This raises a SyntaxError as written.',
+          challenge: 'Fix the keyword so the program prints: B',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-medium-3',
+          title: 'Nested if, deeper indent',
+          concept: 'Each new block needs another level of indentation.',
+          code: `x = 10
+y = 5
+if x > 0:
+    if y > 0:
+    print("both positive")`,
+          explanation:
+            "The print belongs inside the inner if, which itself sits inside the outer if. That means it needs two levels of indentation, not one.",
+          challenge: 'Fix the indentation so it prints: both positive',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-medium-4',
+          title: 'Even numbers with range step',
+          concept: 'range(start, stop, step) lets you skip values.',
+          code: `for i in range(2, 8):
+    print(i)`,
+          explanation:
+            'Right now it prints 2, 3, 4, 5, 6, 7. To get only even numbers up to 8, change both the stop value and the step.',
+          challenge: 'Print only the even numbers: 2 4 6 8 (one per line).',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-medium-5',
+          title: 'Sum a list with a for loop',
+          concept: 'A for loop header still needs a colon, even when iterating a list.',
+          code: `total = 0
+for i in [1, 2, 3, 4, 5]
+    total = total + i
+print(total)`,
+          explanation:
+            'The colon at the end of the for line is missing. Without it, Python cannot tell where the loop body starts.',
+          challenge: 'Make the program print the sum: 15',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+      ],
+    },
+    hard: {
+      id: 'hard',
+      label: 'Hard',
+      description:
+        'Multi-bug fixes: loop logic errors, wrong starting values, infinite loops, condition flips.',
+      examples: [
+        {
+          id: 'basics-hard-1',
+          title: 'Factorial of 5',
+          concept: 'Multiplying needs a starting value of 1 and a range that includes n.',
+          code: `n = 5
+result = 0
+for i in range(1, n):
+    result = result * i
+print(result)`,
+          explanation:
+            'Two bugs: result starts at 0 (anything × 0 = 0), and range(1, n) stops at 4 instead of 5. Factorial means 1 × 2 × 3 × 4 × 5.',
+          challenge: 'Fix both bugs so the program prints: 120',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-hard-2',
+          title: 'Count the even numbers',
+          concept: '% gives the remainder. n % 2 == 0 means n is even.',
+          code: `numbers = [1, 2, 3, 4, 5, 6]
+count = 0
+for n in numbers:
+    if n % 2 == 1:
+        count = count + 1
+print(count)`,
+          explanation:
+            "Right now the if checks for an odd remainder (1), so it counts odd numbers. We want to count evens, where the remainder is 0.",
+          challenge: 'Fix the condition so the program prints: 3',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-hard-3',
+          title: 'Sum 1 to 10 with while',
+          concept: 'A while loop must change its condition variable, or it runs forever.',
+          code: `i = 1
+total = 0
+while i < 10:
+    total = total + i
+print(total)`,
+          explanation:
+            'Two bugs: i is never updated (infinite loop), and i < 10 stops at 9. To sum 1 through 10 you also need i <= 10.',
+          challenge: 'Fix the loop so the program prints: 55',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-hard-4',
+          title: 'Reverse a list',
+          concept: 'range(start, stop, step) accepts a negative step to count down.',
+          code: `nums = [1, 2, 3, 4, 5]
+reversed_list = []
+for i in range(0, len(nums)):
+    reversed_list.append(nums[i])
+print(reversed_list)`,
+          explanation:
+            "As written, the loop walks the list forwards, so reversed_list ends up the same as nums. To reverse, you need to start from the last index and step backwards.",
+          challenge: 'Make the program print: [5, 4, 3, 2, 1]',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+        {
+          id: 'basics-hard-5',
+          title: 'Find letter L positions',
+          concept: 'Strings are indexable; comparison still uses == not =.',
+          code: `word = "hello"
+for i in range(0, len(word)):
+    if word[i] = "l":
+        print("L found at", i)`,
+          explanation:
+            'The if uses a single = (assignment) where it should use == (compare). Once that is fixed the loop prints positions of every "l".',
+          challenge: 'Fix the comparison so the program prints:\nL found at 2\nL found at 3',
+          quiz: [],
+          nodes: [],
+          edges: [],
+          steps: [],
+        },
+      ],
+    },
+  },
+};
+
+/**
+ * Per-example metadata for the "Basics to Know" lab.
+ *
+ * Lives only in the frontend (not in the database) — the BugFixLab page reads
+ * `expectedOutput` to decide if the user has fixed the bug, and `fixedCode` is
+ * shown if they ask to reveal the solution.
+ *
+ *   expectedOutput  — exact stdout of the corrected program (lines joined with \n)
+ *   fixedCode       — one valid correct version (newlines preserved)
+ *   hint            — short nudge shown on the "Hint" button
+ */
+export const basicsBugFixes = {
+  'basics-easy-1': {
+    expectedOutput: 'positive',
+    fixedCode: `x = 5
+if x > 0:
+    print("positive")`,
+    hint: 'Add four spaces in front of the print line so it sits inside the if block.',
+  },
+  'basics-easy-2': {
+    expectedOutput: '1\n2\n3\n4\n5',
+    fixedCode: `for i in range(1, 6):
+    print(i)`,
+    hint: 'range(start, stop) where stop is one past the last value you want — try (1, 6).',
+  },
+  'basics-easy-3': {
+    expectedOutput: '0\n1\n2',
+    fixedCode: `for i in range(3):
+    print(i)`,
+    hint: 'Every for/if/while header ends with a colon. Add the missing : at the end of the for line.',
+  },
+  'basics-easy-4': {
+    expectedOutput: 'adult',
+    fixedCode: `age = 18
+if age == 18:
+    print("adult")
+else:
+    print("not adult")`,
+    hint: 'Use double equals (==) inside the if to compare values.',
+  },
+  'basics-easy-5': {
+    expectedOutput: '1\n2\n3',
+    fixedCode: `count = 1
+while count <= 3:
+    print(count)
+    count = count + 1`,
+    hint: 'Both lines under the while need the same indentation — four spaces each.',
+  },
+  'basics-medium-1': {
+    expectedOutput: '10\n20\n30\n40',
+    fixedCode: `nums = [10, 20, 30, 40]
+for i in range(0, len(nums)):
+    print(nums[i])`,
+    hint: 'Lists are indexed from 0. Start the range at 0 (or use range(len(nums))).',
+  },
+  'basics-medium-2': {
+    expectedOutput: 'B',
+    fixedCode: `score = 85
+if score >= 90:
+    print("A")
+elif score >= 80:
+    print("B")
+else:
+    print("C")`,
+    hint: 'Python uses elif, not elseif.',
+  },
+  'basics-medium-3': {
+    expectedOutput: 'both positive',
+    fixedCode: `x = 10
+y = 5
+if x > 0:
+    if y > 0:
+        print("both positive")`,
+    hint: 'The print is inside two ifs, so it needs eight spaces of indentation in front.',
+  },
+  'basics-medium-4': {
+    expectedOutput: '2\n4\n6\n8',
+    fixedCode: `for i in range(2, 9, 2):
+    print(i)`,
+    hint: 'Use a step of 2, and remember stop is exclusive (try 9 or 10 as the stop).',
+  },
+  'basics-medium-5': {
+    expectedOutput: '15',
+    fixedCode: `total = 0
+for i in [1, 2, 3, 4, 5]:
+    total = total + i
+print(total)`,
+    hint: 'The for line is missing its colon at the end.',
+  },
+  'basics-hard-1': {
+    expectedOutput: '120',
+    fixedCode: `n = 5
+result = 1
+for i in range(1, n + 1):
+    result = result * i
+print(result)`,
+    hint: 'Start result at 1 (not 0), and make the range go up to n + 1 so 5 is included.',
+  },
+  'basics-hard-2': {
+    expectedOutput: '3',
+    fixedCode: `numbers = [1, 2, 3, 4, 5, 6]
+count = 0
+for n in numbers:
+    if n % 2 == 0:
+        count = count + 1
+print(count)`,
+    hint: 'Even numbers have remainder 0 when divided by 2 — flip the condition to == 0.',
+  },
+  'basics-hard-3': {
+    expectedOutput: '55',
+    fixedCode: `i = 1
+total = 0
+while i <= 10:
+    total = total + i
+    i = i + 1
+print(total)`,
+    hint: 'Add i = i + 1 inside the loop, and change i < 10 to i <= 10 so 10 is included.',
+  },
+  'basics-hard-4': {
+    expectedOutput: '[5, 4, 3, 2, 1]',
+    fixedCode: `nums = [1, 2, 3, 4, 5]
+reversed_list = []
+for i in range(len(nums) - 1, -1, -1):
+    reversed_list.append(nums[i])
+print(reversed_list)`,
+    hint: 'Use range(len(nums) - 1, -1, -1) to walk indices from the end back to 0.',
+  },
+  'basics-hard-5': {
+    expectedOutput: 'L found at 2\nL found at 3',
+    fixedCode: `word = "hello"
+for i in range(0, len(word)):
+    if word[i] == "l":
+        print("L found at", i)`,
+    hint: 'Inside the if, compare with == (double equals), not =.',
   },
 };
