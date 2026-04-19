@@ -163,7 +163,6 @@ const externalLinks = [
 ];
 
 const tabs = [
-  { to: '/dashboard', label: 'How to use' },
   { to: '/resources', label: 'Resources' },
   { to: '/about', label: 'About' },
 ];

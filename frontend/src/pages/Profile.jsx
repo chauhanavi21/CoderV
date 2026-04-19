@@ -18,7 +18,6 @@ import { useLessonsContext } from '../contexts/LessonsContext';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 
 const tabs = [
-  { to: '/dashboard', label: 'How to use' },
   { to: '/resources', label: 'Resources' },
   { to: '/about',     label: 'About' },
 ];
