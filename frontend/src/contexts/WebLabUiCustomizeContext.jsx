@@ -79,7 +79,7 @@ function normalizePathHref(href) {
  * Parse a small HTML fragment: lessons link + sign-out label.
  * Returns defaults if tags are missing (sidebar still works).
  */
-export function parseSidebarLabHtml(html) {
+function parseSidebarLabHtml(html) {
   const hints = [];
   const defaults = { learningNavLabel: DEFAULT_LEARNING, signOutLabel: DEFAULT_SIGNOUT };
   const raw = String(html ?? '');
