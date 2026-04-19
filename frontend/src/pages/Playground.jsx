@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { Play, Circle, Loader2 } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import { traceCode, checkBackendHealth } from '../api/visualizer';
 
-const DEFAULT_CODE = `# Write any Python code and click Visualize!
+const DEFAULT_CODE = `# Write any Python code and click Run.
 x = 10
 y = 20
 z = x + y
@@ -15,26 +16,11 @@ print(greeting)
 `;
 
 const EXAMPLES = [
-  {
-    label: 'Variables',
-    code: `a = 5\nb = 3\nc = a + b\nprint(c)`,
-  },
-  {
-    label: 'Loop',
-    code: `total = 0\nfor i in range(1, 6):\n    total += i\nprint(total)`,
-  },
-  {
-    label: 'Function',
-    code: `def square(n):\n    return n * n\n\nresult = square(4)\nprint(result)`,
-  },
-  {
-    label: 'List',
-    code: `nums = [1, 2, 3, 4, 5]\ndoubled = [x * 2 for x in nums]\nprint(doubled)`,
-  },
+  { label: 'Variables', code: `a = 5\nb = 3\nc = a + b\nprint(c)` },
+  { label: 'Loop',      code: `total = 0\nfor i in range(1, 6):\n    total += i\nprint(total)` },
+  { label: 'Function',  code: `def square(n):\n    return n * n\n\nresult = square(4)\nprint(result)` },
+  { label: 'List',      code: `nums = [1, 2, 3, 4, 5]\ndoubled = [x * 2 for x in nums]\nprint(doubled)` },
 ];
-
-/* ─── backend status states ─────────────────────────────────────────────── */
-// null = checking | 'online' | 'waking' | 'offline'
 
 export default function Playground() {
   const [code,          setCode]          = useState(DEFAULT_CODE);
@@ -44,12 +30,10 @@ export default function Playground() {
   const [backendStatus, setBackendStatus] = useState(null);
   const wakeTimerRef = useRef(null);
 
-  /* ── health check on mount ── */
   useEffect(() => {
     checkBackendHealth().then(ok => setBackendStatus(ok ? 'online' : 'offline'));
   }, []);
 
-  /* ── keyboard shortcut ── */
   const handleKeyDown = (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -72,7 +56,6 @@ export default function Playground() {
     setError(null);
     setResult(null);
 
-    // If backend was offline, assume it might be waking up (Render cold start)
     if (backendStatus === 'offline') {
       setBackendStatus('waking');
       wakeTimerRef.current = setTimeout(() => {
@@ -94,119 +77,124 @@ export default function Playground() {
   };
 
   const statusBadge = {
-    null:     { cls: 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400', label: 'Checking…' },
-    online:   { cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300', label: '● Backend online' },
-    waking:   { cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300', label: '⟳ Waking backend…' },
-    offline:  { cls: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400', label: '✕ Backend offline' },
-  }[backendStatus] ?? { cls: '', label: '' };
+    null:    { dotCls: 'bg-zinc-400',   label: 'Checking',     mono: 'text-fg-subtle' },
+    online:  { dotCls: 'bg-emerald-500', label: 'Online',       mono: 'text-emerald-600 dark:text-emerald-400' },
+    waking:  { dotCls: 'bg-amber-500',   label: 'Waking',       mono: 'text-amber-600 dark:text-amber-400' },
+    offline: { dotCls: 'bg-red-500',     label: 'Offline',      mono: 'text-red-600 dark:text-red-400' },
+  }[backendStatus] ?? { dotCls: 'bg-zinc-400', label: '', mono: '' };
 
   return (
     <AppLayout sidebarId="playgroundSidebar">
 
-      {/* ── Header ── */}
-      <div className="mb-5 flex items-start justify-between gap-4 flex-wrap">
+      {/* Header */}
+      <div className="mb-5 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-extrabold dark:text-slate-100">Python Playground</h1>
-          <p className="mt-1 text-muted dark:text-slate-400 text-sm">
-            Write Python, click <strong>Visualize</strong>, and watch it execute step by step.
+          <p className="text-[11px] font-medium uppercase tracking-wider text-fg-subtle mono">Playground</p>
+          <h1 className="mt-1 text-[22px] font-semibold tracking-tightish text-fg">Python sandbox</h1>
+          <p className="mt-1 text-[13px] text-fg-muted">
+            Write Python, run it, and step through execution.
           </p>
         </div>
-        <span className={`mt-1 rounded-full px-3 py-1 text-xs font-bold ${statusBadge.cls}`}>
-          {statusBadge.label}
-        </span>
+        <div className="hairline rounded-md px-3 h-8 inline-flex items-center gap-2">
+          <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dotCls} ${backendStatus === 'waking' ? 'animate-pulse' : ''}`} />
+          <span className={`text-[11px] font-medium mono uppercase tracking-wider ${statusBadge.mono}`}>{statusBadge.label}</span>
+        </div>
       </div>
 
-      {/* ── Quick examples ── */}
-      <div className="mb-4 flex gap-2 flex-wrap">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 self-center mr-1">Examples:</span>
+      {/* Examples */}
+      <div className="mb-3 flex gap-1.5 flex-wrap items-center">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono mr-1">Examples</span>
         {EXAMPLES.map(ex => (
           <button
             key={ex.label}
             onClick={() => { setCode(ex.code); setResult(null); setError(null); }}
-            className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="hairline rounded-md px-2.5 h-7 text-[11px] font-medium text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
             {ex.label}
           </button>
         ))}
       </div>
 
-      {/* ── Editor card ── */}
-      <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden mb-6">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-gray-100 dark:border-slate-700">
+      {/* Editor */}
+      <article className="hairline rounded-md bg-elevated overflow-hidden mb-5">
+        <div className="flex items-center justify-between gap-3 px-3 py-2 hairline-b">
           <div className="flex items-center gap-2.5">
             <span className="flex gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-red-400" />
-              <span className="w-3 h-3 rounded-full bg-yellow-400" />
-              <span className="w-3 h-3 rounded-full bg-green-400" />
+              <Circle size={9} fill="#ef4444" strokeWidth={0} className="text-red-500" />
+              <Circle size={9} fill="#f59e0b" strokeWidth={0} className="text-amber-500" />
+              <Circle size={9} fill="#22c55e" strokeWidth={0} className="text-emerald-500" />
             </span>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 ml-1">Python 3</span>
+            <span className="text-[11px] mono text-fg-subtle ml-1">main.py — Python 3</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:block">Ctrl+Enter to run</span>
+            <span className="text-[10px] mono text-fg-subtle hidden sm:block">⌘↵ to run</span>
             <button
               onClick={() => { setCode(''); setResult(null); setError(null); }}
-              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+              className="text-[11px] mono font-medium text-fg-subtle hover:text-red-500 transition-colors"
             >
-              Clear
+              clear
             </button>
             <button
               onClick={handleVisualize}
               disabled={loading || !code.trim()}
-              className="rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 px-4 py-1.5 text-xs font-bold text-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-2.5 h-7 text-[12px] font-medium disabled:opacity-40 hover:opacity-90 transition"
             >
-              {loading ? 'Tracing…' : 'Visualize ▶'}
+              {loading ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} strokeWidth={2.5} fill="currentColor" />}
+              {loading ? 'Tracing' : 'Run'}
             </button>
           </div>
         </div>
 
-        {/* Editor */}
-        <div className="bg-slate-950 relative">
+        <div className="bg-zinc-50 dark:bg-zinc-950 relative flex">
+          {/* Gutter */}
+          <div className="select-none mono text-[12px] text-fg-subtle py-4 pl-4 pr-2 text-right leading-6">
+            {code.split('\n').map((_, i) => (
+              <div key={i}>{i + 1}</div>
+            ))}
+          </div>
           <textarea
             value={code}
             onChange={e => setCode(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full min-h-52 bg-transparent text-slate-200 font-mono text-sm p-4 resize-y border-none outline-none leading-6"
+            className="flex-1 min-h-52 bg-transparent text-fg mono text-[13px] py-4 pr-4 resize-y border-none outline-none leading-6"
             spellCheck={false}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
-            placeholder="# Write Python code here…"
+            placeholder="# Write Python here…"
           />
         </div>
       </article>
 
-      {/* ── Cold start notice ── */}
+      {/* Cold start notice */}
       {backendStatus === 'waking' && (
-        <div className="mb-4 rounded-xl border border-amber-200 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/20 px-5 py-4 flex items-center gap-3">
-          <div className="w-4 h-4 rounded-full border-2 border-amber-500 border-t-transparent animate-spin shrink-0" />
+        <div className="mb-4 hairline rounded-md bg-amber-500/5 border-amber-500/30 px-4 py-3 flex items-center gap-3">
+          <Loader2 size={14} className="animate-spin text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Backend is waking up…</p>
-            <p className="text-xs text-amber-700 dark:text-amber-400">Render free tier sleeps when idle. This takes ~15–30 s on first request.</p>
+            <p className="text-[13px] font-medium text-amber-700 dark:text-amber-300">Backend is waking up</p>
+            <p className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mono">Render free tier sleeps when idle. ~15–30s on first request.</p>
           </div>
         </div>
       )}
 
-      {/* ── Error ── */}
+      {/* Error */}
       {error && (
-        <div className="mb-4 rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 px-5 py-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-red-500 mb-1">Error</p>
-          <p className="text-sm font-mono text-red-700 dark:text-red-300">{error}</p>
+        <div className="mb-4 hairline rounded-md bg-red-500/5 border-red-500/30 px-4 py-3">
+          <p className="text-[10px] mono font-medium uppercase tracking-wider text-red-600 dark:text-red-400 mb-1">Error</p>
+          <p className="text-[13px] mono text-red-700 dark:text-red-300">{error}</p>
         </div>
       )}
 
-      {/* ── Step visualizer ── */}
+      {/* Visualizer */}
       {result && <StepVisualizer key={result.code} example={result} />}
 
-      {/* ── Empty state ── */}
+      {/* Empty state */}
       {!result && !error && !loading && (
-        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-10 text-center">
-          <p className="text-muted dark:text-slate-500 text-sm">
-            Write Python above and click{' '}
-            <strong className="text-indigo-500">Visualize</strong>
-            {' '}(or press{' '}
-            <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 font-mono text-xs text-slate-600 dark:text-slate-300">Ctrl+Enter</kbd>
-            ) to see execution step by step.
+        <div className="hairline rounded-md p-10 text-center border-dashed">
+          <p className="text-[13px] text-fg-muted">
+            Write Python above and press{' '}
+            <kbd className="hairline rounded px-1.5 py-0.5 mono text-[11px] text-fg">⌘↵</kbd>{' '}
+            or click <span className="text-fg font-medium">Run</span> to see step-by-step execution.
           </p>
         </div>
       )}
