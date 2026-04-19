@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
+import { Check, Play, ChevronRight } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import QuizSection from '../components/QuizSection';
@@ -49,7 +50,6 @@ export default function LessonPractice() {
     });
   }, [difficultyData, lessonId, difficulty, isComplete, progressLoading]);
 
-  // Fetch full example whenever active example ID changes
   useEffect(() => {
     if (!activeExampleId) return;
     setExampleLoading(true);
@@ -62,7 +62,6 @@ export default function LessonPractice() {
       .finally(() => setExampleLoading(false));
   }, [activeExampleId]);
 
-  // Reset gate on difficulty change
   useEffect(() => {
     setHasStartedVisualizer(false);
     setChallengeAccepted(false);
@@ -77,9 +76,9 @@ export default function LessonPractice() {
     if (moduleLoading || progressLoading) {
       return (
         <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
-          <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
             <SkeletonCard className="h-64" />
-            <div className="grid gap-6">
+            <div className="grid gap-4">
               <SkeletonCard />
               <SkeletonCard className="h-56" />
             </div>
@@ -97,9 +96,9 @@ export default function LessonPractice() {
     if (progressLoading) {
       return (
         <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
-          <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
             <SkeletonCard className="h-64" />
-            <div className="grid gap-6">
+            <div className="grid gap-4">
               <SkeletonCard />
               <SkeletonCard className="h-56" />
             </div>
@@ -113,9 +112,9 @@ export default function LessonPractice() {
   if (moduleLoading || progressLoading) {
     return (
       <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
-        <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
           <SkeletonCard className="h-64" />
-          <div className="grid gap-6">
+          <div className="grid gap-4">
             <SkeletonCard />
             <SkeletonCard className="h-56" />
           </div>
@@ -135,37 +134,32 @@ export default function LessonPractice() {
   return (
     <AppLayout tabs={tabs} sidebarId="lessonPracticeSidebar">
       {/* Breadcrumb */}
-      <div className="mb-5 flex items-center gap-2 text-sm">
-        <Link
-          to="/lessons"
-          className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
-        >
-          Lessons
+      <div className="mb-5 flex items-center gap-1.5 text-[12px] mono">
+        <Link to="/lessons" className="font-medium text-fg-muted hover:text-fg transition-colors">
+          lessons
         </Link>
-        <span className="text-gray-300 dark:text-slate-600">/</span>
+        <ChevronRight size={11} className="text-fg-subtle" />
         <Link
           to={`/lessons/${lessonId}`}
-          className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+          className="font-medium text-fg-muted hover:text-fg transition-colors"
         >
-          {module.title}
+          {module.title.toLowerCase().replace(/\s+/g, '-')}
         </Link>
-        <span className="text-gray-300 dark:text-slate-600">/</span>
-        <span className="font-semibold text-slate-700 dark:text-slate-300">
-          {difficultyData.label}
-        </span>
+        <ChevronRight size={11} className="text-fg-subtle" />
+        <span className="font-medium text-fg">{difficultyData.label.toLowerCase()}</span>
       </div>
 
-      <section className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+      <section className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
         {/* Example sidebar */}
-        <aside className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-bold dark:text-slate-100">{difficultyData.label}</h2>
-            <span className="text-xs font-bold text-muted dark:text-slate-400">
-              {difficultyData.examples.length} examples
+        <aside className="hairline rounded-md bg-elevated p-3">
+          <div className="flex items-center justify-between gap-3 px-1 pb-2 mb-2 hairline-b">
+            <h2 className="text-[13px] font-semibold text-fg">{difficultyData.label}</h2>
+            <span className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
+              {difficultyData.examples.length} ex
             </span>
           </div>
 
-          <div className="mt-4 grid gap-3">
+          <div className="grid gap-px">
             {difficultyData.examples.map((ex, index) => {
               const isSelected = ex.id === activeExampleId;
               const done = isComplete(lessonId, difficulty, ex.id);
@@ -184,28 +178,27 @@ export default function LessonPractice() {
                   title={
                     unlocked
                       ? undefined
-                      : 'Complete the previous example with at least 80% on the quiz to unlock.'
+                      : 'Complete the previous example with at least 80% to unlock.'
                   }
                   onClick={() => unlocked && setActiveExampleId(ex.id)}
-                  className={`rounded-xl border p-4 text-left transition-all ${
+                  className={`group flex items-start gap-2.5 rounded-md p-2 text-left transition-colors ${
                     !unlocked
-                      ? 'border-gray-200 dark:border-slate-700 opacity-50 cursor-not-allowed'
+                      ? 'opacity-40 cursor-not-allowed'
                       : isSelected
-                      ? 'border-primary dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-sm'
-                      : 'border-gray-200 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                      ? 'bg-zinc-100 dark:bg-zinc-900'
+                      : 'hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-bold uppercase tracking-wide text-muted dark:text-slate-400">
-                      Example {index + 1}
-                    </p>
-                    {done && (
-                      <span className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 grid place-items-center text-[10px] font-bold leading-none">
-                        &#10003;
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-1 font-bold text-slate-900 dark:text-slate-100">{ex.title}</h3>
+                  <span className={`mt-0.5 w-4 h-4 rounded grid place-items-center text-[9px] font-semibold mono shrink-0 ${
+                    done
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-zinc-200/60 dark:bg-zinc-800 text-fg-subtle'
+                  }`}>
+                    {done ? <Check size={9} strokeWidth={3} /> : String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <p className="text-[12px] font-medium text-fg leading-snug truncate">{ex.title}</p>
+                  </span>
                 </button>
               );
             })}
@@ -213,7 +206,7 @@ export default function LessonPractice() {
         </aside>
 
         {/* Main content */}
-        <div className="grid gap-6">
+        <div className="grid gap-4">
           {exampleLoading || !activeExample ? (
             <>
               <SkeletonCard />
@@ -221,51 +214,48 @@ export default function LessonPractice() {
             </>
           ) : (
             <>
-              {/* Example info */}
-              <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <h2 className="text-2xl font-extrabold dark:text-slate-100">
+              <article className="hairline rounded-md bg-elevated p-5">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <h2 className="text-[18px] font-semibold tracking-tightish text-fg">
                     {activeExample.title}
                   </h2>
-                  <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <span className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
                     {activeExample.nodes.length} node
-                    {activeExample.nodes.length !== 1 ? 's' : ''} /{' '}
-                    {activeExample.edges.length} edge
+                    {activeExample.nodes.length !== 1 ? 's' : ''} · {activeExample.edges.length} edge
                     {activeExample.edges.length !== 1 ? 's' : ''}
                   </span>
                 </div>
 
-                <p className="mt-4 text-base leading-relaxed text-muted dark:text-slate-400">
+                <p className="mt-3 text-[13px] text-fg-muted leading-relaxed">
                   {activeExample.explanation}
                 </p>
 
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="hairline rounded-md p-3">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono">
                       What you learn
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                    <p className="mt-2 text-[13px] text-fg-muted leading-relaxed">
                       {activeExample.concept}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/20 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                  <div className="hairline rounded-md p-3 border-amber-500/30">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400 mono">
                       Think about this
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-amber-900 dark:text-amber-200">
+                    <p className="mt-2 text-[13px] text-fg-muted leading-relaxed">
                       {activeExample.challenge}
                     </p>
                   </div>
                 </div>
 
                 {isComplete(lessonId, difficulty, activeExample.id) && (
-                  <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 px-5 py-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                    <span>&#10003;</span> Completed
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                    <Check size={12} strokeWidth={2.5} /> Completed
                   </div>
                 )}
               </article>
 
-              {/* Step visualizer */}
               {activeExample.steps?.length > 0 && (
                 <StepVisualizer
                   key={activeExample.id}
@@ -274,11 +264,10 @@ export default function LessonPractice() {
                 />
               )}
 
-              {/* Quiz */}
               {activeExample.quiz?.length > 0 && (
                 hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id) ? (
                   challengeAccepted ? (
-                    <div className="animate-fade-in grid gap-6">
+                    <div className="animate-fade-in grid gap-4">
                       <QuizSection
                         key={`quiz-${activeExample.id}`}
                         quiz={activeExample.quiz}
@@ -293,35 +282,31 @@ export default function LessonPractice() {
                       />
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                        Ready when you are.
-                      </p>
-                      <p className="mt-2 text-sm text-muted dark:text-slate-400">
+                    <div className="hairline rounded-md bg-elevated p-6 text-center">
+                      <p className="text-[13px] font-medium text-fg">Ready when you are.</p>
+                      <p className="mt-1 text-[12px] text-fg-muted">
                         Open the quiz only if you want a quick check on this example.
                       </p>
                       <button
                         type="button"
                         onClick={() => setChallengeAccepted(true)}
-                        className="mt-6 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:ring-offset-slate-900"
+                        className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-3 h-8 text-[13px] font-medium hover:opacity-90 transition"
                       >
                         Challenge me
                       </button>
                     </div>
                   )
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8 text-center">
-                    <p className="text-sm text-muted dark:text-slate-400">
-                      Step through the visualizer above to unlock the quiz.
+                  <div className="hairline rounded-md p-6 text-center border-dashed">
+                    <p className="text-[13px] text-fg-muted">
+                      Step through the visualizer to unlock the quiz.
                     </p>
-                    <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-indigo-500">
+                    <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-fg-subtle">
                       <span>Press</span>
-                      <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">
-                        Step →
-                      </kbd>
+                      <kbd className="hairline rounded px-1.5 py-0.5 mono text-fg">Step</kbd>
                       <span>or</span>
-                      <kbd className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-slate-600 dark:text-slate-300">
-                        ▶ Run All
+                      <kbd className="hairline rounded px-1.5 py-0.5 mono text-fg inline-flex items-center gap-1">
+                        <Play size={9} strokeWidth={2} /> Run
                       </kbd>
                     </div>
                   </div>

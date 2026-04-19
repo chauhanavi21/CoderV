@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 const LINK_REGEX = /\[([^\]]+)\]\(([^)\s]+)\)/g;
 
@@ -37,7 +38,7 @@ export default function AssistantMessage({ content }) {
 
   return (
     <div>
-      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+      <p className="text-[13px] leading-relaxed whitespace-pre-wrap">
         {parts.map((p, idx) => {
           if (p.kind === 'text') {
             return <span key={idx}>{p.value}</span>;
@@ -47,7 +48,7 @@ export default function AssistantMessage({ content }) {
               <Link
                 key={idx}
                 to={p.href}
-                className="font-bold text-indigo-600 dark:text-indigo-300 underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-200"
+                className="font-medium text-fg underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-2 hover:decoration-fg"
               >
                 {p.label}
               </Link>
@@ -60,9 +61,9 @@ export default function AssistantMessage({ content }) {
                 href={p.href}
                 target="_blank"
                 rel="noreferrer"
-                className="font-bold text-indigo-600 dark:text-indigo-300 underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-200"
+                className="font-medium text-fg underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-2 hover:decoration-fg"
               >
-                {p.label} ↗
+                {p.label}
               </a>
             );
           }
@@ -71,15 +72,15 @@ export default function AssistantMessage({ content }) {
       </p>
 
       {buttons.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {buttons.map((b) => (
             <Link
               key={b.key}
               to={b.href}
-              className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold px-3.5 py-1.5 shadow-sm transition-colors"
+              className="hairline inline-flex items-center gap-1.5 rounded-md bg-app hover:bg-zinc-100 dark:hover:bg-zinc-900 text-fg text-[12px] font-medium px-2.5 h-7 transition-colors"
             >
               {b.label}
-              <span aria-hidden="true">→</span>
+              <ArrowRight size={11} strokeWidth={2} />
             </Link>
           ))}
         </div>

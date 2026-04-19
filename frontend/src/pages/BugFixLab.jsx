@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import { Check, Play, ChevronRight } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
@@ -10,12 +11,6 @@ import {
   isDifficultyAccessible,
   isExampleUnlocked,
 } from '../utils/lessonProgressGates';
-
-const difficultyTone = {
-  easy: { badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200' },
-  medium: { badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' },
-  hard: { badge: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200' },
-};
 
 function extractStdout(steps = []) {
   return steps
@@ -58,7 +53,6 @@ export default function BugFixLab() {
   const [showSolution, setShowSolution] = useState(false);
   const editorRef = useRef(null);
 
-  // Pick the first unlocked / suggested example whenever data is ready
   useEffect(() => {
     if (progressLoading || !difficultyData?.examples?.length) return;
     setActiveExampleId((prev) => {
@@ -78,7 +72,6 @@ export default function BugFixLab() {
     [difficultyData, activeExampleId]
   );
 
-  // Reset editor + result state when the active example changes
   useEffect(() => {
     if (!activeExample) return;
     setCode(activeExample.code);
@@ -97,7 +90,7 @@ export default function BugFixLab() {
   if (moduleLoading || progressLoading) {
     return (
       <AppLayout tabs={tabs} sidebarId="bugFixLabSidebar">
-        <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-10 animate-pulse" />
+        <div className="hairline rounded-md bg-elevated p-10 animate-pulse" />
       </AppLayout>
     );
   }
@@ -179,39 +172,32 @@ export default function BugFixLab() {
   return (
     <AppLayout tabs={tabs} sidebarId="bugFixLabSidebar">
       {/* Breadcrumb */}
-      <div className="mb-5 flex items-center gap-2 text-sm">
-        <Link
-          to="/lessons"
-          className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
-        >
-          Lessons
+      <div className="mb-5 flex items-center gap-1.5 text-[12px] mono">
+        <Link to="/lessons" className="font-medium text-fg-muted hover:text-fg transition-colors">
+          lessons
         </Link>
-        <span className="text-gray-300 dark:text-slate-600">/</span>
+        <ChevronRight size={11} className="text-fg-subtle" />
         <Link
           to={`/lessons/${lessonId}`}
-          className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+          className="font-medium text-fg-muted hover:text-fg transition-colors"
         >
-          {module.title}
+          {module.title.toLowerCase().replace(/\s+/g, '-')}
         </Link>
-        <span className="text-gray-300 dark:text-slate-600">/</span>
-        <span className="font-semibold text-slate-700 dark:text-slate-300">
-          {difficultyData.label}
-        </span>
+        <ChevronRight size={11} className="text-fg-subtle" />
+        <span className="font-medium text-fg">{difficultyData.label.toLowerCase()}</span>
       </div>
 
-      <section className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
-        {/* Example sidebar */}
-        <aside className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-bold dark:text-slate-100">{difficultyData.label}</h2>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-bold ${difficultyTone[difficulty]?.badge ?? 'bg-slate-100 text-slate-700'}`}
-            >
+      <section className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
+        {/* Bug list */}
+        <aside className="hairline rounded-md bg-elevated p-3">
+          <div className="flex items-center justify-between gap-3 px-1 pb-2 mb-2 hairline-b">
+            <h2 className="text-[13px] font-semibold text-fg">{difficultyData.label}</h2>
+            <span className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
               {difficultyData.examples.length} bugs
             </span>
           </div>
 
-          <div className="mt-4 grid gap-3">
+          <div className="grid gap-px">
             {difficultyData.examples.map((ex, index) => {
               const isSelected = ex.id === activeExampleId;
               const done = isComplete(lessonId, difficulty, ex.id);
@@ -227,145 +213,130 @@ export default function BugFixLab() {
                   key={ex.id}
                   type="button"
                   disabled={!unlocked}
-                  title={
-                    unlocked
-                      ? undefined
-                      : 'Fix the previous bug first to unlock this one.'
-                  }
+                  title={unlocked ? undefined : 'Fix the previous bug first.'}
                   onClick={() => unlocked && setActiveExampleId(ex.id)}
-                  className={`rounded-xl border p-4 text-left transition-all ${
+                  className={`flex items-start gap-2.5 rounded-md p-2 text-left transition-colors ${
                     !unlocked
-                      ? 'border-gray-200 dark:border-slate-700 opacity-50 cursor-not-allowed'
+                      ? 'opacity-40 cursor-not-allowed'
                       : isSelected
-                      ? 'border-fuchsia-400 dark:border-fuchsia-500 bg-fuchsia-50 dark:bg-fuchsia-900/20 shadow-sm'
-                      : 'border-gray-200 dark:border-slate-700 hover:border-fuchsia-200 dark:hover:border-fuchsia-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                      ? 'bg-zinc-100 dark:bg-zinc-900'
+                      : 'hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-bold uppercase tracking-wide text-muted dark:text-slate-400">
-                      Bug {index + 1}
-                    </p>
-                    {done && (
-                      <span className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 grid place-items-center text-[10px] font-bold leading-none">
-                        &#10003;
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-1 font-bold text-slate-900 dark:text-slate-100">
-                    {ex.title}
-                  </h3>
+                  <span className={`mt-0.5 w-4 h-4 rounded grid place-items-center text-[9px] font-semibold mono shrink-0 ${
+                    done
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-zinc-200/60 dark:bg-zinc-800 text-fg-subtle'
+                  }`}>
+                    {done ? <Check size={9} strokeWidth={3} /> : String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <p className="text-[12px] font-medium text-fg leading-snug truncate">{ex.title}</p>
+                  </span>
                 </button>
               );
             })}
           </div>
         </aside>
 
-        {/* Main content */}
-        <div className="grid gap-6">
+        {/* Main */}
+        <div className="grid gap-4">
           {!activeExample ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-10 text-center text-muted dark:text-slate-400">
+            <div className="hairline rounded-md p-10 text-center text-fg-muted border-dashed">
               Pick a bug from the list to start.
             </div>
           ) : (
             <>
-              {/* Example header */}
-              <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
+              {/* Header */}
+              <article className="hairline rounded-md bg-elevated p-5">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-fuchsia-600 dark:text-fuchsia-400">
+                    <p className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
                       Fix the bug
                     </p>
-                    <h2 className="mt-1 text-2xl font-extrabold dark:text-slate-100">
+                    <h2 className="mt-1 text-[18px] font-semibold tracking-tightish text-fg">
                       {activeExample.title}
                     </h2>
                   </div>
                   {completed && (
-                    <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 px-4 py-2 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                      <span>&#10003;</span> Fixed
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                      <Check size={12} strokeWidth={2.5} /> Fixed
                     </span>
                   )}
                 </div>
 
-                <p className="mt-4 text-base leading-relaxed text-muted dark:text-slate-300">
+                <p className="mt-3 text-[13px] text-fg-muted leading-relaxed">
                   {activeExample.explanation}
                 </p>
 
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="hairline rounded-md p-3">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono">
                       What you learn
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                    <p className="mt-2 text-[13px] text-fg-muted leading-relaxed">
                       {activeExample.concept}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-fuchsia-200 dark:border-fuchsia-800/50 bg-fuchsia-50 dark:bg-fuchsia-900/20 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wide text-fuchsia-700 dark:text-fuchsia-400">
+                  <div className="hairline rounded-md p-3">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono">
                       Your goal
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-fuchsia-900 dark:text-fuchsia-200 whitespace-pre-line">
+                    <p className="mt-2 text-[13px] text-fg-muted leading-relaxed whitespace-pre-line">
                       {activeExample.challenge}
                     </p>
                   </div>
                 </div>
               </article>
 
-              {/* Editor + actions */}
-              <article className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
-                <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-gray-100 dark:border-slate-700 flex-wrap">
+              {/* Editor */}
+              <article className="hairline rounded-md bg-elevated overflow-hidden">
+                <div className="flex items-center justify-between gap-3 px-3 py-2 hairline-b flex-wrap">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-red-400" />
-                      <span className="w-3 h-3 rounded-full bg-yellow-400" />
-                      <span className="w-3 h-3 rounded-full bg-green-400" />
-                    </span>
-                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 ml-1">
-                      Python 3 — fix the bug
-                    </span>
+                    <span className="text-[11px] mono text-fg-subtle">main.py</span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:block">
-                      Ctrl+Enter to run
-                    </span>
+                    <span className="text-[10px] mono text-fg-subtle hidden sm:block">⌘↵ to run</span>
                     <button
                       type="button"
                       onClick={() => setShowHint((v) => !v)}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-fuchsia-500 transition-colors cursor-pointer"
+                      className="text-[11px] mono font-medium text-fg-subtle hover:text-fg transition-colors"
                     >
-                      {showHint ? 'Hide hint' : 'Hint'}
+                      {showHint ? 'hide hint' : 'hint'}
                     </button>
                     <button
                       type="button"
                       onClick={handleResetCode}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                      className="text-[11px] mono font-medium text-fg-subtle hover:text-red-500 transition-colors"
                     >
-                      Reset
+                      reset
                     </button>
                     <button
                       type="button"
                       onClick={handleApplySolution}
-                      className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                      className="text-[11px] mono font-medium text-fg-subtle hover:text-fg transition-colors"
                     >
-                      Show solution
+                      solution
                     </button>
                     <button
                       type="button"
                       onClick={handleRun}
                       disabled={running || !code.trim()}
-                      className="rounded-lg bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-40 px-4 py-1.5 text-xs font-bold text-white transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-2.5 h-7 text-[12px] font-medium disabled:opacity-40 hover:opacity-90 transition"
                     >
-                      {running ? 'Running…' : 'Run my fix ▶'}
+                      <Play size={11} strokeWidth={2.5} fill="currentColor" />
+                      {running ? 'Running' : 'Run'}
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-slate-950 relative">
+                <div className="bg-zinc-50 dark:bg-zinc-950 relative">
                   <textarea
                     ref={editorRef}
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     onKeyDown={handleEditorKeyDown}
-                    className="w-full min-h-52 bg-transparent text-slate-200 font-mono text-sm p-4 resize-y border-none outline-none leading-6"
+                    className="w-full min-h-52 bg-transparent text-fg mono text-[13px] p-4 resize-y border-none outline-none leading-6"
                     spellCheck={false}
                     autoComplete="off"
                     autoCorrect="off"
@@ -374,64 +345,60 @@ export default function BugFixLab() {
                 </div>
 
                 {showHint && exampleHint && (
-                  <div className="border-t border-gray-100 dark:border-slate-700 bg-amber-50 dark:bg-amber-900/20 px-5 py-3 text-sm text-amber-800 dark:text-amber-200">
-                    <span className="font-bold">Hint: </span>
+                  <div className="hairline-t bg-amber-500/5 px-4 py-2.5 text-[12px] text-amber-700 dark:text-amber-300">
+                    <span className="font-semibold mono uppercase tracking-wider text-[10px]">hint </span>
                     {exampleHint}
                   </div>
                 )}
 
                 {showSolution && (
-                  <div className="border-t border-gray-100 dark:border-slate-700 bg-indigo-50 dark:bg-indigo-900/20 px-5 py-3 text-xs text-indigo-700 dark:text-indigo-300">
-                    Solution loaded into the editor — press Run my fix to verify it.
+                  <div className="hairline-t bg-zinc-50 dark:bg-zinc-900/50 px-4 py-2.5 text-[12px] text-fg-muted">
+                    Solution loaded into the editor — press Run to verify.
                   </div>
                 )}
               </article>
 
-              {/* Output panels */}
+              {/* Output */}
               <article className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <div className="hairline rounded-md bg-elevated p-4">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono">
                     Expected output
                   </p>
-                  <pre className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-3 font-mono text-sm text-slate-800 dark:text-slate-200 min-h-[64px]">
+                  <pre className="mt-2 whitespace-pre-wrap rounded bg-zinc-50 dark:bg-zinc-950 hairline p-3 mono text-[12px] text-fg min-h-[64px]">
                     {expectedOutput || '—'}
                   </pre>
                 </div>
                 <div
-                  className={`rounded-2xl border p-5 shadow-sm transition-colors ${
+                  className={`hairline rounded-md p-4 transition-colors ${
                     matched
-                      ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20'
+                      ? 'border-emerald-500/40 bg-emerald-500/5'
                       : errorText
-                      ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                      ? 'border-red-500/40 bg-red-500/5'
+                      : 'bg-elevated'
                   }`}
                 >
-                  <p
-                    className={`text-xs font-bold uppercase tracking-wide ${
-                      matched
-                        ? 'text-emerald-700 dark:text-emerald-300'
-                        : errorText
-                        ? 'text-red-700 dark:text-red-300'
-                        : 'text-slate-500 dark:text-slate-400'
-                    }`}
-                  >
+                  <p className={`text-[10px] font-medium uppercase tracking-wider mono ${
+                    matched ? 'text-emerald-600 dark:text-emerald-400'
+                    : errorText ? 'text-red-600 dark:text-red-400'
+                    : 'text-fg-subtle'
+                  }`}>
                     Your output
                   </p>
-                  <pre className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-3 font-mono text-sm text-slate-800 dark:text-slate-200 min-h-[64px]">
+                  <pre className="mt-2 whitespace-pre-wrap rounded bg-zinc-50 dark:bg-zinc-950 hairline p-3 mono text-[12px] text-fg min-h-[64px]">
                     {errorText
                       ? errorText
                       : outputText !== null
                       ? outputText || '(no output)'
-                      : 'Press Run my fix to see your output here.'}
+                      : 'Press Run to see your output.'}
                   </pre>
                   {matched && (
-                    <p className="mt-3 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                      &#10003; Bug fixed — example marked complete.
+                    <p className="mt-2 text-[12px] font-medium text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1.5">
+                      <Check size={12} strokeWidth={2.5} /> Bug fixed — example marked complete.
                     </p>
                   )}
                   {!matched && outputText !== null && !errorText && (
-                    <p className="mt-3 text-sm font-semibold text-amber-700 dark:text-amber-300">
-                      Output doesn't match yet. Compare line-by-line with the expected output.
+                    <p className="mt-2 text-[12px] text-amber-600 dark:text-amber-400">
+                      Output doesn't match yet. Compare line by line.
                     </p>
                   )}
                 </div>

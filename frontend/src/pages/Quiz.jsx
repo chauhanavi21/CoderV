@@ -1,31 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Clock, ArrowRight } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { SkeletonList } from '../components/SkeletonCard';
 
 const BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
-const difficultyStyles = {
-  easy:   { badge: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500' },
-  medium: { badge: 'bg-amber-100 text-amber-800',     bar: 'bg-amber-500'   },
-  hard:   { badge: 'bg-red-100 text-red-800',         bar: 'bg-red-500'     },
+const difficultyTone = {
+  easy: 'text-emerald-500',
+  medium: 'text-amber-500',
+  hard: 'text-red-500',
 };
 
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60);
-  return `${m} min`;
+  return `${m}m`;
 }
 
 const tabs = [
-  { to: '/quiz',      label: 'Extra Quiz' },
-  { to: '/resources', label: 'Resources'  },
-  { to: '/about',     label: 'About'      },
+  { to: '/quiz', label: 'Extra Quiz' },
+  { to: '/resources', label: 'Resources' },
+  { to: '/about', label: 'About' },
 ];
 
 export default function Quiz() {
-  const [quizzes, setQuizzes]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error,   setError]     = useState(null);
+  const [quizzes, setQuizzes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch(`${BASE}/api/quizzes`)
@@ -37,70 +38,63 @@ export default function Quiz() {
 
   return (
     <AppLayout tabs={tabs} sidebarId="quizSidebar">
-      {/* Hero */}
-      <article className="bg-white border border-gray-200 rounded-2xl p-7 shadow-card grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 items-center mb-2 text-gray-900">
-        <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-extrabold mb-2.5">
-            Extra Practice Quizzes
-          </h1>
-          <p className="text-muted text-base leading-relaxed">
-            Challenge yourself with timed quizzes across different topics. Each quiz has a countdown timer and shows your score at the end.
-          </p>
-        </div>
-        <div className="grid place-items-center lg:place-items-center max-lg:place-items-start">
-          <div className="w-[170px] h-[170px] rounded-full gradient-quiz-badge grid place-items-center shadow-[0_12px_30px_rgba(99,102,241,0.25)]">
-            <div className="bg-white w-[130px] h-[130px] rounded-full flex flex-col items-center justify-center">
-              <span className="text-[2.5rem] font-extrabold text-primary leading-none">
-                {loading ? '…' : quizzes.length}
-              </span>
-              <span className="text-xs text-muted font-semibold text-center leading-snug">
-                Quizzes<br />Available
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      {/* Quiz grid */}
-      <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">Available Quizzes</h2>
+      <header className="hairline-b pb-5 mb-6">
+        <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-1.5">
+          /quiz
+        </p>
+        <h1 className="text-2xl font-semibold tracking-tightish text-fg">
+          Extra Practice Quizzes
+        </h1>
+        <p className="text-[13px] text-fg-muted mt-1.5 max-w-xl">
+          Timed multiple-choice quizzes across topics. Each shows your score on submission.
+        </p>
+        <p className="text-[11px] mono text-fg-subtle mt-3">
+          {loading ? '…' : quizzes.length} quiz{quizzes.length === 1 ? '' : 'zes'} available
+        </p>
+      </header>
 
       {loading && (
         <SkeletonList count={3} className="md:grid-cols-2 xl:grid-cols-3" />
       )}
 
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">
+        <div className="hairline rounded-md bg-red-500/5 border-red-500/30 p-4 text-[13px] text-red-600 dark:text-red-300">
           {error}
         </div>
       )}
 
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {quizzes.map((q) => {
-            const style = difficultyStyles[q.difficulty] || difficultyStyles.easy;
-            return (
-              <article
-                key={q.id}
-                className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 text-gray-900"
-              >
-                <div className="text-[2.5rem] mb-1">{q.icon}</div>
-                <h3 className="font-bold text-base">{q.title}</h3>
-                <p className="text-muted text-sm leading-relaxed flex-1">{q.description}</p>
-                <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-1">
-                  <span className="text-xs text-muted font-semibold">⏱ {formatTime(q.time_limit)}</span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${style.badge}`}>
-                    {q.difficulty}
-                  </span>
-                </div>
-                <Link
-                  to={`/quiz/${q.id}`}
-                  className="w-full text-center gradient-primary text-white rounded-xl px-4 py-3 text-sm font-bold shadow-btn hover:-translate-y-0.5 active:translate-y-0 transition-transform"
-                >
-                  Start Quiz
-                </Link>
-              </article>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {quizzes.map((q) => (
+            <Link
+              key={q.id}
+              to={`/quiz/${q.id}`}
+              className="group hairline rounded-md bg-elevated p-4 flex flex-col gap-2 hover:border-app-strong transition-colors"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-medium text-[14px] text-fg leading-snug">
+                  {q.title}
+                </h3>
+                <ArrowRight
+                  size={14}
+                  strokeWidth={1.75}
+                  className="text-fg-subtle group-hover:text-fg group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5"
+                />
+              </div>
+              <p className="text-[12.5px] text-fg-muted leading-relaxed flex-1">
+                {q.description}
+              </p>
+              <div className="hairline-t mt-2 pt-2.5 flex items-center gap-3 text-[11px] mono">
+                <span className="inline-flex items-center gap-1 text-fg-subtle">
+                  <Clock size={11} strokeWidth={1.75} />
+                  {formatTime(q.time_limit)}
+                </span>
+                <span className={`uppercase tracking-wider font-medium ${difficultyTone[q.difficulty] || 'text-fg-subtle'}`}>
+                  {q.difficulty}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
     </AppLayout>

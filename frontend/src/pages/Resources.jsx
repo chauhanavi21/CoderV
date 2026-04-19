@@ -1,22 +1,23 @@
+import { BookOpen, Code2, Target, Play, Globe, MessageSquare, GitBranch, GraduationCap, ArrowRight, Clock } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 
 const guides = [
-  { icon: '📖', title: 'Programming Basics', desc: 'Comprehensive guide covering fundamental programming concepts' },
-  { icon: '💻', title: 'Code Style Guide', desc: 'Best practices for writing clean, maintainable code' },
-  { icon: '🎯', title: 'Problem Solving Tips', desc: 'Strategies and techniques for tackling coding challenges' },
+  { Icon: BookOpen, title: 'Programming Basics', desc: 'Comprehensive guide covering fundamental programming concepts.' },
+  { Icon: Code2, title: 'Code Style Guide', desc: 'Best practices for writing clean, maintainable code.' },
+  { Icon: Target, title: 'Problem Solving Tips', desc: 'Strategies and techniques for tackling coding challenges.' },
 ];
 
 const videos = [
-  { title: 'Data Structures Explained', desc: 'Visual guide to common data structures', duration: '42 min' },
-  { title: 'Algorithm Fundamentals', desc: 'Step-by-step algorithm explanations', duration: '38 min' },
-  { title: 'Debugging Techniques', desc: 'Master the art of finding and fixing bugs', duration: '25 min' },
+  { title: 'Data Structures Explained', desc: 'Visual guide to common data structures.', duration: '42m' },
+  { title: 'Algorithm Fundamentals', desc: 'Step-by-step algorithm explanations.', duration: '38m' },
+  { title: 'Debugging Techniques', desc: 'Master the art of finding and fixing bugs.', duration: '25m' },
 ];
 
 const externalLinks = [
-  { icon: '🌐', title: 'MDN Web Docs', desc: 'Comprehensive web development documentation' },
-  { icon: '📚', title: 'Stack Overflow', desc: 'Community-driven Q&A for programmers' },
-  { icon: '💡', title: 'GitHub Learning Lab', desc: 'Interactive courses on Git and GitHub' },
-  { icon: '🎓', title: 'FreeCodeCamp', desc: 'Free coding bootcamp with certificates' },
+  { Icon: Globe, title: 'MDN Web Docs', desc: 'Comprehensive web development documentation.' },
+  { Icon: MessageSquare, title: 'Stack Overflow', desc: 'Community-driven Q&A for programmers.' },
+  { Icon: GitBranch, title: 'GitHub Learning Lab', desc: 'Interactive courses on Git and GitHub.' },
+  { Icon: GraduationCap, title: 'FreeCodeCamp', desc: 'Free coding bootcamp with certificates.' },
 ];
 
 const tabs = [
@@ -28,77 +29,90 @@ const tabs = [
 export default function Resources() {
   return (
     <AppLayout tabs={tabs} sidebarId="resourcesSidebar">
-      {/* Hero */}
-      <div className="text-center py-10 max-md:py-6 mb-5">
-        <h1 className="text-[2.5rem] max-md:text-2xl font-extrabold mb-3">Learning Resources</h1>
-        <p className="text-muted text-lg max-md:text-base">
-          Curated materials to supplement your learning journey
+      <header className="hairline-b pb-5 mb-8">
+        <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-1.5">/resources</p>
+        <h1 className="text-2xl font-semibold tracking-tightish text-fg">Learning Resources</h1>
+        <p className="text-[13px] text-fg-muted mt-1.5">
+          Curated materials to supplement your learning journey.
         </p>
-      </div>
+      </header>
 
-      {/* Documentation & Guides */}
-      <h2 className="mt-8 mb-4 text-xl font-bold">📚 Documentation &amp; Guides</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
-        {guides.map((g) => (
-          <article
-            key={g.title}
-            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 text-gray-900"
-          >
-            <div className="text-[2.5rem] mb-2">{g.icon}</div>
-            <h3 className="font-bold text-base">{g.title}</h3>
-            <p className="text-muted text-sm leading-relaxed flex-1">{g.desc}</p>
-            <button className="w-full bg-indigo-50 text-primary rounded-xl px-4 py-3 text-sm font-semibold hover:bg-violet-100 hover:shadow-md transition-all cursor-pointer">
-              View Guide
-            </button>
-          </article>
-        ))}
-      </div>
+      <section className="mb-10">
+        <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-3">
+          Documentation & Guides
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {guides.map(({ Icon, title, desc }) => (
+            <article
+              key={title}
+              className="hairline rounded-md bg-elevated p-4 flex flex-col gap-2.5 hover:border-app-strong transition-colors"
+            >
+              <Icon size={16} strokeWidth={1.75} className="text-fg" />
+              <h3 className="font-medium text-[14px] text-fg">{title}</h3>
+              <p className="text-fg-muted text-[12.5px] leading-relaxed flex-1">{desc}</p>
+              <button className="hairline mt-2 inline-flex items-center justify-center gap-1.5 rounded-md px-3 h-8 text-[12px] font-medium text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                View Guide <ArrowRight size={11} strokeWidth={2} />
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
 
-      {/* Video Tutorials */}
-      <h2 className="mt-8 mb-4 text-xl font-bold">🎥 Video Tutorials</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
-        {videos.map((v) => (
-          <article
-            key={v.title}
-            className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:-translate-y-1 hover:shadow-hover transition-all duration-200 relative text-gray-900"
-          >
-            <div className="w-full h-40 gradient-quiz-badge rounded-lg grid place-items-center text-5xl text-white mb-3">
-              ▶️
-            </div>
-            <span className="absolute top-10 right-10 bg-black/75 text-white px-2.5 py-1 rounded-md text-xs font-semibold">
-              {v.duration}
-            </span>
-            <h3 className="font-bold text-base">{v.title}</h3>
-            <p className="text-muted text-sm leading-relaxed flex-1">{v.desc}</p>
-            <button className="w-full gradient-primary text-white rounded-xl px-4 py-3 text-sm font-bold shadow-btn cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform">
-              Watch Now
-            </button>
-          </article>
-        ))}
-      </div>
+      <section className="mb-10">
+        <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-3">
+          Video Tutorials
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {videos.map((v) => (
+            <article
+              key={v.title}
+              className="hairline rounded-md bg-elevated overflow-hidden hover:border-app-strong transition-colors flex flex-col"
+            >
+              <div className="hairline-b aspect-video bg-app grid place-items-center relative">
+                <Play size={28} strokeWidth={1.5} className="text-fg-subtle" fill="currentColor" />
+                <span className="absolute top-2 right-2 hairline bg-app rounded px-1.5 py-0.5 text-[10px] mono text-fg-muted inline-flex items-center gap-1">
+                  <Clock size={9} strokeWidth={2} /> {v.duration}
+                </span>
+              </div>
+              <div className="p-4 flex flex-col gap-2 flex-1">
+                <h3 className="font-medium text-[14px] text-fg">{v.title}</h3>
+                <p className="text-fg-muted text-[12.5px] leading-relaxed flex-1">{v.desc}</p>
+                <button className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-3 h-8 text-[12px] font-medium hover:opacity-90 transition">
+                  <Play size={11} strokeWidth={2} fill="currentColor" /> Watch
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-      {/* External Resources */}
-      <h2 className="mt-8 mb-4 text-xl font-bold">🔗 External Resources</h2>
-      <div className="grid gap-3.5 mb-10">
-        {externalLinks.map((link) => (
-          <a
-            key={link.title}
-            href="#"
-            className="flex items-center gap-4 p-5 bg-white border border-gray-200 rounded-xl transition-all hover:border-primary hover:shadow-[0_8px_20px_rgba(99,102,241,0.12)] hover:translate-x-1 group text-gray-900"
-          >
-            <div className="text-[2rem] w-[50px] h-[50px] bg-gray-100 rounded-lg grid place-items-center shrink-0">
-              {link.icon}
-            </div>
-            <div className="flex-1">
-              <h4 className="font-bold text-sm mb-1">{link.title}</h4>
-              <p className="text-muted text-sm">{link.desc}</p>
-            </div>
-            <span className="text-2xl text-primary font-bold ml-auto group-hover:translate-x-1 transition-transform">
-              →
-            </span>
-          </a>
-        ))}
-      </div>
+      <section className="mb-10">
+        <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-3">
+          External Resources
+        </p>
+        <div className="hairline rounded-md bg-elevated divide-y divide-zinc-200 dark:divide-zinc-800">
+          {externalLinks.map(({ Icon, title, desc }) => (
+            <a
+              key={title}
+              href="#"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors group"
+            >
+              <span className="hairline grid place-items-center w-8 h-8 rounded-md bg-app text-fg shrink-0">
+                <Icon size={14} strokeWidth={1.75} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-[13px] text-fg">{title}</h4>
+                <p className="text-fg-muted text-[12px] mt-0.5">{desc}</p>
+              </div>
+              <ArrowRight
+                size={14}
+                strokeWidth={1.75}
+                className="text-fg-subtle group-hover:text-fg group-hover:translate-x-0.5 transition-all"
+              />
+            </a>
+          ))}
+        </div>
+      </section>
     </AppLayout>
   );
 }

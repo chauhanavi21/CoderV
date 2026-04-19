@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Sparkles, RotateCcw, Send, User, Loader2 } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import AssistantMessage from '../components/AssistantMessage';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,7 +26,7 @@ const tabs = [
 const initialMessage = {
   role: 'assistant',
   content:
-    "Hi! I'm CoderV, your AI coding tutor. Ask me anything about programming, algorithms, data structures, web dev, debugging, or system design. I only help with code-related topics — let's level up.",
+    "I'm CoderV, your AI coding tutor. Ask me anything about programming, algorithms, data structures, web dev, debugging, or system design.",
 };
 
 function buildProgressContext({ registry, modulesCache, getDifficultyProgress, getTotalProgress }) {
@@ -190,66 +191,69 @@ export default function AiAssistant() {
 
   return (
     <AppLayout tabs={tabs} sidebarId="aiSidebar">
-      <div className="max-w-[900px] mx-auto">
+      <div className="max-w-[860px] mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-5 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-gray-200 dark:border-slate-700 rounded-2xl p-7 mb-6 max-md:flex-col max-md:text-center">
-          <div className="text-[3.5rem] gradient-quiz-badge w-20 h-20 rounded-full grid place-items-center shadow-[0_8px_20px_rgba(99,102,241,0.2)] shrink-0">
-            🤖
-          </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-extrabold mb-2 dark:text-slate-100">AI Learning Assistant</h1>
-            <p className="text-muted dark:text-slate-400 text-sm">
+        <div className="mb-5 flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-fg-subtle mono">Assistant</p>
+            <h1 className="mt-1 text-[22px] font-semibold tracking-tightish text-fg flex items-center gap-2">
+              <Sparkles size={18} strokeWidth={1.75} className="text-fg-muted" />
+              AI Tutor
+            </h1>
+            <p className="mt-1 text-[13px] text-fg-muted">
               Get instant help with coding, algorithms, debugging, and concepts.
-              <span className="hidden sm:inline"> I only answer programming questions.</span>
             </p>
-            {totalCount > 0 && (
-              <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300 mt-2">
-                I can see your progress: {completedCount} / {totalCount} examples completed
-                {progress?.totalPercent != null && ` · ${progress.totalPercent}%`}
-              </p>
-            )}
           </div>
+          {totalCount > 0 && (
+            <div className="hairline rounded-md px-3 py-2">
+              <p className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">Context</p>
+              <p className="text-[12px] mono text-fg mt-0.5">
+                {completedCount}/{totalCount} examples
+                {progress?.totalPercent != null && <span className="text-fg-subtle"> · {progress.totalPercent}%</span>}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Chat container */}
-        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-card mb-6 text-gray-900 dark:text-slate-100">
+        <div className="hairline rounded-md bg-elevated overflow-hidden mb-4">
           {/* Toolbar */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Conversation
+          <div className="flex items-center justify-between px-4 h-10 hairline-b">
+            <p className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
+              conversation
             </p>
             <button
               type="button"
               onClick={clearChat}
-              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] mono font-medium text-fg-subtle hover:text-fg transition-colors"
               disabled={sending}
             >
-              ↻ Clear chat
+              <RotateCcw size={11} strokeWidth={2} /> clear
             </button>
           </div>
 
           {/* Messages */}
           <div
             ref={scrollRef}
-            className="min-h-[400px] max-h-[520px] overflow-y-auto p-6 bg-slate-50 dark:bg-slate-900/40 grid gap-4"
+            className="min-h-[400px] max-h-[520px] overflow-y-auto p-4 bg-app grid gap-3"
           >
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.role === 'assistant' && (
-                  <div className="text-xl w-9 h-9 rounded-full grid place-items-center shrink-0 bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm">
-                    🤖
+                  <div className="hairline w-7 h-7 rounded-md grid place-items-center shrink-0 bg-elevated text-fg">
+                    <Sparkles size={13} strokeWidth={1.75} />
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] px-4 py-3 rounded-2xl shadow-sm ${
+                  className={`max-w-[80%] px-3.5 py-2.5 rounded-md text-[13px] leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-indigo-600 text-white rounded-br-md text-sm leading-relaxed whitespace-pre-wrap'
+                      ? 'bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 whitespace-pre-wrap'
                       : msg.isError
-                      ? 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800/50 rounded-bl-md text-sm leading-relaxed whitespace-pre-wrap'
-                      : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-md'
+                      ? 'hairline border-red-500/30 bg-red-500/5 text-red-600 dark:text-red-300 whitespace-pre-wrap'
+                      : 'hairline bg-elevated text-fg'
                   }`}
                 >
                   {msg.role === 'assistant' && !msg.isError ? (
@@ -259,20 +263,20 @@ export default function AiAssistant() {
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="text-lg w-9 h-9 rounded-full grid place-items-center shrink-0 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold">
-                    👤
+                  <div className="w-7 h-7 rounded-md grid place-items-center shrink-0 bg-zinc-100 dark:bg-zinc-900 text-fg-muted">
+                    <User size={13} strokeWidth={1.75} />
                   </div>
                 )}
               </div>
             ))}
 
             {sending && (
-              <div className="flex gap-3 justify-start">
-                <div className="text-xl w-9 h-9 rounded-full grid place-items-center shrink-0 bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm">
-                  🤖
+              <div className="flex gap-2.5 justify-start">
+                <div className="hairline w-7 h-7 rounded-md grid place-items-center shrink-0 bg-elevated text-fg">
+                  <Sparkles size={13} strokeWidth={1.75} />
                 </div>
-                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl rounded-bl-md px-4 py-3 text-sm italic text-slate-500 dark:text-slate-400">
-                  Thinking…
+                <div className="hairline bg-elevated rounded-md px-3.5 py-2.5 text-[13px] text-fg-subtle italic inline-flex items-center gap-2">
+                  <Loader2 size={12} className="animate-spin" /> Thinking
                 </div>
               </div>
             )}
@@ -284,7 +288,7 @@ export default function AiAssistant() {
               e.preventDefault();
               send();
             }}
-            className="p-5 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex gap-3 max-md:flex-col"
+            className="p-3 hairline-t flex gap-2 max-md:flex-col"
           >
             <textarea
               ref={inputRef}
@@ -296,43 +300,44 @@ export default function AiAssistant() {
                   send();
                 }
               }}
-              placeholder="Ask a coding question... (Shift+Enter for newline)"
+              placeholder="Ask a coding question…  (Shift+Enter for newline)"
               rows={2}
               disabled={sending}
-              className="flex-1 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 rounded-xl px-4 py-3 text-sm resize-none outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-sans disabled:opacity-50 dark:text-slate-100"
+              className="flex-1 hairline bg-app rounded-md px-3 py-2 text-[13px] resize-none outline-none transition focus:border-app-strong font-sans disabled:opacity-50 text-fg placeholder:text-fg-subtle"
             />
             <button
               type="submit"
               disabled={sending || !input.trim()}
-              className="self-end max-md:w-full gradient-primary text-white rounded-xl px-5 py-3 text-sm font-bold shadow-btn cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              className="self-end max-md:w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-3 h-9 text-[12px] font-medium disabled:opacity-40 hover:opacity-90 transition"
             >
-              {sending ? 'Sending…' : 'Send Question'}
+              <Send size={12} strokeWidth={2} />
+              {sending ? 'Sending' : 'Send'}
             </button>
           </form>
 
           {error && (
-            <div className="px-5 py-2 text-xs text-red-600 dark:text-red-400 font-semibold border-t border-red-100 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20">
+            <div className="px-4 py-2 text-[11px] mono text-red-500 hairline-t bg-red-500/5">
               {error}
             </div>
           )}
         </div>
 
         {/* Suggestions */}
-        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 shadow-card text-gray-900 dark:text-slate-100">
-          <h3 className="font-bold text-sm mb-4">Quick Questions</h3>
-          <div className="flex flex-wrap gap-2.5 max-md:justify-center">
+        <div className="hairline rounded-md bg-elevated p-4">
+          <p className="text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle mb-3">Quick questions</p>
+          <div className="flex flex-wrap gap-1.5">
             {quickQuestions.map((q) => (
               <button
                 key={q}
                 onClick={() => send(q)}
                 disabled={sending}
-                className="px-4 py-2.5 bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-full text-sm font-medium cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-primary hover:text-primary dark:hover:text-indigo-300 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="hairline rounded-md px-2.5 h-7 text-[12px] text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors disabled:opacity-50"
               >
                 {q}
               </button>
             ))}
           </div>
-          <p className="mt-4 text-[11px] text-slate-500 dark:text-slate-500">
+          <p className="mt-3 text-[10px] mono text-fg-subtle">
             CoderV's AI tutor only answers programming-related questions and tailors hints based on the lessons you've completed.
           </p>
         </div>

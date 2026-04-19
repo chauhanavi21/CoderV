@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Clock, Check, X, Play } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { SkeletonCard } from '../components/SkeletonCard';
 import { useAuth } from '../contexts/AuthContext';
 
 const BASE = import.meta.env.VITE_API_URL || 'https://coderv.onrender.com';
 
-const difficultyStyles = {
-  easy:   'bg-emerald-100 text-emerald-800',
-  medium: 'bg-amber-100 text-amber-800',
-  hard:   'bg-red-100 text-red-800',
+const difficultyTone = {
+  easy: 'text-emerald-500',
+  medium: 'text-amber-500',
+  hard: 'text-red-500',
 };
 
 function formatTime(secs) {
@@ -18,54 +19,32 @@ function formatTime(secs) {
   return `${m}:${s}`;
 }
 
-function ScoreRing({ score, total }) {
-  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
-  const color = pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
-  return (
-    <div
-      className="w-[160px] h-[160px] rounded-full grid place-items-center relative mx-auto"
-      style={{ background: `conic-gradient(${color} ${pct * 3.6}deg, #e2e8f0 0deg)` }}
-    >
-      <div className="absolute w-[116px] h-[116px] rounded-full bg-white dark:bg-slate-800" />
-      <div className="relative z-10 text-center">
-        <p className="text-3xl font-extrabold" style={{ color }}>{pct}%</p>
-        <p className="text-xs text-muted font-semibold">{score}/{total} correct</p>
-      </div>
-    </div>
-  );
-}
-
-// ── State machine: 'loading' | 'ready' | 'active' | 'finished' ───────────────
 export default function QuizTake() {
   const { quizId } = useParams();
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
   const { user, getToken } = useAuth();
 
-  const [quiz,      setQuiz]      = useState(null);
-  const [phase,     setPhase]     = useState('loading'); // loading|ready|active|finished
-  const [error,     setError]     = useState(null);
+  const [quiz, setQuiz] = useState(null);
+  const [phase, setPhase] = useState('loading');
+  const [error, setError] = useState(null);
 
-  // Per-question answers [null | index]
-  const [answers,   setAnswers]   = useState([]);
-  const [current,   setCurrent]   = useState(0);
-  const [revealed,  setRevealed]  = useState(false); // show correct/wrong for current Q
+  const [answers, setAnswers] = useState([]);
+  const [current, setCurrent] = useState(0);
+  const [revealed, setRevealed] = useState(false);
 
-  // Timer
-  const [timeLeft,  setTimeLeft]  = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [timeTaken, setTimeTaken] = useState(0);
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
 
-  // Results
   const [score, setScore] = useState(0);
   const [saved, setSaved] = useState(false);
 
   const tabs = [
-    { to: '/quiz', label: '← All Quizzes' },
+    { to: '/quiz', label: 'All Quizzes' },
     { to: `/quiz/${quizId}`, label: quiz?.title ?? 'Quiz' },
   ];
 
-  // ── Fetch quiz ──────────────────────────────────────────────────────────────
   useEffect(() => {
     fetch(`${BASE}/api/quizzes/${quizId}`)
       .then((r) => r.json())
@@ -79,7 +58,6 @@ export default function QuizTake() {
       .catch((e) => { setError(e.message); setPhase('ready'); });
   }, [quizId]);
 
-  // ── Timer ───────────────────────────────────────────────────────────────────
   const finishQuiz = useCallback((currentAnswers, elapsed) => {
     clearInterval(timerRef.current);
     const finalAnswers = currentAnswers ?? answers;
@@ -97,7 +75,6 @@ export default function QuizTake() {
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // Time's up — finish with current answers
           clearInterval(timerRef.current);
           const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
           finishQuiz(null, elapsed);
@@ -110,7 +87,6 @@ export default function QuizTake() {
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
-  // ── Save attempt ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (phase !== 'finished' || saved || !user) return;
     async function persist() {
@@ -123,13 +99,12 @@ export default function QuizTake() {
         });
         setSaved(true);
       } catch {
-        // silent — result still shown locally
+        // silent
       }
     }
     persist();
   }, [phase, saved, user, score, quiz, quizId, timeTaken, getToken]);
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
   function startQuiz() {
     setPhase('active');
     startTimer();
@@ -153,22 +128,23 @@ export default function QuizTake() {
     }
   }
 
-  // ── Colour logic ────────────────────────────────────────────────────────────
   function optionClass(idx) {
-    const base = 'flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-sm transition-all cursor-pointer ';
+    const base = 'flex items-center gap-3 hairline rounded-md px-3.5 py-3 text-left text-[13px] transition-all cursor-pointer ';
     if (!revealed) {
       return base + (answers[current] === idx
-        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-sm'
-        : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-600');
+        ? 'border-app-strong bg-zinc-50 dark:bg-zinc-900'
+        : 'bg-elevated hover:border-app-strong');
     }
-    if (idx === quiz.questions[current].answer) return base + 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30';
-    if (idx === answers[current]) return base + 'border-red-400 bg-red-50 dark:bg-red-900/20';
-    return base + 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 opacity-50';
+    if (idx === quiz.questions[current].answer) return base + 'border-emerald-500/60 bg-emerald-500/5';
+    if (idx === answers[current]) return base + 'border-red-500/60 bg-red-500/5';
+    return base + 'bg-elevated opacity-50';
   }
 
-  const timerColor = timeLeft <= 30 ? 'text-red-500' : timeLeft <= 60 ? 'text-amber-500' : 'text-emerald-600 dark:text-emerald-400';
+  const timerTone =
+    timeLeft <= 30 ? 'text-red-500 border-red-500/40 bg-red-500/5'
+    : timeLeft <= 60 ? 'text-amber-500 border-amber-500/40 bg-amber-500/5'
+    : 'text-fg';
 
-  // ────────────────────────────────────────────────────────────────────────────
   if (phase === 'loading') {
     return (
       <AppLayout tabs={tabs} sidebarId="quizTakeSidebar">
@@ -181,64 +157,72 @@ export default function QuizTake() {
   if (error) {
     return (
       <AppLayout tabs={tabs} sidebarId="quizTakeSidebar">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-10 text-center text-red-700">
-          <p className="font-bold text-lg mb-2">Could not load quiz</p>
-          <p className="text-sm mb-6">{error}</p>
-          <Link to="/quiz" className="text-sm font-bold text-indigo-600 hover:text-indigo-800">← Back to quizzes</Link>
+        <div className="hairline rounded-md bg-red-500/5 border-red-500/30 p-8 text-center">
+          <p className="font-medium text-[14px] text-red-500 mb-1.5">Could not load quiz</p>
+          <p className="text-[13px] text-fg-muted mb-5">{error}</p>
+          <Link
+            to="/quiz"
+            className="hairline inline-flex items-center gap-1.5 rounded-md px-3 h-8 text-[12px] font-medium text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          >
+            <ArrowLeft size={12} /> Back to quizzes
+          </Link>
         </div>
       </AppLayout>
     );
   }
 
-  // ── READY screen ─────────────────────────────────────────────────────────────
   if (phase === 'ready') {
     return (
       <AppLayout tabs={tabs} sidebarId="quizTakeSidebar">
-        <article className="max-w-2xl mx-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-10 shadow-card text-center text-gray-900 dark:text-slate-100">
-          <div className="text-6xl mb-6">{quiz.icon}</div>
-          <h1 className="text-3xl font-extrabold mb-3">{quiz.title}</h1>
-          <p className="text-muted dark:text-slate-400 text-base mb-6 leading-relaxed">{quiz.description}</p>
+        <div className="max-w-2xl mx-auto">
+          <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-2">
+            /quiz/{quizId}
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tightish text-fg mb-2">{quiz.title}</h1>
+          <p className="text-[13px] text-fg-muted leading-relaxed mb-6 max-w-xl">{quiz.description}</p>
 
-          <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
-            <div className="text-center">
-              <p className="text-2xl font-extrabold text-indigo-600">{quiz.questions.length}</p>
-              <p className="text-xs text-muted font-semibold">Questions</p>
-            </div>
-            <div className="w-px h-10 bg-gray-200 dark:bg-slate-700" />
-            <div className="text-center">
-              <p className="text-2xl font-extrabold text-amber-500">{formatTime(quiz.time_limit)}</p>
-              <p className="text-xs text-muted font-semibold">Time limit</p>
-            </div>
-            <div className="w-px h-10 bg-gray-200 dark:bg-slate-700" />
-            <div className="text-center">
-              <span className={`px-3 py-1 rounded-full text-sm font-bold uppercase ${difficultyStyles[quiz.difficulty] || difficultyStyles.easy}`}>
-                {quiz.difficulty}
-              </span>
-              <p className="text-xs text-muted font-semibold mt-1">Difficulty</p>
+          <div className="hairline rounded-md bg-elevated overflow-hidden mb-5">
+            <div className="grid grid-cols-3 divide-x divide-zinc-200 dark:divide-zinc-800">
+              <div className="p-4">
+                <p className="text-2xl font-semibold text-fg mono tabular-nums">{quiz.questions.length}</p>
+                <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mt-0.5">Questions</p>
+              </div>
+              <div className="p-4">
+                <p className="text-2xl font-semibold text-fg mono tabular-nums">{formatTime(quiz.time_limit)}</p>
+                <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mt-0.5">Time limit</p>
+              </div>
+              <div className="p-4">
+                <p className={`text-[13px] font-medium mono uppercase tracking-wider ${difficultyTone[quiz.difficulty] || 'text-fg-muted'}`}>
+                  {quiz.difficulty}
+                </p>
+                <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mt-0.5">Difficulty</p>
+              </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/20 p-4 mb-8 text-left text-sm text-amber-900 dark:text-amber-200">
-            <p className="font-bold mb-1">Before you start:</p>
-            <ul className="list-disc list-inside space-y-1 text-xs leading-relaxed">
-              <li>Each question shows the correct answer after you select an option</li>
-              <li>The timer counts down — the quiz auto-submits when time runs out</li>
-              <li>Your result is saved to your account after finishing</li>
+          <div className="hairline rounded-md bg-elevated p-4 mb-6">
+            <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-2">
+              Notes
+            </p>
+            <ul className="text-[12.5px] text-fg-muted leading-relaxed space-y-1 list-disc list-inside marker:text-fg-subtle">
+              <li>Each question reveals the correct answer after you choose</li>
+              <li>The timer counts down — quiz auto-submits when time runs out</li>
+              <li>Your result saves to your account when finished</li>
             </ul>
           </div>
 
           <button
             onClick={startQuiz}
-            className="gradient-primary text-white rounded-xl px-10 py-4 text-base font-extrabold shadow-btn hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-5 h-10 text-[13px] font-medium hover:opacity-90 transition"
           >
-            Start Quiz →
+            <Play size={13} strokeWidth={2} fill="currentColor" />
+            Start Quiz
           </button>
-        </article>
+        </div>
       </AppLayout>
     );
   }
 
-  // ── ACTIVE screen ─────────────────────────────────────────────────────────────
   if (phase === 'active') {
     const q = quiz.questions[current];
     const progress = ((current + (revealed ? 1 : 0)) / quiz.questions.length) * 100;
@@ -246,44 +230,35 @@ export default function QuizTake() {
     return (
       <AppLayout tabs={tabs} sidebarId="quizTakeSidebar">
         <div className="max-w-2xl mx-auto">
-          {/* Header bar */}
-          <div className="flex items-center justify-between mb-6 gap-4">
+          <div className="flex items-center justify-between mb-5 gap-4">
             <div className="flex-1">
-              <div className="flex items-center justify-between text-xs font-semibold text-muted dark:text-slate-400 mb-1.5">
-                <span>Question {current + 1} of {quiz.questions.length}</span>
-                <span>{Math.round(progress)}% complete</span>
+              <div className="flex items-center justify-between text-[11px] mono uppercase tracking-wider text-fg-subtle mb-1.5">
+                <span>Question {current + 1} / {quiz.questions.length}</span>
+                <span>{Math.round(progress)}%</span>
               </div>
-              <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
+              <div className="hairline-t h-px bg-bg">
                 <div
-                  className="h-2 rounded-full bg-indigo-500 transition-all duration-300"
+                  className="h-px bg-fg transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
 
-            {/* Timer */}
-            <div className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 font-extrabold text-lg tabular-nums ${
-              timeLeft <= 30
-                ? 'border-red-300 bg-red-50 dark:bg-red-900/20'
-                : timeLeft <= 60
-                ? 'border-amber-300 bg-amber-50 dark:bg-amber-900/20'
-                : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
-            } ${timerColor}`}>
-              <span className={`text-base ${timeLeft <= 30 ? 'animate-pulse' : ''}`}>⏱</span>
+            <div className={`hairline inline-flex items-center gap-1.5 rounded-md px-2.5 h-8 mono tabular-nums text-[13px] font-medium ${timerTone}`}>
+              <Clock size={12} strokeWidth={2} className={timeLeft <= 30 ? 'animate-pulse' : ''} />
               {formatTime(timeLeft)}
             </div>
           </div>
 
-          {/* Question card */}
-          <article className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-7 shadow-sm mb-5">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted dark:text-slate-400 mb-3">
+          <article className="hairline rounded-md bg-elevated p-5 mb-4">
+            <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-3">
               {quiz.title} · {quiz.difficulty}
             </p>
-            <h2 className="text-lg font-extrabold text-gray-900 dark:text-slate-100 leading-snug mb-6">
+            <h2 className="text-[15px] font-medium text-fg leading-snug mb-5">
               {q.question}
             </h2>
 
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               {q.options.map((opt, idx) => (
                 <button
                   key={idx}
@@ -292,55 +267,53 @@ export default function QuizTake() {
                   onClick={() => selectAnswer(idx)}
                   className={optionClass(idx)}
                 >
-                  <span className={`w-7 h-7 rounded-lg grid place-items-center text-xs font-extrabold shrink-0 ${
+                  <span className={`w-6 h-6 rounded-md grid place-items-center text-[11px] font-medium mono shrink-0 ${
                     revealed && idx === q.answer
                       ? 'bg-emerald-500 text-white'
                       : revealed && idx === answers[current] && idx !== q.answer
-                      ? 'bg-red-400 text-white'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                      ? 'bg-red-500 text-white'
+                      : 'hairline bg-app text-fg-muted'
                   }`}>
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  <span className="text-gray-800 dark:text-slate-200 leading-snug">{opt}</span>
+                  <span className="text-fg leading-snug flex-1">{opt}</span>
                   {revealed && idx === q.answer && (
-                    <span className="ml-auto text-emerald-600 font-bold text-base">✓</span>
+                    <Check size={14} strokeWidth={2.5} className="text-emerald-500 shrink-0" />
                   )}
                   {revealed && idx === answers[current] && idx !== q.answer && (
-                    <span className="ml-auto text-red-500 font-bold text-base">✗</span>
+                    <X size={14} strokeWidth={2.5} className="text-red-500 shrink-0" />
                   )}
                 </button>
               ))}
             </div>
 
-            {/* Feedback */}
             {revealed && (
-              <div className={`mt-5 rounded-xl px-5 py-3 text-sm font-semibold animate-fade-in ${
+              <div className={`mt-4 hairline rounded-md px-3.5 py-2.5 text-[12.5px] ${
                 answers[current] === q.answer
-                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50'
-                  : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800/50'
+                  ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-600 dark:text-emerald-300'
+                  : 'bg-red-500/5 border-red-500/30 text-red-600 dark:text-red-300'
               }`}>
                 {answers[current] === q.answer
-                  ? '✓ Correct!'
-                  : `✗ Incorrect — the correct answer is "${q.options[q.answer]}"`}
+                  ? 'Correct.'
+                  : `Incorrect — the answer is "${q.options[q.answer]}"`}
               </div>
             )}
           </article>
 
-          {/* Next / Finish */}
           {revealed && (
-            <div className="flex justify-end animate-fade-in">
+            <div className="flex justify-end">
               <button
                 onClick={nextQuestion}
-                className="gradient-primary text-white rounded-xl px-8 py-3.5 text-sm font-extrabold shadow-btn hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-4 h-9 text-[12px] font-medium hover:opacity-90 transition"
               >
-                {current + 1 >= quiz.questions.length ? 'See Results →' : 'Next Question →'}
+                {current + 1 >= quiz.questions.length ? 'See Results' : 'Next'}
+                <ArrowRight size={12} strokeWidth={2.5} />
               </button>
             </div>
           )}
 
-          {/* Skip hint */}
           {!revealed && (
-            <p className="text-xs text-center text-muted dark:text-slate-500 mt-2">
+            <p className="text-[11px] mono text-center text-fg-subtle mt-2">
               Select an answer to continue
             </p>
           )}
@@ -349,68 +322,82 @@ export default function QuizTake() {
     );
   }
 
-  // ── FINISHED screen ───────────────────────────────────────────────────────────
   const pct = quiz.questions.length > 0 ? Math.round((score / quiz.questions.length) * 100) : 0;
   const grade =
-    pct >= 90 ? { label: 'Excellent!', color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50' } :
-    pct >= 70 ? { label: 'Good job!',  color: 'text-amber-600',   bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50'       } :
-                { label: 'Keep practising!', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50'             };
+    pct >= 90 ? { label: 'Excellent', tone: 'text-emerald-500' }
+    : pct >= 70 ? { label: 'Good', tone: 'text-amber-500' }
+    : { label: 'Keep practising', tone: 'text-red-500' };
 
   return (
     <AppLayout tabs={tabs} sidebarId="quizTakeSidebar">
       <div className="max-w-2xl mx-auto">
-        {/* Result card */}
-        <article className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-8 shadow-card mb-6 text-center">
-          <div className="text-4xl mb-4">{quiz.icon}</div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-slate-100 mb-1">{quiz.title}</h1>
-          <p className="text-sm text-muted dark:text-slate-400 mb-8">Quiz complete!</p>
+        <article className="hairline rounded-md bg-elevated p-6 mb-5">
+          <p className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-1">
+            Quiz complete
+          </p>
+          <h1 className="text-xl font-semibold tracking-tightish text-fg mb-5">{quiz.title}</h1>
 
-          <ScoreRing score={score} total={quiz.questions.length} />
+          <div className="flex items-baseline gap-3 mb-1">
+            <span className={`text-5xl font-semibold mono tabular-nums ${grade.tone}`}>{pct}%</span>
+            <span className="text-[12px] mono text-fg-subtle">{score} / {quiz.questions.length} correct</span>
+          </div>
+          <p className={`text-[13px] font-medium ${grade.tone} mb-5`}>{grade.label}</p>
 
-          <div className={`mt-6 rounded-xl border px-6 py-3 text-lg font-extrabold ${grade.color} ${grade.bg}`}>
-            {grade.label}
+          <div className="hairline-t h-px bg-bg mb-5">
+            <div
+              className={`h-px transition-all ${pct >= 90 ? 'bg-emerald-500' : pct >= 70 ? 'bg-amber-500' : 'bg-red-500'}`}
+              style={{ width: `${pct}%` }}
+            />
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 divide-x divide-zinc-200 dark:divide-zinc-800 hairline rounded-md">
             {[
-              { label: 'Correct',   value: score,                               color: 'text-emerald-600' },
-              { label: 'Incorrect', value: quiz.questions.length - score,       color: 'text-red-500'     },
-              { label: 'Time taken',value: formatTime(timeTaken),               color: 'text-indigo-600'  },
+              { label: 'Correct', value: score, tone: 'text-emerald-500' },
+              { label: 'Incorrect', value: quiz.questions.length - score, tone: 'text-red-500' },
+              { label: 'Time', value: formatTime(timeTaken), tone: 'text-fg' },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-gray-200 dark:border-slate-700 px-3 py-4">
-                <p className={`text-2xl font-extrabold ${s.color}`}>{s.value}</p>
-                <p className="text-xs text-muted dark:text-slate-400 font-semibold mt-0.5">{s.label}</p>
+              <div key={s.label} className="px-3 py-3">
+                <p className={`text-xl font-semibold mono tabular-nums ${s.tone}`}>{s.value}</p>
+                <p className="text-[10px] mono uppercase tracking-wider text-fg-subtle mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
         </article>
 
-        {/* Question review */}
-        <h2 className="text-lg font-bold dark:text-slate-100 mb-4">Review Answers</h2>
-        <div className="grid gap-4 mb-8">
+        <h2 className="text-[11px] mono uppercase tracking-wider text-fg-subtle mb-3">Review</h2>
+        <div className="grid gap-2 mb-6">
           {quiz.questions.map((q, i) => {
             const correct = answers[i] === q.answer;
             return (
               <div
                 key={i}
-                className={`rounded-xl border p-5 ${
+                className={`hairline rounded-md p-4 ${
                   correct
-                    ? 'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/10'
-                    : 'border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/10'
+                    ? 'bg-emerald-500/5 border-emerald-500/20'
+                    : 'bg-red-500/5 border-red-500/20'
                 }`}
               >
-                <p className="text-xs font-bold uppercase tracking-wide text-muted dark:text-slate-400 mb-1">
-                  Q{i + 1} · {correct ? '✓ Correct' : '✗ Incorrect'}
+                <p className="text-[10px] mono uppercase tracking-wider text-fg-subtle mb-1 flex items-center gap-1.5">
+                  Q{i + 1}
+                  {correct ? (
+                    <span className="inline-flex items-center gap-0.5 text-emerald-500">
+                      <Check size={10} strokeWidth={2.5} /> correct
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-0.5 text-red-500">
+                      <X size={10} strokeWidth={2.5} /> incorrect
+                    </span>
+                  )}
                 </p>
-                <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm mb-2">{q.question}</p>
+                <p className="font-medium text-fg text-[13px] mb-1.5">{q.question}</p>
                 {!correct && answers[i] !== null && (
-                  <p className="text-xs text-red-700 dark:text-red-400">
-                    Your answer: <span className="font-bold">{q.options[answers[i]]}</span>
+                  <p className="text-[11.5px] text-red-500">
+                    Your answer: <span className="font-medium">{q.options[answers[i]]}</span>
                   </p>
                 )}
                 {!correct && (
-                  <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">
-                    Correct answer: <span className="font-bold">{q.options[q.answer]}</span>
+                  <p className="text-[11.5px] text-emerald-500 mt-0.5">
+                    Correct: <span className="font-medium">{q.options[q.answer]}</span>
                   </p>
                 )}
               </div>
@@ -418,17 +405,23 @@ export default function QuizTake() {
           })}
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3 justify-center flex-wrap">
+        <div className="flex gap-2 justify-center flex-wrap">
           <button
-            onClick={() => { setAnswers(new Array(quiz.questions.length).fill(null)); setCurrent(0); setRevealed(false); setTimeLeft(quiz.time_limit); setSaved(false); setPhase('ready'); }}
-            className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-6 py-3 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+            onClick={() => {
+              setAnswers(new Array(quiz.questions.length).fill(null));
+              setCurrent(0);
+              setRevealed(false);
+              setTimeLeft(quiz.time_limit);
+              setSaved(false);
+              setPhase('ready');
+            }}
+            className="hairline rounded-md px-4 h-9 text-[12px] font-medium text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
             Try Again
           </button>
           <Link
             to="/quiz"
-            className="gradient-primary text-white rounded-xl px-6 py-3 text-sm font-bold shadow-btn hover:-translate-y-0.5 transition-transform"
+            className="rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-4 h-9 inline-flex items-center text-[12px] font-medium hover:opacity-90 transition"
           >
             All Quizzes
           </Link>

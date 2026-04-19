@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
+import { Play, RotateCcw, ChevronRight, FileCode2, Network } from 'lucide-react';
 
-/* ─── colour map ──────────────────────────────────────────────────────────── */
 const TYPE_COLOR = {
   create:         '#7C6AF6',
   update:         '#7C6AF6',
@@ -43,7 +43,6 @@ function labelFor(action) {
   }
 }
 
-/* ─── graph builder ───────────────────────────────────────────────────────── */
 function buildGraph(steps, upTo) {
   const nodes = new Map();
   const edges = [];
@@ -95,7 +94,6 @@ function layoutNodes(nodeList, w, h) {
   return pos;
 }
 
-/* ─── component ───────────────────────────────────────────────────────────── */
 export default function StepVisualizer({ example, onFirstInteraction }) {
   const steps = useMemo(() => example.steps || [], [example.steps]);
   const lines = useMemo(() => example.code.split('\n'), [example.code]);
@@ -169,60 +167,65 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
   const isError = currentStep?.action?.type === 'error';
 
   return (
-    <article className="rounded-2xl border border-gray-200 bg-slate-950 shadow-card text-white overflow-hidden">
+    <article className="hairline rounded-md bg-elevated overflow-hidden">
 
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-slate-800 flex-wrap">
-        <div>
-          <h2 className="text-base font-bold">Step-by-step visualizer</h2>
-          <p className="text-xs text-slate-400">Watch each line execute and variables update in real time.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-300">
-            {cursor} / {steps.length} steps
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 px-4 h-10 hairline-b">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-medium mono uppercase tracking-wider text-fg-subtle">
+            Step Visualizer
           </span>
-          {done && <span className="rounded-full bg-emerald-500/20 text-emerald-400 px-3 py-1 text-xs font-bold">Done</span>}
+          <span className="text-[10px] mono text-fg-subtle">
+            {cursor} / {steps.length}
+          </span>
         </div>
+        {done && (
+          <span className="text-[10px] font-medium mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            done
+          </span>
+        )}
       </div>
 
-      {/* ── Mobile tab switcher (hidden on lg+) ── */}
-      <div className="flex lg:hidden border-b border-slate-800">
-        {['code', 'graph'].map((tab) => (
+      {/* Mobile tab switcher */}
+      <div className="flex lg:hidden hairline-b">
+        {[
+          { key: 'code', label: 'Code', Icon: FileCode2 },
+          { key: 'graph', label: 'Graph & Vars', Icon: Network },
+        ].map(({ key, label, Icon }) => (
           <button
-            key={tab}
+            key={key}
             type="button"
-            onClick={() => setMobileTab(tab)}
-            className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer ${
-              mobileTab === tab
-                ? 'text-indigo-400 border-b-2 border-indigo-500 -mb-px'
-                : 'text-slate-500 hover:text-slate-300'
+            onClick={() => setMobileTab(key)}
+            className={`flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-[11px] font-medium mono uppercase tracking-wider transition-colors ${
+              mobileTab === key
+                ? 'text-fg border-b border-fg -mb-px'
+                : 'text-fg-subtle hover:text-fg-muted'
             }`}
           >
-            {tab === 'code' ? '📄 Code' : '📊 Graph & Vars'}
+            <Icon size={11} strokeWidth={2} />
+            {label}
           </button>
         ))}
       </div>
 
-      {/* ── Main panels ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
-
-        {/* Left — code */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:divide-x divide-zinc-200 dark:divide-zinc-800">
+        {/* Code */}
         <div className={`p-4 ${mobileTab !== 'code' ? 'hidden lg:block' : ''}`}>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Code</p>
-          <div className="rounded-xl bg-slate-900 p-3 overflow-x-auto">
-            <pre className="text-sm leading-6 font-mono">
+          <p className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle mb-2">Code</p>
+          <div className="rounded bg-zinc-50 dark:bg-zinc-950 hairline p-3 overflow-x-auto">
+            <pre className="text-[12px] leading-6 mono">
               {lines.map((line, i) => (
                 <div
                   key={i}
                   className={`px-2 -mx-2 rounded transition-colors duration-150 ${
                     i === activeLine
                       ? isError
-                        ? 'bg-red-500/20 text-red-200'
-                        : 'bg-yellow-500/20 text-yellow-200'
-                      : 'text-slate-300'
+                        ? 'bg-red-500/15 text-red-600 dark:text-red-300'
+                        : 'bg-amber-500/15 text-amber-700 dark:text-amber-200'
+                      : 'text-fg'
                   }`}
                 >
-                  <span className="inline-block w-6 text-right mr-3 text-slate-600 select-none text-xs">
+                  <span className="inline-block w-6 text-right mr-3 text-fg-subtle select-none text-[11px]">
                     {i + 1}
                   </span>
                   {line || ' '}
@@ -232,23 +235,21 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
           </div>
         </div>
 
-        {/* Right — graph + variables */}
+        {/* Graph + variables */}
         <div className={`p-4 flex flex-col gap-4 ${mobileTab !== 'graph' ? 'hidden lg:flex' : ''}`}>
-
-          {/* Graph */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Memory graph</p>
-            <div className="rounded-xl bg-slate-900 p-2">
+            <p className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle mb-2">Memory graph</p>
+            <div className="rounded bg-zinc-50 dark:bg-zinc-950 hairline p-2">
               <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full">
-                <rect width={svgW} height={svgH} rx="14" fill="#0f172a" />
+                <rect width={svgW} height={svgH} rx="4" fill="transparent" />
                 {graph.edges.map((edge, i) => {
                   const from = positions[edge.from];
                   const to   = positions[edge.to];
                   if (!from || !to) return null;
                   return (
                     <line key={`e${i}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                      stroke="#475569" strokeWidth="1.5"
-                      strokeDasharray={edge.dashed ? '6 4' : 'none'} />
+                      stroke="#52525b" strokeWidth="1"
+                      strokeDasharray={edge.dashed ? '4 3' : 'none'} />
                   );
                 })}
                 {graph.nodes.map(node => {
@@ -264,39 +265,38 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
                     <g key={node.id}>
                       {isLatest && (
                         <rect x={p.x - boxW/2 - 3} y={p.y - boxH/2 - 3}
-                          width={boxW + 6} height={boxH + 6} rx="14"
-                          fill="none" stroke="#fbbf24" strokeWidth="2" />
+                          width={boxW + 6} height={boxH + 6} rx="6"
+                          fill="none" stroke="#fbbf24" strokeWidth="1.5" />
                       )}
                       <rect x={p.x - boxW/2} y={p.y - boxH/2}
-                        width={boxW} height={boxH} rx="11" fill={node.color}
-                        strokeDasharray={node.dashed ? '5 3' : 'none'}
-                        stroke={node.dashed ? '#94a3b8' : 'none'} />
-                      <text x={p.x} y={p.y - 5} textAnchor="middle" fontSize="11" fontWeight="bold" fill="white">{lbl}</text>
-                      <text x={p.x} y={p.y + 11} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,.7)">{val}</text>
+                        width={boxW} height={boxH} rx="4" fill={node.color}
+                        strokeDasharray={node.dashed ? '4 3' : 'none'}
+                        stroke={node.dashed ? '#a1a1aa' : 'none'} />
+                      <text x={p.x} y={p.y - 5} textAnchor="middle" fontSize="11" fontWeight="600" fill="white" fontFamily="JetBrains Mono, monospace">{lbl}</text>
+                      <text x={p.x} y={p.y + 11} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,.75)" fontFamily="JetBrains Mono, monospace">{val}</text>
                     </g>
                   );
                 })}
                 {graph.nodes.length === 0 && (
-                  <text x={svgW/2} y={svgH/2} textAnchor="middle" fontSize="13" fill="#475569">
-                    Press Step → or Run All to begin
+                  <text x={svgW/2} y={svgH/2} textAnchor="middle" fontSize="11" fill="#71717a" fontFamily="JetBrains Mono, monospace">
+                    Press Step or Run to begin
                   </text>
                 )}
               </svg>
             </div>
           </div>
 
-          {/* Variables table */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Variables</p>
-            <div className="rounded-xl bg-slate-900 overflow-hidden">
+            <p className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle mb-2">Variables</p>
+            <div className="rounded bg-zinc-50 dark:bg-zinc-950 hairline overflow-hidden">
               {Object.keys(locals).length === 0 ? (
-                <p className="text-xs text-slate-600 px-4 py-3">No variables yet.</p>
+                <p className="text-[12px] mono text-fg-subtle px-4 py-3">No variables yet.</p>
               ) : (
-                <table className="w-full text-xs font-mono">
+                <table className="w-full text-[12px] mono">
                   <thead>
-                    <tr className="border-b border-slate-800">
-                      <th className="text-left px-4 py-2 text-slate-500 font-semibold w-1/3">Name</th>
-                      <th className="text-left px-4 py-2 text-slate-500 font-semibold">Value</th>
+                    <tr className="hairline-b">
+                      <th className="text-left px-4 py-2 text-fg-subtle font-medium uppercase tracking-wider text-[10px] w-1/3">Name</th>
+                      <th className="text-left px-4 py-2 text-fg-subtle font-medium uppercase tracking-wider text-[10px]">Value</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -305,9 +305,9 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
                         currentStep?.action?.name === k ||
                         currentStep?.action?.ret  === k;
                       return (
-                        <tr key={k} className={`border-b border-slate-800/50 ${isChanged ? 'bg-yellow-500/10' : ''}`}>
-                          <td className={`px-4 py-1.5 font-bold ${isChanged ? 'text-yellow-300' : 'text-indigo-300'}`}>{k}</td>
-                          <td className="px-4 py-1.5 text-slate-200 break-all">{v}</td>
+                        <tr key={k} className={`border-b border-zinc-100 dark:border-zinc-900 last:border-0 ${isChanged ? 'bg-amber-500/10' : ''}`}>
+                          <td className={`px-4 py-1.5 font-medium ${isChanged ? 'text-amber-600 dark:text-amber-300' : 'text-fg'}`}>{k}</td>
+                          <td className="px-4 py-1.5 text-fg-muted break-all">{v}</td>
                         </tr>
                       );
                     })}
@@ -319,43 +319,45 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
         </div>
       </div>
 
-      {/* ── Status bar ── */}
-      <div className={`px-5 py-3 border-t border-slate-800 text-sm ${isError ? 'text-red-300' : 'text-slate-300'}`}>
+      {/* Status bar */}
+      <div className={`px-4 py-2.5 hairline-t text-[12px] mono ${isError ? 'text-red-500' : 'text-fg-muted'}`}>
         {currentStep ? (
           <>
-            <span className={`font-bold mr-2 ${isError ? 'text-red-400' : 'text-yellow-400'}`}>
-              Line {currentStep.line + 1}:
+            <span className={`font-semibold mr-2 ${isError ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'}`}>
+              line {currentStep.line + 1}
             </span>
             {currentStep.desc}
             {currentStep.action && !['output','error'].includes(currentStep.action.type) && (
-              <span className="ml-2 text-slate-500 text-xs">({labelFor(currentStep.action)})</span>
+              <span className="ml-2 text-fg-subtle">({labelFor(currentStep.action)})</span>
             )}
           </>
         ) : (
-          <span className="text-slate-500">Ready — press Step → or Run All.</span>
+          <span className="text-fg-subtle">ready — press Step or Run.</span>
         )}
       </div>
 
-      {/* ── Controls ── */}
-      <div className="px-5 pb-4 pt-3 flex items-center gap-3 flex-wrap border-t border-slate-800">
-        <button onClick={runAll}    disabled={running}
-          className="rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer">
-          ▶ Run All
+      {/* Controls */}
+      <div className="px-4 pb-3 pt-2 flex items-center gap-2 flex-wrap hairline-t">
+        <button onClick={runAll} disabled={running}
+          className="inline-flex items-center gap-1.5 rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-3 h-7 text-[12px] font-medium disabled:opacity-40 hover:opacity-90 transition">
+          <Play size={11} strokeWidth={2.5} fill="currentColor" />
+          Run all
         </button>
-        <button onClick={stepOnce}  disabled={running || done}
-          className="rounded-xl bg-slate-700 hover:bg-slate-600 disabled:opacity-40 px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer">
-          Step →
+        <button onClick={stepOnce} disabled={running || done}
+          className="hairline inline-flex items-center gap-1.5 rounded-md px-3 h-7 text-[12px] font-medium text-fg disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
+          Step
+          <ChevronRight size={11} strokeWidth={2.5} />
         </button>
         <button onClick={reset}
-          className="rounded-xl bg-slate-800 hover:bg-slate-700 px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer">
-          ↺ Reset
+          className="hairline inline-flex items-center gap-1.5 rounded-md px-3 h-7 text-[12px] font-medium text-fg-muted hover:text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
+          <RotateCcw size={11} strokeWidth={2} />
+          Reset
         </button>
 
-        {/* Output inline */}
         {outputs.length > 0 && (
-          <div className="ml-auto rounded-xl bg-slate-900 border border-slate-700 px-4 py-2 flex items-center gap-3">
-            <span className="text-[10px] font-bold uppercase text-slate-500">Output</span>
-            <div className="text-sm font-mono text-emerald-300 space-y-0.5">
+          <div className="ml-auto hairline rounded-md px-3 py-1.5 flex items-center gap-3 bg-zinc-50 dark:bg-zinc-950">
+            <span className="text-[10px] font-medium uppercase tracking-wider mono text-fg-subtle">stdout</span>
+            <div className="text-[12px] mono text-emerald-600 dark:text-emerald-400 space-y-0.5">
               {outputs.map((o, i) => <div key={i}>&gt; {o}</div>)}
             </div>
           </div>

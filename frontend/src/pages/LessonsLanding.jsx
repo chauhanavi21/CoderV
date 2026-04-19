@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowRight, Lock } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { useLessonsContext } from '../contexts/LessonsContext';
@@ -21,7 +22,7 @@ export default function LessonsLanding() {
     return (
       <AppLayout tabs={tabs} sidebarId="lessonsSidebar">
         <SkeletonHero className="mb-2" />
-        <div className="h-6 w-32 bg-gray-200 dark:bg-slate-700 rounded animate-pulse mt-8 mb-4" />
+        <div className="h-6 w-32 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse mt-8 mb-4" />
         <SkeletonList count={2} className="md:grid-cols-2 xl:grid-cols-2" />
       </AppLayout>
     );
@@ -29,89 +30,85 @@ export default function LessonsLanding() {
 
   return (
     <AppLayout tabs={tabs} sidebarId="lessonsSidebar">
-      {/* Hero */}
-      <article className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-7 shadow-card grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 items-center">
+      {/* Header */}
+      <div className="mb-6 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-extrabold mb-2.5 dark:text-slate-100">
-            Your Learning Path
-          </h1>
-          <p className="text-muted dark:text-slate-400 text-base leading-relaxed">
-            Work through each lesson at your own pace. Every lesson type covers a
-            different learning experience and builds on the last.
+          <p className="text-[11px] font-medium uppercase tracking-wider text-fg-subtle mono">Curriculum</p>
+          <h1 className="mt-1 text-[22px] font-semibold tracking-tightish text-fg">Your Learning Path</h1>
+          <p className="mt-1 text-[13px] text-fg-muted">
+            Work through each lesson at your own pace.
           </p>
         </div>
-        <div className="grid place-items-center lg:place-items-center max-lg:place-items-start">
-          <div
-            className="w-[170px] aspect-square rounded-full grid place-items-center relative shadow-[0_8px_20px_rgba(99,102,241,0.15)]"
-            style={{
-              background: `conic-gradient(#6366f1 ${total.percent * 3.6}deg, #e2e8f0 0deg)`,
-            }}
-          >
-            <div className="absolute w-[128px] h-[128px] rounded-full bg-white dark:bg-slate-800" />
-            <span className="relative z-10 text-center font-extrabold text-indigo-900 dark:text-indigo-200 text-sm leading-snug">
-              Total<br />Progress<br />{total.completed} / {total.total}
-            </span>
+        <div className="hairline rounded-md px-4 py-2.5 bg-elevated">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-fg-subtle mono">Total Progress</p>
+          <div className="flex items-center gap-3 mt-1">
+            <p className="text-[18px] font-semibold mono text-fg">{total.completed}<span className="text-fg-subtle"> / {total.total}</span></p>
+            <span className="text-[11px] mono text-fg-muted">({total.percent}%)</span>
+          </div>
+          <div className="mt-2 w-32 h-px bg-zinc-200 dark:bg-zinc-800">
+            <div className="h-px bg-fg transition-all duration-500" style={{ width: `${total.percent}%` }} />
           </div>
         </div>
-      </article>
+      </div>
 
-      {/* Lesson cards */}
-      <h2 className="mt-8 mb-4 text-xl font-bold dark:text-slate-100">All Lessons</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Lesson list */}
+      <div className="flex items-center gap-2 mb-3">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-fg-subtle mono">All Lessons</p>
+        <div className="flex-1 hairline-b" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {registry.map((lesson) => {
           const progress = getLessonProgress(lesson.id);
+          const isLocked = !lesson.available;
           return (
             <article
               key={lesson.id}
-              className={`border rounded-2xl p-6 bg-white dark:bg-slate-800 flex flex-col gap-4 transition-all duration-200 ${
-                lesson.available
-                  ? 'border-gray-200 dark:border-slate-700 shadow-sm hover:-translate-y-1 hover:shadow-hover'
-                  : 'border-gray-100 dark:border-slate-800 opacity-50 cursor-not-allowed'
+              className={`hairline rounded-md p-5 bg-elevated flex flex-col gap-3 transition-colors ${
+                isLocked ? 'opacity-50' : 'hover:border-app-strong'
               }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span
-                  className={`w-11 h-11 rounded-xl grid place-items-center font-extrabold text-white ${lesson.color}`}
-                >
-                  {lesson.number}
-                </span>
-                {lesson.available ? (
-                  <span className="text-xs font-bold text-muted dark:text-slate-400">
-                    {progress.completed} / {progress.total} complete
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-7 h-7 rounded-md grid place-items-center font-semibold text-[11px] mono bg-zinc-100 dark:bg-zinc-900 text-fg shrink-0">
+                    {String(lesson.number).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-[14px] font-medium text-fg truncate">{lesson.title}</h3>
+                </div>
+                {isLocked ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium mono uppercase tracking-wider text-fg-subtle">
+                    <Lock size={10} strokeWidth={2} /> locked
                   </span>
                 ) : (
-                  <span className="rounded-full bg-gray-100 dark:bg-slate-700 px-3 py-1 text-xs font-bold text-gray-400 dark:text-slate-500">
-                    Locked
+                  <span className="text-[11px] font-medium mono text-fg-subtle">
+                    {progress.completed}/{progress.total}
                   </span>
                 )}
               </div>
 
-              <div className="flex-1">
-                <h3 className="font-bold text-lg dark:text-slate-100">{lesson.title}</h3>
-                <p className="mt-1.5 text-sm text-muted dark:text-slate-400 leading-relaxed">
-                  {lesson.description}
-                </p>
-              </div>
+              <p className="text-[13px] text-fg-muted leading-relaxed">{lesson.description}</p>
 
-              {lesson.available ? (
+              {!isLocked && (
                 <>
-                  <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
+                  <div className="w-full h-px bg-zinc-100 dark:bg-zinc-900">
                     <div
-                      className="h-2 rounded-full bg-indigo-500 transition-all duration-500"
+                      className="h-px bg-fg transition-all duration-500"
                       style={{ width: `${progress.percent}%` }}
                     />
                   </div>
                   <Link
                     to={`/lessons/${lesson.id}`}
-                    className="w-full text-center bg-indigo-50 dark:bg-indigo-900/30 text-primary dark:text-indigo-300 rounded-xl px-4 py-3 text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/40 hover:shadow-md transition-all"
+                    className="group inline-flex items-center justify-between text-[12px] font-medium text-fg-muted hover:text-fg transition-colors"
                   >
-                    {progress.completed > 0 ? 'Continue' : 'Start'} Lesson{' '}
-                    {lesson.number}
+                    <span>{progress.completed > 0 ? 'Continue' : 'Start'} Lesson {lesson.number}</span>
+                    <ArrowRight size={13} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </>
-              ) : (
-                <div className="w-full text-center bg-gray-50 dark:bg-slate-700/50 text-gray-400 dark:text-slate-500 rounded-xl px-4 py-3 text-sm font-semibold">
-                  Coming Soon
+              )}
+
+              {isLocked && (
+                <div className="text-[11px] font-medium mono uppercase tracking-wider text-fg-subtle">
+                  Coming soon
                 </div>
               )}
             </article>
