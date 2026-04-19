@@ -15,6 +15,7 @@ import QuizTake from './pages/QuizTake';
 import AiAssistant from './pages/AiAssistant';
 import Resources from './pages/Resources';
 import About from './pages/About';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
 const P = ({ children }) => <ProtectedRoute>{children}</ProtectedRoute>;
@@ -45,6 +46,7 @@ function App() {
         <Route path="/ai" element={<P><AiAssistant /></P>} />
         <Route path="/resources" element={<P><Resources /></P>} />
         <Route path="/about" element={<P><About /></P>} />
+        <Route path="/profile" element={<P><Profile /></P>} />
 
         {/* Legacy redirects */}
         <Route path="/lesson" element={<Navigate to="/lessons" replace />} />

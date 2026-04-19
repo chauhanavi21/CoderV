@@ -27,6 +27,14 @@ export default function Sidebar({ id }) {
   const { user, signOut } = useAuth();
   const uiCustomize = useWebLabUiCustomizeOptional();
 
+  const displayName = user?.displayName?.trim()
+    || user?.email?.split('@')[0]
+    || 'User';
+
+  const initials = user?.displayName
+    ? user.displayName.trim().split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+    : (user?.email?.[0]?.toUpperCase() ?? 'U');
+
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth <= 840;
@@ -51,14 +59,6 @@ export default function Sidebar({ id }) {
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
   }, [isMobile, id]);
-
-  const displayName = user?.displayName?.trim()
-    || user?.email?.split('@')[0]
-    || 'User';
-
-  const initials = user?.displayName
-    ? user.displayName.trim().split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
-    : (user?.email?.[0]?.toUpperCase() ?? 'U');
 
   return (
     <>
@@ -93,7 +93,6 @@ export default function Sidebar({ id }) {
         <div className="hidden md:flex items-center gap-2 h-12 px-4 hairline-b">
           <div className="w-5 h-5 rounded-sm bg-zinc-900 dark:bg-zinc-100 grid place-items-center text-[10px] font-bold text-zinc-100 dark:text-zinc-900 mono">C</div>
           <span className="text-[13px] font-semibold tracking-tightish text-fg">CoderV</span>
-          <span className="ml-auto text-[10px] mono text-fg-subtle">v1</span>
         </div>
 
         {/* Section label */}
@@ -132,9 +131,20 @@ export default function Sidebar({ id }) {
 
         <div className="flex-1" />
 
-        {/* User chip */}
+        {/* User chip → Profile */}
         <div className="px-2 pb-1">
-          <div className="flex items-center gap-2.5 hairline rounded-md p-2">
+          <NavLink
+            to="/profile"
+            onClick={() => isMobile && setHidden(true)}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 hairline rounded-md p-2 transition-colors ${
+                isActive
+                  ? 'bg-zinc-100 dark:bg-zinc-900 border-app-strong'
+                  : 'hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60 hover:border-app-strong'
+              }`
+            }
+            aria-label="Open profile"
+          >
             {user?.photoURL ? (
               <img
                 src={user.photoURL}
@@ -148,9 +158,9 @@ export default function Sidebar({ id }) {
             )}
             <div className="min-w-0 flex-1">
               <div className="text-[12px] font-medium text-fg truncate leading-tight">{displayName}</div>
-              <div className="text-[10px] text-fg-subtle leading-tight mt-0.5">Student</div>
+              <div className="text-[10px] text-fg-subtle leading-tight mt-0.5">View profile</div>
             </div>
-          </div>
+          </NavLink>
         </div>
 
         {/* Sign out */}
