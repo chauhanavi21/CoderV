@@ -1,9 +1,6 @@
 import { Component } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 
-/**
- * Catches any unhandled JS errors in the component tree and renders a friendly
- * fallback instead of a blank/broken page.
- */
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -27,31 +24,36 @@ export default class ErrorBoundary extends Component {
     if (!this.state.hasError) return this.props.children;
 
     return (
-      <main className="min-h-screen grid place-items-center py-7 bg-slate-50 dark:bg-slate-950">
+      <main className="min-h-screen grid place-items-center bg-app text-fg">
         <div className="text-center max-w-md px-6">
-          <div className="w-[90px] h-[90px] rounded-3xl bg-red-100 dark:bg-red-900/30 inline-grid place-items-center text-5xl mb-8 shadow-card">
-            ⚠️
+          <div className="hairline border-red-500/40 w-12 h-12 rounded-md bg-red-500/5 inline-grid place-items-center mb-6">
+            <AlertTriangle size={20} strokeWidth={1.75} className="text-red-500" />
           </div>
-          <h1 className="text-4xl font-black text-red-500 mb-4">Something broke</h1>
-          <p className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">
-            An unexpected error occurred
+          <p className="text-[11px] mono uppercase tracking-wider text-red-500 mb-2">
+            error
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+          <h1 className="text-2xl font-semibold tracking-tightish text-fg mb-2">
+            Something broke
+          </h1>
+          <p className="text-[13px] text-fg-muted mb-2 leading-relaxed">
+            An unexpected error occurred.
+          </p>
+          <p className="hairline rounded-md bg-elevated mono text-[11.5px] text-red-500 px-3 py-2 mb-2 break-all text-left">
             {this.state.message}
           </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mb-8">
-            This is likely a temporary issue. Refresh the page or go back to the dashboard.
+          <p className="text-[11.5px] text-fg-subtle mb-6">
+            Likely temporary. Refresh the page or return to the dashboard.
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
+          <div className="flex gap-2 justify-center flex-wrap">
             <button
               onClick={() => window.location.reload()}
-              className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl px-5 py-3 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+              className="hairline inline-flex items-center gap-1.5 rounded-md px-3.5 h-9 text-[12px] font-medium text-fg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
             >
-              Reload page
+              <RefreshCw size={12} strokeWidth={2} /> Reload
             </button>
             <button
               onClick={() => this.handleReset()}
-              className="gradient-primary text-white rounded-xl px-6 py-3 text-sm font-bold shadow-btn hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer"
+              className="rounded-md bg-fg text-bg-elevated dark:bg-zinc-100 dark:text-zinc-950 px-3.5 h-9 inline-flex items-center text-[12px] font-medium hover:opacity-90 transition"
             >
               Go to Dashboard
             </button>
