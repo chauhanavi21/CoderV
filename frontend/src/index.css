@@ -1,55 +1,137 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Linear / Vercel-inspired theme.
+   - Dark by default. Light mode is supported but treated as the secondary skin.
+   - Neutral grayscale palette with ONE near-white accent.
+   - No gradients in chrome. Hairline borders. JetBrains Mono for code.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --bg:           #fafafa;
+  --bg-elevated:  #ffffff;
+  --border:       #e4e4e7;
+  --border-strong:#d4d4d8;
+  --fg:           #18181b;
+  --fg-muted:     #52525b;
+  --fg-subtle:    #71717a;
+  --accent:       #18181b;
+  --accent-fg:    #fafafa;
+  --ring:         rgba(24,24,27,0.10);
+}
+
+.dark {
+  --bg:           #0a0a0a;
+  --bg-elevated:  #111113;
+  --border:       #1f1f23;
+  --border-strong:#2a2a2f;
+  --fg:           #ededee;
+  --fg-muted:     #a1a1aa;
+  --fg-subtle:    #71717a;
+  --accent:       #fafafa;
+  --accent-fg:    #0a0a0a;
+  --ring:         rgba(255,255,255,0.10);
+}
+
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
   body {
-    @apply font-sans text-gray-800 min-h-screen m-0 p-0;
-    background: linear-gradient(160deg, #eef2ff 0%, #ecfeff 45%, #fff7ed 100%);
-    transition: background 0.3s ease, color 0.2s ease;
+    @apply font-sans m-0 p-0 min-h-screen;
+    background: var(--bg);
+    color: var(--fg);
+    font-feature-settings: 'cv02','cv03','cv04','cv11';
+    letter-spacing: -0.011em;
   }
-  .dark body {
-    @apply text-slate-100;
-    background: linear-gradient(160deg, #0f172a 0%, #1e1b2e 45%, #0d1117 100%);
-  }
+  ::selection { background: var(--accent); color: var(--accent-fg); }
   a { @apply text-inherit no-underline; }
+  hr { border-color: var(--border); }
+  code, kbd, pre, samp { font-family: theme('fontFamily.mono'); }
 }
 
 @layer utilities {
-  .gradient-primary { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+  /* The legacy `gradient-*` utility classes are referenced all over the
+     codebase. Repaint them as flat, restrained surfaces so the look becomes
+     coherent without touching every component. */
+  .gradient-primary {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
   .gradient-auth {
-    background:
-      radial-gradient(circle at 15% 25%, rgba(79,70,229,0.18), transparent 35%),
-      radial-gradient(circle at 80% 15%, rgba(6,182,212,0.18), transparent 35%),
-      radial-gradient(circle at 45% 80%, rgba(245,158,11,0.16), transparent 30%),
-      linear-gradient(135deg, #4338ca, #0891b2);
+    background: #0a0a0a;
+    color: #fafafa;
   }
-  .gradient-avatar { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
-  .gradient-quiz-badge { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-  .gradient-float-ai { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .gradient-avatar {
+    background: #27272a;
+    color: #fafafa;
+  }
+  .gradient-quiz-badge {
+    background: #18181b;
+    color: #fafafa;
+  }
+  .gradient-float-ai {
+    background: #18181b;
+    color: #fafafa;
+  }
   .gradient-about-text {
-    background: linear-gradient(135deg, #4f46e5, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--fg);
   }
-  .progress-conic { background: conic-gradient(#10b981 0 40%, #d1fae5 40% 100%); }
+  .progress-conic {
+    background: linear-gradient(90deg, #22c55e var(--p,40%), var(--border) 0);
+  }
+
+  /* Reusable surface tokens */
+  .surface {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+  }
+  .surface-muted {
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .hairline { border: 1px solid var(--border); }
+  .hairline-b { border-bottom: 1px solid var(--border); }
+  .hairline-r { border-right: 1px solid var(--border); }
+  .hairline-t { border-top: 1px solid var(--border); }
+
+  .text-fg        { color: var(--fg); }
+  .text-fg-muted  { color: var(--fg-muted); }
+  .text-fg-subtle { color: var(--fg-subtle); }
+  .bg-elevated    { background: var(--bg-elevated); }
+  .bg-app         { background: var(--bg); }
+  .border-app     { border-color: var(--border); }
+  .border-app-strong { border-color: var(--border-strong); }
+
+  /* Mono utilities used in chrome */
+  .mono { font-family: theme('fontFamily.mono'); font-feature-settings: 'zero','ss01'; }
+
+  /* Subtle focus ring */
+  .ring-accent { box-shadow: 0 0 0 2px var(--ring); }
 }
+
+/* Scrollbar — VS Code-style, thin and recessed in dark mode */
+.dark ::-webkit-scrollbar        { width: 10px; height: 10px; }
+.dark ::-webkit-scrollbar-track  { background: transparent; }
+.dark ::-webkit-scrollbar-thumb  { background: #27272a; border-radius: 6px; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-slide-in {
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in {
-  animation: fadeIn 0.4s ease;
+.animate-slide-in { animation: slideIn 0.18s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
+.animate-fade-in { animation: fadeIn 0.18s ease-out; }

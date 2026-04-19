@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 
 const NODE_COLORS = {
-  create:    { fill: '#7C6AF6', ring: '#a594f9' },
-  fn_def:    { fill: '#D85A30', ring: '#f0997b' },
-  class_def: { fill: '#D85A30', ring: '#f0997b' },
-  loop:      { fill: '#E24B4A', ring: '#f09595' },
-  condition: { fill: '#1D9E75', ring: '#5dcaa5' },
-  attr:      { fill: '#1D9E75', ring: '#5dcaa5' },
-  default:   { fill: '#6366f1', ring: '#818cf8' },
+  create:    { fill: '#27272a', ring: '#52525b' },
+  fn_def:    { fill: '#27272a', ring: '#a3a3a3' },
+  class_def: { fill: '#27272a', ring: '#a3a3a3' },
+  loop:      { fill: '#27272a', ring: '#71717a' },
+  condition: { fill: '#27272a', ring: '#71717a' },
+  attr:      { fill: '#27272a', ring: '#71717a' },
+  default:   { fill: '#27272a', ring: '#52525b' },
 };
 
 function getNodePositions(nodes, width, height) {
@@ -52,15 +52,15 @@ export default function GraphPreview({ example }) {
   );
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-slate-950 p-4 text-white shadow-card">
+    <div className="hairline rounded-md bg-zinc-950 p-3 text-zinc-100">
       <div className="mb-3 flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h3 className="font-bold text-base">Graph view</h3>
-          <p className="text-sm text-slate-300">
-            Each node represents a variable, function, or class from the example.
+          <p className="text-[10px] mono uppercase tracking-wider text-zinc-500 mb-0.5">graph</p>
+          <p className="text-[12px] text-zinc-400">
+            Nodes represent variables, functions, or classes from the example.
           </p>
         </div>
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-200">
+        <span className="hairline border-zinc-800 rounded px-2 py-0.5 text-[10px] mono uppercase tracking-wider text-zinc-400">
           {example.nodes.length} node{example.nodes.length !== 1 ? 's' : ''}
         </span>
       </div>
@@ -76,11 +76,11 @@ export default function GraphPreview({ example }) {
             markerHeight="6"
             orient="auto-start-reverse"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#cbd5e1" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#71717a" />
           </marker>
         </defs>
 
-        <rect x="0" y="0" width={width} height={height} rx="20" fill="#020617" />
+        <rect x="0" y="0" width={width} height={height} rx="6" fill="#09090b" />
 
         {example.edges.map((edge) => {
           const start = positions[edge.from];
@@ -98,16 +98,16 @@ export default function GraphPreview({ example }) {
                 y1={lineStart.y}
                 x2={lineEnd.x}
                 y2={lineEnd.y}
-                stroke="#475569"
-                strokeWidth="1.5"
-                strokeDasharray="5 4"
+                stroke="#3f3f46"
+                strokeWidth="1"
+                strokeDasharray="3 3"
                 strokeLinecap="round"
                 markerEnd="url(#graph-arrow)"
               />
               {edge.label ? (
                 <>
-                  <rect x={labelX - 14} y={labelY - 12} width="28" height="18" rx="9" fill="#1e293b" />
-                  <text x={labelX} y={labelY + 1} textAnchor="middle" className="fill-slate-200 text-[11px] font-bold">
+                  <rect x={labelX - 14} y={labelY - 10} width="28" height="16" rx="3" fill="#18181b" stroke="#27272a" />
+                  <text x={labelX} y={labelY + 2} textAnchor="middle" className="fill-zinc-400 text-[10px] font-medium" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                     {edge.label}
                   </text>
                 </>
@@ -122,10 +122,8 @@ export default function GraphPreview({ example }) {
           const col = nodeColor(node.id, example.steps);
           return (
             <g key={node.id}>
-              <circle cx={point.x} cy={point.y} r={nodeRadius + 5} fill={col.fill} opacity="0.18" />
-              <circle cx={point.x} cy={point.y} r={nodeRadius} fill={col.fill} />
-              <circle cx={point.x} cy={point.y} r={nodeRadius - 4} fill={col.ring} />
-              <text x={point.x} y={point.y + 4} textAnchor="middle" className="fill-white text-[11px] font-bold">
+              <circle cx={point.x} cy={point.y} r={nodeRadius} fill={col.fill} stroke={col.ring} strokeWidth="1" />
+              <text x={point.x} y={point.y + 3} textAnchor="middle" className="fill-zinc-200 text-[10px] font-medium" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                 {node.label ?? node.id}
               </text>
             </g>
