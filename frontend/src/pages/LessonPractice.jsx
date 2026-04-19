@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import QuizSection from '../components/QuizSection';
+import QuizAiBot from '../components/QuizAiBot';
 import { SkeletonCard } from '../components/SkeletonCard';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { fetchExample } from '../api/lessons';
@@ -259,12 +260,18 @@ export default function LessonPractice() {
               {activeExample.quiz?.length > 0 && (
                 hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id) ? (
                   challengeAccepted ? (
-                    <div className="animate-fade-in">
+                    <div className="animate-fade-in grid gap-6">
                       <QuizSection
                         key={`quiz-${activeExample.id}`}
                         quiz={activeExample.quiz}
                         alreadyComplete={isComplete(lessonId, difficulty, activeExample.id)}
                         onPass={() => markComplete(lessonId, difficulty, activeExample.id)}
+                      />
+                      <QuizAiBot
+                        key={`bot-${activeExample.id}`}
+                        quiz={activeExample.quiz}
+                        exampleTitle={activeExample.title}
+                        exampleConcept={activeExample.concept}
                       />
                     </div>
                   ) : (

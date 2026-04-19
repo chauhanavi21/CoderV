@@ -3,8 +3,10 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { scopeCssToSelector } from '../utils/scopeCssToSelector';
@@ -18,6 +20,12 @@ const STYLE_EL_ID = 'coderv-web-lab-sidebar-css';
 
 const DEFAULT_LEARNING = 'Learning';
 const DEFAULT_SIGNOUT = 'Sign out';
+
+// Customizations made in the Web Lab are temporary previews, not saved
+// preferences. After this many ms with no further edits we restore the
+// real sidebar so a learner who walks away from the lesson does not end
+// up with a permanently re-skinned app.
+const SIDEBAR_PREVIEW_TTL_MS = 3 * 60 * 1000;
 
 export const DEFAULT_SIDEBAR_HTML = `<!-- You are editing HTML. The sidebar reads this fragment and applies the text you put inside the tags. -->
 
@@ -132,6 +140,38 @@ export function WebLabUiCustomizeProvider({ children }) {
   useLayoutEffect(() => {
     clearLegacySidebarStorage();
   }, []);
+
+  // Auto-revert to defaults after a period of inactivity. The timer is
+  // (re)started any time the HTML or CSS differs from the defaults and is
+  // cleared as soon as both are back to their defaults. This guarantees
+  // the lab preview cannot stick around forever, even if the learner
+  // navigates away from the lesson page (which unmounts WebCustomizeLab
+  // and its own pathname-based reset logic).
+  const revertTimerRef = useRef(null);
+  useEffect(() => {
+    const isCustomized =
+      sidebarHtmlSource !== DEFAULT_SIDEBAR_HTML || sidebarCssSource !== DEFAULT_SIDEBAR_CSS;
+
+    if (revertTimerRef.current) {
+      clearTimeout(revertTimerRef.current);
+      revertTimerRef.current = null;
+    }
+
+    if (!isCustomized) return undefined;
+
+    revertTimerRef.current = setTimeout(() => {
+      revertTimerRef.current = null;
+      setSidebarHtmlSourceState(DEFAULT_SIDEBAR_HTML);
+      setSidebarCssSourceState(DEFAULT_SIDEBAR_CSS);
+    }, SIDEBAR_PREVIEW_TTL_MS);
+
+    return () => {
+      if (revertTimerRef.current) {
+        clearTimeout(revertTimerRef.current);
+        revertTimerRef.current = null;
+      }
+    };
+  }, [sidebarHtmlSource, sidebarCssSource]);
 
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
