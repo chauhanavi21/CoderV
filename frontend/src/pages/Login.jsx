@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Sun, Moon, ArrowRight, Check } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { useTheme } from '../contexts/ThemeContext';
@@ -70,10 +67,18 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email);
+      const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not send reset email.');
+      }
       setResetSent(true);
     } catch (err) {
-      setError(firebaseError(err.code));
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
