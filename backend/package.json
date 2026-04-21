@@ -4,6 +4,7 @@
   "description": "CoderV Express backend — MVC, Python tracer, Clerk auth, Supabase storage",
   "type": "module",
   "scripts": {
+    "build": "node --check server.js",
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
@@ -13,6 +14,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.7.0",
+    "nodemailer": "^6.10.0",
     "openai": "^6.34.0"
   }
 }
