@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "CoderV Express backend — MVC, Python tracer, Clerk auth, Supabase storage",
   "type": "module",
+  "engines": {
+    "node": ">=20 <23"
+  },
   "scripts": {
     "build": "node --check server.js",
     "start": "node server.js",
