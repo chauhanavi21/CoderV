@@ -132,8 +132,18 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
                       optionStyle = 'opacity-50 cursor-default text-fg-subtle';
                     }
                   } else if (isThisSelected) {
-                    optionStyle = 'border-app-strong bg-zinc-50 dark:bg-zinc-900';
+                    optionStyle =
+                      'border-indigo-500 bg-indigo-500/10 text-fg ring-2 ring-indigo-500/40 shadow-sm cursor-pointer';
                   }
+
+                  const badgeStyle =
+                    isRevealed && isThisCorrectAnswer
+                      ? 'bg-emerald-500 text-white border-transparent'
+                      : isRevealed && isThisSelected && isWrong
+                      ? 'bg-red-500 text-white border-transparent'
+                      : !isRevealed && isThisSelected
+                      ? 'bg-indigo-500 text-white border-transparent'
+                      : 'hairline bg-app text-fg-muted';
 
                   return (
                     <button
@@ -141,20 +151,15 @@ export default function QuizSection({ quiz, onPass, alreadyComplete }) {
                       type="button"
                       disabled={isRevealed}
                       onClick={() => handleSelect(qIdx, optIdx)}
+                      aria-pressed={isThisSelected}
                       className={`hairline flex items-center gap-2.5 rounded-md px-3 py-2.5 text-left text-[12.5px] transition-all ${optionStyle}`}
                     >
                       <span
-                        className={`flex-shrink-0 w-5 h-5 rounded grid place-items-center text-[10px] font-medium mono ${
-                          isRevealed && isThisCorrectAnswer
-                            ? 'bg-emerald-500 text-white'
-                            : isRevealed && isThisSelected && isWrong
-                            ? 'bg-red-500 text-white'
-                            : 'hairline bg-app text-fg-muted'
-                        }`}
+                        className={`flex-shrink-0 w-5 h-5 rounded grid place-items-center text-[10px] font-medium mono ${badgeStyle}`}
                       >
                         {LETTERS[optIdx]}
                       </span>
-                      <span className="leading-snug text-fg">{opt}</span>
+                      <span className={`leading-snug text-fg ${!isRevealed && isThisSelected ? 'font-medium' : ''}`}>{opt}</span>
                     </button>
                   );
                 })}
