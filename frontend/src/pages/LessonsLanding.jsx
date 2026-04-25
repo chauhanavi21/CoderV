@@ -100,7 +100,7 @@ export default function LessonsLanding() {
                     to={`/lessons/${lesson.id}`}
                     className="group inline-flex items-center justify-between text-[12px] font-medium text-fg-muted hover:text-fg transition-colors"
                   >
-                    <span>{progress.completed > 0 ? 'Continue' : 'Start'} Lesson {lesson.number}</span>
+                    <span>{progress.completed > 0 ? 'Continue' : 'Start'} Lesson {lesson.number+1}</span>
                     <ArrowRight size={13} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </>
