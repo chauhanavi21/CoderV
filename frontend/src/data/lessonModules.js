@@ -1,7 +1,7 @@
 export const lessonsRegistry = [
   {
     id: 'basics',
-    number: 1,
+    number: 0,
     title: 'Basics to Know',
     description:
       'The code is broken. Fix indentation, ranges, missing colons, off-by-one bugs, and other Python basics — then run it to see if your output matches.',
@@ -10,7 +10,7 @@ export const lessonsRegistry = [
   },
   {
     id: 'type-1',
-    number: 2,
+    number: 1,
     title: 'Python Step Visualizer',
     description:
       'Learn Python step by step — watch variables, loops, functions, and classes come to life on an animated graph as each line executes.',
@@ -19,7 +19,7 @@ export const lessonsRegistry = [
   },
   {
     id: 'type-2',
-    number: 3,
+    number: 2,
     title: 'Data Structures Explorer',
     description:
       'Understand how data structures work under the hood with interactive visualizations.',
@@ -28,7 +28,7 @@ export const lessonsRegistry = [
   },
   {
     id: 'type-3',
-    number: 4,
+    number: 3,
     title: 'Algorithm Patterns',
     description:
       'Master common algorithm patterns through guided examples and visual breakdowns.',
@@ -37,7 +37,7 @@ export const lessonsRegistry = [
   },
   {
     id: 'type-4',
-    number: 5,
+    number: 4,
     title: 'System Design Basics',
     description:
       'Learn fundamental system design concepts with real-world scenario walkthroughs.',
@@ -46,7 +46,7 @@ export const lessonsRegistry = [
   },
   {
     id: 'web-lab',
-    number: 6,
+    number: 5,
     title: 'Customize the website',
     description:
       'Change the real sidebar with HTML and CSS (changes clear when you switch stages, mark complete, or leave the lesson), then use JavaScript for a short live “hack” of dashboard scores (not saved).',

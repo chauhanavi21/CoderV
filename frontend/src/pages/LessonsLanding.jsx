@@ -71,7 +71,7 @@ export default function LessonsLanding() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="w-7 h-7 rounded-md grid place-items-center font-semibold text-[11px] mono bg-zinc-100 dark:bg-zinc-900 text-fg shrink-0">
-                    {String(lesson.number).padStart(2, '0')}
+                    {String(lesson.number+1).padStart(2, '0')}
                   </span>
                   <h3 className="text-[14px] font-medium text-fg truncate">{lesson.title}</h3>
                 </div>
