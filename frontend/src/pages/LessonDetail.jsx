@@ -30,7 +30,7 @@ export default function LessonDetail() {
 
   const tabs = [
     { to: '/lessons', label: 'All Lessons' },
-    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number+1}` : lessonId },
   ];
 
   if (moduleLoading || progressLoading) {
@@ -70,7 +70,7 @@ export default function LessonDetail() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[11px] font-medium mono uppercase tracking-wider text-fg-subtle">
-              Lesson {String(lesson?.number).padStart(2, '0')}
+              Lesson {String(lesson?.number+1).padStart(2, '0')}
             </span>
             <span className="text-fg-subtle">·</span>
             <span className="text-[11px] font-medium mono uppercase tracking-wider text-fg-subtle">

@@ -68,7 +68,7 @@ export default function LessonPractice() {
   }, [difficulty]);
 
   const tabs = [
-    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number+1}` : lessonId },
     { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData?.label ?? difficulty },
   ];
 

@@ -148,7 +148,7 @@ export default function WebCustomizeLab() {
   }
 
   const topTabs = [
-    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : lessonId },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number+1}` : lessonId },
     {
       to: `/lessons/${lessonId}/${stage}`,
       label: stage === 'js' ? 'Dashboard JS' : stage === 'css' ? 'Sidebar CSS' : 'Sidebar HTML',

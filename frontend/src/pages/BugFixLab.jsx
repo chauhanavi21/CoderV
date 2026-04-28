@@ -83,7 +83,7 @@ export default function BugFixLab() {
   }, [activeExample]);
 
   const tabs = [
-    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number}` : 'Lesson' },
+    { to: `/lessons/${lessonId}`, label: lesson ? `Lesson ${lesson.number+1}` : 'Lesson' },
     { to: `/lessons/${lessonId}/${difficulty}`, label: difficultyData?.label ?? difficulty },
   ];
 

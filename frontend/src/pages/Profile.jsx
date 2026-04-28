@@ -199,7 +199,7 @@ export default function Profile() {
                 >
                   <div className="flex items-center gap-3">
                     <span className="w-7 h-7 rounded-md grid place-items-center text-[11px] font-semibold mono bg-zinc-100 dark:bg-zinc-900 text-fg shrink-0">
-                      {String(lesson.number).padStart(2, '0')}
+                      {String(lesson.number+1).padStart(2, '0')}
                     </span>
                     <div className="min-w-0 flex-1">
                       <h3 className="text-[13px] font-medium text-fg truncate">{lesson.title}</h3>
@@ -236,7 +236,7 @@ export default function Profile() {
                 className="hairline rounded-md p-4 bg-elevated flex items-center gap-3 hover:border-app-strong transition-colors"
               >
                 <span className="w-7 h-7 rounded-md grid place-items-center text-[11px] font-semibold mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
-                  {String(lesson.number).padStart(2, '0')}
+                  {String(lesson.number+1).padStart(2, '0')}
                 </span>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[13px] font-medium text-fg truncate">{lesson.title}</h3>
