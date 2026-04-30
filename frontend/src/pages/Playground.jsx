@@ -4,15 +4,23 @@ import AppLayout from '../components/AppLayout';
 import StepVisualizer from '../components/StepVisualizer';
 import { traceCode, checkBackendHealth } from '../api/visualizer';
 
-const DEFAULT_CODE = `# Write any Python code and click Run.
-x = 10
-y = 20
-z = x + y
-print(z)
+const DEFAULT_CODE = `# List indexing demo: run it to see clean memory connections.
+nums = [10, 20, 30, 40, 50, 60, 70, 80]
 
-name = "CoderV"
-greeting = "Hello, " + name
-print(greeting)
+first = nums[0]
+second = nums[1]
+middle = nums[4]
+second_last = nums[-2]
+last = nums[-1]
+
+left_edge = first + second
+right_edge = second_last + last
+
+print("first:", first)
+print("middle:", middle)
+print("last:", last)
+print("left edge:", left_edge)
+print("right edge:", right_edge)
 `;
 
 const EXAMPLES = [

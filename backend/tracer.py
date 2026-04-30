@@ -16,6 +16,7 @@ Usage:
 
 import sys
 import json
+import ast
 import traceback as tb
 
 
@@ -37,34 +38,88 @@ def get_str_locals(frame):
     return result
 
 
-def make_action(prev, curr):
+def collect_load_names(node):
+    """Return variable names read by an expression, in first-seen order."""
+    names = []
+
+    class NameVisitor(ast.NodeVisitor):
+        def visit_Name(self, name_node):
+            if isinstance(name_node.ctx, ast.Load) and name_node.id not in names:
+                names.append(name_node.id)
+
+    NameVisitor().visit(node)
+    return names
+
+
+def build_dependency_map(code_str):
+    """Map source line numbers to variables used by assignment expressions."""
+    dependencies = {}
+
+    try:
+        tree = ast.parse(code_str)
+    except SyntaxError:
+        return dependencies
+
+    for node in ast.walk(tree):
+        sources = []
+
+        if isinstance(node, ast.Assign):
+            sources = collect_load_names(node.value)
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            sources = collect_load_names(node.value)
+        elif isinstance(node, ast.AugAssign):
+            sources = collect_load_names(node.target) + collect_load_names(node.value)
+
+        if sources:
+            line = node.lineno - 1
+            dependencies[line] = list(dict.fromkeys(sources))
+
+    return dependencies
+
+
+def make_action(prev, curr, sources=None):
     """Derive the most significant variable action from a locals diff."""
     new_vars     = {k: v for k, v in curr.items() if k not in prev}
     changed_vars = {k: v for k, v in curr.items() if k in prev and prev[k] != v}
 
+    def with_sources(action):
+        linked_sources = [name for name in (sources or []) if name != action['name']]
+        if linked_sources:
+            action['from'] = linked_sources
+        return action
+
     if new_vars:
         k, v = next(iter(new_vars.items()))
-        return {'type': 'create', 'name': k, 'val': v}
+        return with_sources({'type': 'create', 'name': k, 'val': v})
     if changed_vars:
         k, v = next(iter(changed_vars.items()))
-        return {'type': 'update', 'name': k, 'val': v}
+        return with_sources({'type': 'update', 'name': k, 'val': v})
     return None
 
 
 def trace_and_capture(code_str):
     code_lines        = code_str.split('\n')
+    dependency_map    = build_dependency_map(code_str)
     steps             = []
     captured_prints   = []
     frame_prev_locals = {}   # keyed by id(frame)
     frame_pending_line = {}
 
     class StdoutCapture:
+        def __init__(self):
+            self.buffer = ''
+
         def write(self, text):
-            stripped = text.rstrip('\n')
-            if stripped:
-                captured_prints.append(stripped)
+            self.buffer += text
+            while '\n' in self.buffer:
+                line, self.buffer = self.buffer.split('\n', 1)
+                if line:
+                    captured_prints.append(line)
+
         def flush(self):
-            pass
+            if self.buffer:
+                captured_prints.append(self.buffer)
+                self.buffer = ''
 
     def commit_step(lineno, curr_locals, prev_locals):
         line_text = (
@@ -72,7 +127,7 @@ def trace_and_capture(code_str):
             if 0 <= lineno < len(code_lines)
             else f'line {lineno + 1}'
         )
-        action = make_action(prev_locals, curr_locals)
+        action = make_action(prev_locals, curr_locals, dependency_map.get(lineno))
 
         # Flush captured print output attributed to this line
         for p in list(captured_prints):

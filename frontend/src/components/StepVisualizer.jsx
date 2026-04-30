@@ -85,11 +85,12 @@ function buildGraph(steps, upTo) {
 function layoutNodes(nodeList, w, h) {
   if (!nodeList.length) return {};
   if (nodeList.length === 1) return { [nodeList[0].id]: { x: w / 2, y: h / 2 } };
-  const r = Math.min(w, h) / 2 - 56;
+  const rx = w / 2 - 76;
+  const ry = h / 2 - 52;
   const pos = {};
   nodeList.forEach((n, i) => {
     const angle = ((Math.PI * 2) / nodeList.length) * i - Math.PI / 2;
-    pos[n.id] = { x: w / 2 + r * Math.cos(angle), y: h / 2 + r * Math.sin(angle) };
+    pos[n.id] = { x: w / 2 + rx * Math.cos(angle), y: h / 2 + ry * Math.sin(angle) };
   });
   return pos;
 }
@@ -161,7 +162,7 @@ export default function StepVisualizer({ example, onFirstInteraction }) {
 
   const graph     = buildGraph(steps, cursor);
   const svgW      = 440;
-  const svgH      = 260;
+  const svgH      = 320;
   const positions = layoutNodes(graph.nodes, svgW, svgH);
 
   const isError = currentStep?.action?.type === 'error';
