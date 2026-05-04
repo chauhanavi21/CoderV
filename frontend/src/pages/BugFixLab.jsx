@@ -4,6 +4,7 @@ import { Check, Play, ChevronRight } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
+import { useAuth } from '../contexts/AuthContext';
 import { traceCode } from '../api/visualizer';
 import { basicsBugFixes } from '../data/lessonModules';
 import {
@@ -42,6 +43,7 @@ export default function BugFixLab() {
   const difficultyData = module?.difficulties?.[difficulty];
 
   const { markComplete, isComplete, progressLoading } = useProgress();
+  const { openLessons } = useAuth();
 
   const [activeExampleId, setActiveExampleId] = useState(null);
   const [code, setCode] = useState('');
@@ -62,10 +64,11 @@ export default function BugFixLab() {
       if (!prev) return fallback;
       const idx = examples.findIndex((e) => e.id === prev);
       if (idx < 0) return fallback;
-      if (!isExampleUnlocked(examples, idx, lessonId, difficulty, isComplete)) return fallback;
+      if (!isExampleUnlocked(examples, idx, lessonId, difficulty, isComplete, openLessons))
+        return fallback;
       return prev;
     });
-  }, [difficultyData, lessonId, difficulty, isComplete, progressLoading]);
+  }, [difficultyData, lessonId, difficulty, isComplete, progressLoading, openLessons]);
 
   const activeExample = useMemo(
     () => difficultyData?.examples?.find((e) => e.id === activeExampleId) || null,
@@ -99,7 +102,7 @@ export default function BugFixLab() {
     return <Navigate to="/lessons" replace />;
   }
 
-  if (!isDifficultyAccessible(module, lessonId, difficulty, isComplete)) {
+  if (!isDifficultyAccessible(module, lessonId, difficulty, isComplete, openLessons)) {
     return <Navigate to={`/lessons/${lessonId}`} replace />;
   }
 
@@ -206,7 +209,8 @@ export default function BugFixLab() {
                 index,
                 lessonId,
                 difficulty,
-                isComplete
+                isComplete,
+                openLessons
               );
               return (
                 <button

@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout';
 import { SkeletonHero, SkeletonList } from '../components/SkeletonCard';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
+import { useAuth } from '../contexts/AuthContext';
 import { isDifficultyAccessible } from '../utils/lessonProgressGates';
 
 const difficultyTone = {
@@ -25,6 +26,7 @@ export default function LessonDetail() {
   const { registry } = useLessonsContext();
   const { module, loading: moduleLoading, error: moduleError } = useLessonDetail(lessonId);
   const { getLessonProgress, getDifficultyProgress, progressLoading, isComplete } = useProgress();
+  const { openLessons } = useAuth();
 
   const lesson = registry.find((l) => l.id === lessonId);
 
@@ -123,7 +125,7 @@ export default function LessonDetail() {
           const dp = getDifficultyProgress(lessonId, diffId);
           const tone = difficultyTone[diffId] || difficultyTone.beginner;
           const bar = difficultyBar[diffId] || difficultyBar.beginner;
-          const accessible = isDifficultyAccessible(module, lessonId, diffId, isComplete);
+          const accessible = isDifficultyAccessible(module, lessonId, diffId, isComplete, openLessons);
 
           const cardInner = (
             <>

@@ -7,7 +7,8 @@ export const LESSON_QUIZ_PASS_THRESHOLD_PCT = 80;
  * @param {string} difficultyId
  * @param {(lessonId: string, difficultyId: string, exampleId: string) => boolean} isComplete
  */
-export function isDifficultyAccessible(module, lessonId, difficultyId, isComplete) {
+export function isDifficultyAccessible(module, lessonId, difficultyId, isComplete, bypassGates = false) {
+  if (bypassGates) return true;
   const order = module.difficultyOrder;
   const idx = order.indexOf(difficultyId);
   if (idx <= 0) return true;
@@ -24,7 +25,8 @@ export function isDifficultyAccessible(module, lessonId, difficultyId, isComplet
  * @param {{ id: string }[]} examples - Ordered list for one difficulty
  * @param {number} index - Index of the example in `examples`
  */
-export function isExampleUnlocked(examples, index, lessonId, difficultyId, isComplete) {
+export function isExampleUnlocked(examples, index, lessonId, difficultyId, isComplete, bypassGates = false) {
+  if (bypassGates) return true;
   if (index <= 0) return true;
   const prevId = examples[index - 1].id;
   return isComplete(lessonId, difficultyId, prevId);

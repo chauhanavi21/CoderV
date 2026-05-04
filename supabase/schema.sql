@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   first_name  TEXT,
   last_name   TEXT,
   image_url   TEXT,
+  open_lessons BOOLEAN NOT NULL DEFAULT false,
   created_at  TIMESTAMPTZ DEFAULT NOW(),
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );

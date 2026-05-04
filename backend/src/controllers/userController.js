@@ -1,3 +1,4 @@
+import admin from '../config/firebase.js';
 import * as userModel from '../models/userModel.js';
 
 /**
@@ -25,7 +26,20 @@ export async function syncUser(req, res) {
       image_url:  imageUrl,
     });
 
-    res.json({ success: true });
+    const row = await userModel.getUserById(userId);
+    let fromClaims = false;
+    if (admin.apps?.length) {
+      try {
+        const fbUser = await admin.auth().getUser(userId);
+        fromClaims = !!fbUser.customClaims?.openLessons;
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    res.json({
+      success: true,
+      openLessons: !!row?.open_lessons || fromClaims,
+    });
   } catch (err) {
     console.error('[userController.syncUser]', err.message);
     res.status(500).json({ error: err.message });

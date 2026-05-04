@@ -46,6 +46,17 @@ test('UNIT LEVEL - lessonProgressGates - unlocks examples in sequence inside one
   assert.equal(isExampleUnlocked(examples, 1, 'type-1', 'beginner', firstComplete), true);
 });
 
+test('UNIT LEVEL - lessonProgressGates - open flag bypasses difficulty and example locks', () => {
+  const nothingComplete = () => false;
+  assert.equal(
+    isDifficultyAccessible(sampleModule, 'type-1', 'easy', nothingComplete, true),
+    true
+  );
+
+  const examples = [{ id: 'first-example' }, { id: 'second-example' }];
+  assert.equal(isExampleUnlocked(examples, 1, 'type-1', 'beginner', nothingComplete, true), true);
+});
+
 test('UNIT LEVEL - lessonProgressGates - suggests the first incomplete example for continue learning', () => {
   const examples = [{ id: 'variables' }, { id: 'loops' }, { id: 'functions' }];
   const firstTwoComplete = (_lessonId, _difficultyId, exampleId) =>

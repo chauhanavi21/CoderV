@@ -3,6 +3,7 @@ import { Link, NavLink, Navigate, useLocation, useParams } from 'react-router-do
 import AppLayout from '../components/AppLayout';
 import { useLessonsContext } from '../contexts/LessonsContext';
 import { useProgress } from '../hooks/useProgress';
+import { useAuth } from '../contexts/AuthContext';
 import { useWebLabUiCustomize } from '../contexts/WebLabUiCustomizeContext';
 import { useWebLabDashboardHack, WEB_LAB_JS_MSG } from '../contexts/WebLabDashboardHackContext';
 
@@ -54,6 +55,7 @@ export default function WebCustomizeLab() {
   const { lessonId = WEB_LAB_LESSON_ID, difficulty: track } = useParams();
   const { registry } = useLessonsContext();
   const { markComplete, isComplete, getTotalProgress } = useProgress();
+  const { openLessons } = useAuth();
   const hack = useWebLabDashboardHack();
   const {
     sidebarHtmlSource,
@@ -137,13 +139,13 @@ export default function WebCustomizeLab() {
     return <Navigate to={`/lessons/${lessonId}/html`} replace />;
   }
 
-  if (stage === 'css' && !htmlDone) {
+  if (stage === 'css' && !htmlDone && !openLessons) {
     return <Navigate to={`/lessons/${lessonId}/html`} replace />;
   }
-  if (stage === 'js' && !htmlDone) {
+  if (stage === 'js' && !htmlDone && !openLessons) {
     return <Navigate to={`/lessons/${lessonId}/html`} replace />;
   }
-  if (stage === 'js' && !cssDone) {
+  if (stage === 'js' && !cssDone && !openLessons) {
     return <Navigate to={`/lessons/${lessonId}/css`} replace />;
   }
 
@@ -160,7 +162,10 @@ export default function WebCustomizeLab() {
       <div className="mb-2 flex flex-wrap gap-2">
         {STAGE_TABS.map((t) => {
           const unlocked =
-            t.key === 'html' || (t.key === 'css' && htmlDone) || (t.key === 'js' && htmlDone && cssDone);
+            openLessons ||
+            t.key === 'html' ||
+            (t.key === 'css' && htmlDone) ||
+            (t.key === 'js' && htmlDone && cssDone);
           const baseTab =
             'rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors';
           if (unlocked) {
@@ -195,7 +200,7 @@ export default function WebCustomizeLab() {
           );
         })}
       </div>
-      {(!htmlDone || !cssDone) && (
+      {openLessons ? null : (!htmlDone || !cssDone) && (
         <p className="mb-4 max-w-2xl text-xs text-muted dark:text-slate-500">
           Stages unlock in order. Use <strong className="text-slate-600 dark:text-slate-400">Mark stage complete</strong>{' '}
           on each step before the next tab becomes available.

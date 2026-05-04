@@ -9,6 +9,7 @@ import { SkeletonCard } from '../components/SkeletonCard';
 import { useLessonsContext, useLessonDetail } from '../contexts/LessonsContext';
 import { fetchExample } from '../api/lessons';
 import { useProgress } from '../hooks/useProgress';
+import { useAuth } from '../contexts/AuthContext';
 import WebCustomizeLab from './WebCustomizeLab';
 import BugFixLab from './BugFixLab';
 import {
@@ -32,6 +33,7 @@ export default function LessonPractice() {
   const [challengeAccepted, setChallengeAccepted] = useState(false);
 
   const { markComplete, isComplete, progressLoading } = useProgress();
+  const { openLessons } = useAuth();
 
   useEffect(() => {
     if (progressLoading || !difficultyData?.examples?.length) return;
@@ -45,10 +47,11 @@ export default function LessonPractice() {
 
       const idx = examples.findIndex((e) => e.id === prev);
       if (idx < 0) return fallback;
-      if (!isExampleUnlocked(examples, idx, lessonId, difficulty, isComplete)) return fallback;
+      if (!isExampleUnlocked(examples, idx, lessonId, difficulty, isComplete, openLessons))
+        return fallback;
       return prev;
     });
-  }, [difficultyData, lessonId, difficulty, isComplete, progressLoading]);
+  }, [difficultyData, lessonId, difficulty, isComplete, progressLoading, openLessons]);
 
   useEffect(() => {
     if (!activeExampleId) return;
@@ -127,7 +130,7 @@ export default function LessonPractice() {
     return <Navigate to="/lessons" replace />;
   }
 
-  if (!isDifficultyAccessible(module, lessonId, difficulty, isComplete)) {
+  if (!isDifficultyAccessible(module, lessonId, difficulty, isComplete, openLessons)) {
     return <Navigate to={`/lessons/${lessonId}`} replace />;
   }
 
@@ -168,7 +171,8 @@ export default function LessonPractice() {
                 index,
                 lessonId,
                 difficulty,
-                isComplete
+                isComplete,
+                openLessons
               );
               return (
                 <button
@@ -265,8 +269,10 @@ export default function LessonPractice() {
               )}
 
               {activeExample.quiz?.length > 0 && (
-                hasStartedVisualizer || isComplete(lessonId, difficulty, activeExample.id) ? (
-                  challengeAccepted ? (
+                openLessons ||
+                hasStartedVisualizer ||
+                isComplete(lessonId, difficulty, activeExample.id) ? (
+                  openLessons || challengeAccepted ? (
                     <div className="animate-fade-in grid gap-4">
                       <QuizSection
                         key={`quiz-${activeExample.id}`}
