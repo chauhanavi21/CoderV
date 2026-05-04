@@ -57,6 +57,7 @@ const milestones = [
   { label: 'Milestone 3', href: '/TeamG-milestone3.pdf' },
   { label: 'Milestone 4', href: '/TeamG-milestone4.pdf' },
   { label: 'Milestone 5', href: '/TeamG-milestone5.pdf' },
+  { label: 'Milestone 6', href: '/TeamG-milestone6.pdf' },
 ];
 
 const tabs = [
