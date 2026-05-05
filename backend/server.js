@@ -7,9 +7,7 @@ import app from './src/app.js';
 if (process.env.NODE_ENV === 'production') {
   job.start();
 }
-app.get("/api/healths", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
+
 // Default 5050: macOS often binds AirPlay Receiver to 5000 (Control Center), causing EADDRINUSE.
 const PORT = Number(process.env.PORT) || 5050;
 

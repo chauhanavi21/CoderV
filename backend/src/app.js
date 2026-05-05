@@ -29,6 +29,10 @@ app.use(
 app.use(express.json({ limit: '100kb' }));
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+// Before `/api/health` — that mount matches `/api/healths` as a prefix and would 404.
+app.get('/api/healths', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 app.use('/api/health',   healthRoutes);
 app.use('/api/trace',    traceRoutes);
 app.use('/api/progress', progressRoutes);
